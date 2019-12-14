@@ -1,14 +1,20 @@
 package com.visualipcv.view;
 
-import javax.swing.*;
-import java.awt.*;
+import com.visualipcv.Processor;
 
-public class GraphView extends JPanel {
+import javax.swing.*;
+import javax.swing.tree.TreeSelectionModel;
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+
+public class GraphView extends JPanel implements Transferable {
     private static final int GRAPH_WIDTH = 65537;
     private static final int GRAPH_HEIGHT = 65537;
 
-    private Color backgroundColor = Color.darkGray;
-    private Color lineColor = Color.gray;
+    private Color backgroundColor = new Color(40, 40, 40, 255);
+    private Color lineColor = Color.darkGray;
     private int cellSize = 50;
     private int offsetX = -GRAPH_WIDTH / 2;
     private int offsetY = -GRAPH_HEIGHT / 2;
@@ -26,8 +32,8 @@ public class GraphView extends JPanel {
         DragListener drag = new DragListener() {
             @Override
             public void dragged(int deltaX, int deltaY) {
-                offsetX -= deltaX;
-                offsetY -= deltaY;
+                offsetX += deltaX;
+                offsetY += deltaY;
                 repaint();
                 revalidate();
             }
@@ -35,23 +41,27 @@ public class GraphView extends JPanel {
 
         internalPanel.addMouseListener(drag);
         internalPanel.addMouseMotionListener(drag);
+        setTransferHandler(new ProcessorDragHandler());
     }
 
     public Point toGraphCoords(Point p) {
-        int x = p.x + offsetX;
-        int y = p.y + offsetY;
-        return new Point(x, y);
-    }
-
-    public Point toRealCoords(Point p) {
         int x = p.x - offsetX;
         int y = p.y - offsetY;
         return new Point(x, y);
     }
 
+    public Point toRealCoords(Point p) {
+        int x = p.x + offsetX;
+        int y = p.y + offsetY;
+        return new Point(x, y);
+    }
+
     @Override
     public Component add(Component component) {
-        return internalPanel.add(component);
+        Component c = internalPanel.add(component);
+        repaint();
+        revalidate();
+        return c;
     }
 
     @Override
@@ -96,5 +106,20 @@ public class GraphView extends JPanel {
 
     public int getOffsetY() {
         return offsetY;
+    }
+
+    @Override
+    public DataFlavor[] getTransferDataFlavors() {
+        return null;
+    }
+
+    @Override
+    public boolean isDataFlavorSupported(DataFlavor flavor) {
+        return false;
+    }
+
+    @Override
+    public Object getTransferData(DataFlavor flavor) {
+        return null;
     }
 }

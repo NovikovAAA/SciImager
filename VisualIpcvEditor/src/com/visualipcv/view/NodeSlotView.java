@@ -4,10 +4,11 @@ import javax.swing.*;
 import java.awt.*;
 
 public class NodeSlotView extends JComponent {
+    private static final int STROKE_THICKNESS = 3;
+
     private boolean isConnected = false;
 
     public NodeSlotView() {
-        setPreferredSize(new Dimension(50, 50));
         setBackground(new Color(50, 0, 0, 255));
         setForeground(new Color(200, 0, 0, 255));
     }
@@ -18,7 +19,11 @@ public class NodeSlotView extends JComponent {
         graphics2D.setColor(getBackground());
         graphics2D.fillOval(0, 0, getWidth(), getHeight());
         graphics2D.setColor(getForeground());
-        graphics2D.setStroke(new BasicStroke(5));
-        graphics2D.drawOval(0, 0, getWidth(), getHeight());
+        graphics2D.setStroke(new BasicStroke(STROKE_THICKNESS));
+        graphics2D.drawOval(
+                STROKE_THICKNESS / 2,
+                STROKE_THICKNESS / 2,
+                getWidth() - STROKE_THICKNESS + 1,
+                getHeight() - STROKE_THICKNESS + 1);
     }
 }

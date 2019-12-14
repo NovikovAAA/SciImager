@@ -11,6 +11,7 @@ public class DragListener extends MouseInputAdapter {
     @Override
     public void mousePressed(MouseEvent e) {
         pressed = e;
+        e.getComponent().getParent().setComponentZOrder(e.getComponent(), 0);
     }
 
     @Override

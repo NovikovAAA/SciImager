@@ -27,15 +27,12 @@ public class Main {
             @Override
             public void run() {
                 JFrame frame = buildFrame();
-                //frame.setLayout(null);
-                //GraphView canvas = new GraphView();
-                //NodeView view = new NodeView(processorLibrary.getProcessors()[0]);
-                //view.setLocation(10 + canvas.getGraphWidth() / 2, 10 + canvas.getGraphHeight() / 2);
-                //canvas.add(view);
-                //frame.add(canvas);
-
-                FunctionListView list = new FunctionListView(processorLibrary);
-                frame.add(list);
+                JSplitPane split = new JSplitPane();
+                split.setLeftComponent(new FunctionListView(processorLibrary));
+                split.setRightComponent(new GraphView());
+                split.setContinuousLayout(true);
+                split.setDividerLocation(300);
+                frame.add(split);
             }
         });
     }

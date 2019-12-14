@@ -6,17 +6,23 @@ import java.util.Set;
 
 public class Processor {
     private String name;
+    private String category;
     private Map<String, DataType> inputProperties;
     private Map<String, DataType> outputProperties;
 
-    public Processor(String name, Map<String, DataType> inputProperties, Map<String, DataType> outputProperties) {
+    public Processor(String name, String category, Map<String, DataType> inputProperties, Map<String, DataType> outputProperties) {
         this.name = name;
+        this.category = category;
         this.inputProperties = inputProperties;
         this.outputProperties = outputProperties;
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getCategory() {
+        return category;
     }
 
     public int getInputPropertyCount() {
@@ -35,12 +41,12 @@ public class Processor {
         return outputProperties.get(name);
     }
 
-    public Set<String> getInputProperties() {
-        return inputProperties.keySet();
+    public Map<String, DataType> getInputProperties() {
+        return inputProperties;
     }
 
-    public Set<String> getOutputProperties() {
-        return outputProperties.keySet();
+    public Map<String, DataType> getOutputProperties() {
+        return outputProperties;
     }
 
     @Override
