@@ -21,7 +21,13 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TestFunction.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="DllExport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VisualIPCV.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -32,7 +38,7 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ScilabMain.cpp">
+    <ClCompile Include="TestFunction.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
