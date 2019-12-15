@@ -1,5 +1,6 @@
 package com.visualipcv;
 
+import com.visualipcv.controller.GraphController;
 import com.visualipcv.view.FunctionListView;
 import com.visualipcv.view.GraphView;
 import com.visualipcv.view.NodeView;
@@ -11,7 +12,6 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 public class Main {
-    private static final Logger logger = Logger.getLogger(Main.class.toString());
 
     static
     {
@@ -21,6 +21,9 @@ public class Main {
     }
 
     private static ProcessorLibrary processorLibrary = new ProcessorLibrary();
+    private static final Logger logger = Logger.getLogger(Main.class.toString());
+
+    private static GraphController controller;
 
     public static void main(String[] args) throws IOException {
         EventQueue.invokeLater(new Runnable() {
@@ -29,7 +32,12 @@ public class Main {
                 JFrame frame = buildFrame();
                 JSplitPane split = new JSplitPane();
                 split.setLeftComponent(new FunctionListView(processorLibrary));
-                split.setRightComponent(new GraphView());
+
+                GraphView graphView = new GraphView();
+                Graph graph = new Graph();
+                controller = new GraphController(graph, graphView);
+
+                split.setRightComponent(graphView);
                 split.setContinuousLayout(true);
                 split.setDividerLocation(300);
                 frame.add(split);

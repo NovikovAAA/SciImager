@@ -1,17 +1,17 @@
-package com.visualipcv.view;
+package com.visualipcv.view.dragdrop;
 
 import com.visualipcv.Processor;
+import com.visualipcv.view.GraphView;
+import com.visualipcv.view.NodeView;
+import com.visualipcv.view.dragdrop.ProcessorDataFlavor;
+import com.visualipcv.view.dragdrop.ProcessorTransferable;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
 
-class ProcessorDragHandler extends TransferHandler {
+public class ProcessorDragHandler extends TransferHandler {
     @Override
     public int getSourceActions(JComponent c) {
         return TransferHandler.COPY_OR_MOVE;
@@ -51,17 +51,13 @@ class ProcessorDragHandler extends TransferHandler {
         try {
             p = (Processor)t.getTransferData(ProcessorDataFlavor.PROCESSOR_DATA_FLAVOR);
         } catch(Exception e) {
-            e.printStackTrace();
             return false;
         }
 
         GraphView target = (GraphView)support.getComponent();
         DropLocation location = support.getDropLocation();
-
-        NodeView node = new NodeView(p);
         Point point = target.toGraphCoords(location.getDropPoint());
-        node.setLocation(point);
-        target.add(node);
+        target.onDrop(p, point);
         return true;
     }
 }

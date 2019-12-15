@@ -1,22 +1,21 @@
-package com.visualipcv.view;
+package com.visualipcv.view.dragdrop;
 
-import com.visualipcv.Processor;
+import com.visualipcv.view.NodeSlotView;
 
-import javax.swing.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-public class ProcessorTransferable implements Transferable {
-    private static final DataFlavor[] flavors = {
-        ProcessorDataFlavor.PROCESSOR_DATA_FLAVOR
+public class SlotTransferable implements Transferable {
+    private SlotDataFlavor[] flavors = {
+        SlotDataFlavor.SLOT_DATA_FLAVOR
     };
 
-    private Processor processor;
+    private NodeSlotView slot;
 
-    public ProcessorTransferable(Processor processor) {
-        this.processor = processor;
+    public SlotTransferable(NodeSlotView slot) {
+        this.slot = slot;
     }
 
     @Override
@@ -34,14 +33,14 @@ public class ProcessorTransferable implements Transferable {
         return false;
     }
 
-    public Processor getProcessor() {
-        return processor;
+    public NodeSlotView getSlot() {
+        return slot;
     }
 
     @Override
     public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
         if(isDataFlavorSupported(flavor)) {
-            return getProcessor();
+            return getSlot();
         } else {
             throw new UnsupportedFlavorException(flavor);
         }

@@ -1,15 +1,13 @@
 package com.visualipcv.view;
 
-import com.visualipcv.Processor;
+import com.visualipcv.view.dragdrop.ProcessorDragHandler;
+import com.visualipcv.view.events.DragDropEventListener;
 
 import javax.swing.*;
-import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
+import java.util.ArrayList;
 
-public class GraphView extends JPanel implements Transferable {
+public class GraphView extends JPanel {
     private static final int GRAPH_WIDTH = 65537;
     private static final int GRAPH_HEIGHT = 65537;
 
@@ -20,6 +18,9 @@ public class GraphView extends JPanel implements Transferable {
     private int offsetY = -GRAPH_HEIGHT / 2;
 
     private JPanel internalPanel;
+    private ArrayList<NodeView> nodes = new ArrayList<NodeView>();
+
+    private DragDropEventListener dropListener;
 
     public GraphView() {
         setLayout(null);
@@ -59,9 +60,25 @@ public class GraphView extends JPanel implements Transferable {
     @Override
     public Component add(Component component) {
         Component c = internalPanel.add(component);
+
+        if(c instanceof NodeView) {
+            nodes.add((NodeView)c);
+        }
+
         repaint();
         revalidate();
         return c;
+    }
+
+    @Override
+    public void remove(Component component) {
+        if(component instanceof NodeView) {
+            nodes.remove((NodeView)component);
+        }
+
+        internalPanel.remove(component);
+        repaint();
+        revalidate();
     }
 
     @Override
@@ -108,18 +125,18 @@ public class GraphView extends JPanel implements Transferable {
         return offsetY;
     }
 
-    @Override
-    public DataFlavor[] getTransferDataFlavors() {
-        return null;
+    public JPanel getInternalPanel() {
+        return internalPanel;
     }
 
-    @Override
-    public boolean isDataFlavorSupported(DataFlavor flavor) {
-        return false;
+    public void setDropListener(DragDropEventListener listener) {
+        dropListener = listener;
     }
 
-    @Override
-    public Object getTransferData(DataFlavor flavor) {
-        return null;
+    public void onDrop(Object payload, Point location) {
+        if(dropListener == null) {
+            return;
+        }
+        dropListener.onDrop(payload, location);
     }
 }

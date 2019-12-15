@@ -2,11 +2,10 @@ package com.visualipcv.view;
 
 import com.visualipcv.Processor;
 import com.visualipcv.ProcessorLibrary;
+import com.visualipcv.view.dragdrop.ProcessorDragHandler;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;

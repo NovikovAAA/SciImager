@@ -1,6 +1,8 @@
-package com.visualipcv.view;
+package com.visualipcv.view.dragdrop;
 
 import com.visualipcv.Processor;
+import com.visualipcv.view.NodeSlotView;
+import com.visualipcv.view.NodeView;
 
 import java.awt.datatransfer.DataFlavor;
 
@@ -9,5 +11,10 @@ public class ProcessorDataFlavor extends DataFlavor {
 
     public ProcessorDataFlavor() {
         super(Processor.class, null);
+    }
+
+    @Override
+    public boolean isFlavorSerializedObjectType() {
+        return false;
     }
 }
