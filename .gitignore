@@ -356,4 +356,5 @@ MigrationBackup/
 */target/*
 .idea
 
-opencv_world411d.dll
+/Build/
+/OpenCV/
