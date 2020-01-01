@@ -15,7 +15,7 @@ public class Main {
 
     static
     {
-        System.loadLibrary("ext/opencv_world411d");
+        System.loadLibrary("ext/opencv_world420d");
         System.loadLibrary("ext/VisualIPCV");
         System.loadLibrary("ext/VisualIpcvJava");
     }
