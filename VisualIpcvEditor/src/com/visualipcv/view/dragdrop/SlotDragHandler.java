@@ -5,13 +5,17 @@ import com.visualipcv.Processor;
 import com.visualipcv.view.NodeSlotType;
 import com.visualipcv.view.NodeSlotView;
 import com.visualipcv.view.SlotConnection;
+import com.visualipcv.view.TempSlotConnection;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 
 public class SlotDragHandler extends TransferHandler {
+
     @Override
     public int getSourceActions(JComponent c) {
         return TransferHandler.LINK;
@@ -33,6 +37,8 @@ public class SlotDragHandler extends TransferHandler {
         }
 
         slot.onBeginDrag(other);
+        TempSlotConnection tempSlotConnection = new TempSlotConnection(other);
+        slot.getNode().getGraph().add(tempSlotConnection);
         return new SlotTransferable(other);
     }
 
@@ -60,6 +66,10 @@ public class SlotDragHandler extends TransferHandler {
                 return false;
             }
 
+            if(target.getProperty().getType() != slot.getProperty().getType()) {
+                return false;
+            }
+
         } catch(Exception e) {
             return false;
         }
@@ -69,10 +79,6 @@ public class SlotDragHandler extends TransferHandler {
 
     @Override
     public boolean importData(TransferHandler.TransferSupport support) {
-        if(!this.canImport(support)) {
-            return false;
-        }
-
         Transferable t = support.getTransferable();
         NodeSlotView slot = null;
 
@@ -80,6 +86,10 @@ public class SlotDragHandler extends TransferHandler {
             slot = (NodeSlotView)t.getTransferData(SlotDataFlavor.SLOT_DATA_FLAVOR);
         } catch(Exception e) {
             e.printStackTrace();
+        }
+
+        if(!this.canImport(support)) {
+            return false;
         }
 
         if(slot == null) {

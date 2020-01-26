@@ -1,14 +1,8 @@
 package com.visualipcv.controller;
 
-import com.visualipcv.Graph;
-import com.visualipcv.Node;
-import com.visualipcv.NodeSlot;
-import com.visualipcv.Processor;
+import com.visualipcv.*;
 import com.visualipcv.view.*;
-import com.visualipcv.view.events.DragDropEventListener;
-import com.visualipcv.view.events.GraphModifiedEventListener;
-import com.visualipcv.view.events.NodeEventListener;
-import com.visualipcv.view.events.NodeSlotEventListener;
+import com.visualipcv.view.events.*;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -32,7 +26,7 @@ public class GraphController implements GraphModifiedEventListener {
                 if(!(payload instanceof Processor)) {
                     return;
                 }
-                graph.addNode(new Node((Processor)payload, location.x, location.y));
+                graph.addNode(new Node(GraphController.this.graph, (Processor)payload, location.x, location.y));
             }
             @Override
             public void onBeginDrag(Object payload) {
@@ -42,14 +36,14 @@ public class GraphController implements GraphModifiedEventListener {
     }
 
     private NodeSlot findSlotByView(Node node, NodeView nodeView, NodeSlotView slotView) {
-        for(int i = 0; i < node.getInputSlotCount(); i++) {
-            if(nodeView.getInputSlot(i) == slotView) {
-                return node.getInputSlot(i);
+        for(int i = 0; i < node.getInputSlots().size(); i++) {
+            if(nodeView.getInputSlots().get(i).getSlotView() == slotView) {
+                return node.getInputSlots().get(i);
             }
         }
-        for(int i = 0; i < node.getOutputSlotCount(); i++) {
-            if(nodeView.getOutputSlot(i) == slotView) {
-                return node.getOutputSlot(i);
+        for(int i = 0; i < node.getOutputSots().size(); i++) {
+            if(nodeView.getOutputSlots().get(i) == slotView) {
+                return node.getOutputSots().get(i);
             }
         }
         return null;
@@ -58,15 +52,15 @@ public class GraphController implements GraphModifiedEventListener {
     private NodeSlotView findViewBySlot(Node node, NodeSlot slot) {
         NodeView view = nodeToView.get(node);
 
-        for(int i = 0; i < node.getInputSlotCount(); i++) {
-            if(node.getInputSlot(i) == slot) {
-                return view.getInputSlot(i);
+        for(int i = 0; i < node.getInputSlots().size(); i++) {
+            if(node.getInputSlots().get(i) == slot) {
+                return view.getInputSlots().get(i).getSlotView();
             }
         }
 
-        for(int i = 0; i < node.getOutputSlotCount(); i++) {
-            if(node.getOutputSlot(i) == slot) {
-                return view.getOutputSlot(i);
+        for(int i = 0; i < node.getOutputSots().size(); i++) {
+            if(node.getOutputSots().get(i) == slot) {
+                return view.getOutputSlots().get(i);
             }
         }
 
@@ -89,10 +83,18 @@ public class GraphController implements GraphModifiedEventListener {
             }
         });
 
-        for(int i = 0; i < view.getInputSlotCount(); i++) {
-            final NodeSlotView slotView = view.getInputSlot(i);
+        for(int i = 0; i < view.getInputSlots().size(); i++) {
+            final NodeSlotView slotView = view.getInputSlots().get(i).getSlotView();
             final Node node = viewToNode.get(slotView.getNode());
-            final NodeSlot slot = node.getInputSlot(i);
+            final InputNodeSlot slot = node.getInputSlots().get(i);
+
+            view.getInputSlots().get(i).updateValue(slot.getValue());
+            view.getInputSlots().get(i).setInputNodeSlotEventListener(new InputNodeSlotEventListener() {
+                @Override
+                public void onValueChanged(Object newValue) {
+                    slot.setValue(newValue);
+                }
+            });
 
             slotView.setDragDropEventListener(new DragDropEventListener() {
                 @Override
@@ -134,10 +136,10 @@ public class GraphController implements GraphModifiedEventListener {
             });
         }
 
-        for(int i = 0; i < view.getOutputSlotCount(); i++) {
-            final NodeSlotView slotView = view.getOutputSlot(i);
+        for(int i = 0; i < view.getOutputSlots().size(); i++) {
+            final NodeSlotView slotView = view.getOutputSlots().get(i);
             final Node node = viewToNode.get(slotView.getNode());
-            final NodeSlot slot = node.getOutputSlot(i);
+            final NodeSlot slot = node.getOutputSots().get(i);
 
             slotView.setDragDropEventListener(new DragDropEventListener() {
                 @Override

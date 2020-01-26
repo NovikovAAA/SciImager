@@ -3,6 +3,7 @@ package com.visualipcv;
 import com.visualipcv.view.events.GraphModifiedEventListener;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Graph {
     private ArrayList<Node> nodes = new ArrayList<>();
@@ -26,6 +27,10 @@ public class Graph {
         for(GraphModifiedEventListener listener : listeners) {
             listener.onNodeRemoved(this, node);
         }
+    }
+
+    public List<Node> getNodes() {
+        return nodes;
     }
 
     public void addGraphEventListener(GraphModifiedEventListener listener) {

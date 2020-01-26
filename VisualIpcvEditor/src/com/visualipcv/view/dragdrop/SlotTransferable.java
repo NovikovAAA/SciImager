@@ -1,6 +1,7 @@
 package com.visualipcv.view.dragdrop;
 
 import com.visualipcv.view.NodeSlotView;
+import com.visualipcv.view.TempSlotConnection;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;

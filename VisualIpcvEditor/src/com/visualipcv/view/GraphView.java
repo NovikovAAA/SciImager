@@ -5,6 +5,7 @@ import com.visualipcv.view.events.DragDropEventListener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class GraphView extends JPanel {
@@ -17,7 +18,13 @@ public class GraphView extends JPanel {
     private int offsetX = -GRAPH_WIDTH / 2;
     private int offsetY = -GRAPH_HEIGHT / 2;
 
+    private int mousePositionX;
+    private int mousePositionY;
+
+    private Rectangle activeArea;
+
     private JPanel internalPanel;
+    private TempSlotConnection tempSlotConnection;
     private ArrayList<NodeView> nodes = new ArrayList<NodeView>();
 
     private DragDropEventListener dropListener;
@@ -35,14 +42,25 @@ public class GraphView extends JPanel {
             public void dragged(int deltaX, int deltaY) {
                 offsetX += deltaX;
                 offsetY += deltaY;
+                updateActiveArea();
                 repaint();
                 revalidate();
+            }
+            @Override
+            public void mouseMoved(MouseEvent event) {
+                mousePositionX = event.getX();
+                mousePositionY = event.getY();
             }
         };
 
         internalPanel.addMouseListener(drag);
         internalPanel.addMouseMotionListener(drag);
         setTransferHandler(new ProcessorDragHandler());
+        updateActiveArea();
+    }
+
+    private void updateActiveArea() {
+        activeArea = new Rectangle(-offsetX, -offsetY, getWidth(), getHeight());
     }
 
     public Point toGraphCoords(Point p) {
@@ -67,6 +85,12 @@ public class GraphView extends JPanel {
 
         repaint();
         revalidate();
+
+        if(component instanceof TempSlotConnection) {
+            ((TempSlotConnection)component).updateBounds();
+            tempSlotConnection = (TempSlotConnection)component;
+        }
+
         return c;
     }
 
@@ -76,9 +100,19 @@ public class GraphView extends JPanel {
             nodes.remove((NodeView)component);
         }
 
+        if(component instanceof  TempSlotConnection) {
+            tempSlotConnection = null;
+        }
+
         internalPanel.remove(component);
         repaint();
         revalidate();
+    }
+
+    public void removeTempSlotConnection() {
+        if(tempSlotConnection != null) {
+            remove(tempSlotConnection);
+        }
     }
 
     @Override
@@ -125,8 +159,20 @@ public class GraphView extends JPanel {
         return offsetY;
     }
 
+    public int getMousePositionX() {
+        return mousePositionX;
+    }
+
+    public int getMousePositionY() {
+        return mousePositionY;
+    }
+
     public JPanel getInternalPanel() {
         return internalPanel;
+    }
+
+    public Rectangle getActiveArea() {
+        return activeArea;
     }
 
     public void setDropListener(DragDropEventListener listener) {

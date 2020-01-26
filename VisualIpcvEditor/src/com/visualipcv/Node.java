@@ -2,48 +2,49 @@ package com.visualipcv;
 
 import com.visualipcv.view.NodeSlotType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Node {
+    private Graph graph;
     private Processor processor;
-    private NodeSlot[] inputSlots;
-    private NodeSlot[] outputSots;
+    private List<InputNodeSlot> inputSlots;
+    private List<OutputNodeSlot> outputSots;
     private int x;
     private int y;
 
-    public Node(Processor processor, int x, int y) {
+    public Node(Graph graph, Processor processor, int x, int y) {
+        this.graph = graph;
         this.processor = processor;
-        inputSlots = new NodeSlot[processor.getInputPropertyCount()];
-        outputSots = new NodeSlot[processor.getOutputPropertyCount()];
+        inputSlots = new ArrayList<>();
+        outputSots = new ArrayList<>();
 
-        for(int i = 0; i < inputSlots.length; i++) {
-            inputSlots[i] = new NodeSlot(this, processor.getInputProperties().get(i), NodeSlotType.INPUT);
+        for(int i = 0; i < processor.getInputPropertyCount(); i++) {
+            inputSlots.add(new InputNodeSlot(this, processor.getInputProperties().get(i), 0));
         }
 
-        for(int i = 0; i < outputSots.length; i++) {
-            outputSots[i] = new NodeSlot(this, processor.getOutputProperties().get(i), NodeSlotType.OUTPUT);
+        for(int i = 0; i < processor.getOutputPropertyCount(); i++) {
+            outputSots.add(new OutputNodeSlot(this, processor.getOutputProperties().get(i)));
         }
 
         this.x = x;
         this.y = y;
     }
 
+    public Graph getGraph() {
+        return graph;
+    }
+
     public Processor getProcessor() {
         return processor;
     }
 
-    public int getInputSlotCount() {
-        return inputSlots.length;
+    public List<InputNodeSlot> getInputSlots() {
+        return inputSlots;
     }
 
-    public int getOutputSlotCount() {
-        return outputSots.length;
-    }
-
-    public NodeSlot getInputSlot(int index) {
-        return inputSlots[index];
-    }
-
-    public NodeSlot getOutputSlot(int index) {
-        return outputSots[index];
+    public List<OutputNodeSlot> getOutputSots() {
+        return outputSots;
     }
 
     public void setLocation(int x, int y) {

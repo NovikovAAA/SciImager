@@ -1,5 +1,6 @@
 package com.visualipcv.view;
 
+import com.visualipcv.NodeSlot;
 import com.visualipcv.Processor;
 import com.visualipcv.ProcessorProperty;
 import com.visualipcv.view.events.NodeEventListener;
@@ -10,12 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NodeView extends JPanel {
-    private static final int SLOT_SIZE = 25;
-    private static final int GAP_SIZE = 10;
+    public static final int GAP_SIZE = 10;
 
     private GraphView graph;
 
-    private ArrayList<NodeSlotView> inputSlots = new ArrayList<>();
+    private ArrayList<InputNodeSlotView> inputSlots = new ArrayList<>();
     private ArrayList<NodeSlotView> outputSlots = new ArrayList<>();
 
     private NodeEventListener nodeEventListener;
@@ -37,7 +37,7 @@ public class NodeView extends JPanel {
         JPanel properties = new JPanel();
         properties.setOpaque(false);
         int count = Math.max(1, Math.max(inSlotCount, outSlotCount));
-        properties.setSize(new Dimension(300, count * (SLOT_SIZE + GAP_SIZE) + GAP_SIZE));
+        properties.setSize(new Dimension(300, count * (NodeSlotView.SLOT_SIZE + GAP_SIZE) + GAP_SIZE));
         return properties;
     }
 
@@ -45,14 +45,13 @@ public class NodeView extends JPanel {
         JPanel panel = new JPanel(null);
 
         for(int i = 0; i < props.size(); i++) {
-            NodeSlotView slot = new NodeSlotView(this, NodeSlotType.OUTPUT);
-            slot.setSize(SLOT_SIZE, SLOT_SIZE);
-            slot.setLocation(GAP_SIZE, i * SLOT_SIZE + (i + 1) * GAP_SIZE);
+            NodeSlotView slot = new NodeSlotView(props.get(i), this, NodeSlotType.OUTPUT);
+            slot.setLocation(GAP_SIZE, i * NodeSlotView.SLOT_SIZE + (i + 1) * GAP_SIZE);
             panel.add(slot);
             outputSlots.add(slot);
         }
 
-        panel.setSize(new Dimension(SLOT_SIZE + GAP_SIZE * 2, props.size() * (SLOT_SIZE + GAP_SIZE)));
+        panel.setSize(new Dimension(NodeSlotView.SLOT_SIZE + GAP_SIZE * 2, props.size() * (NodeSlotView.SLOT_SIZE + GAP_SIZE)));
         panel.setPreferredSize(panel.getSize());
         panel.setOpaque(false);
         return panel;
@@ -60,23 +59,19 @@ public class NodeView extends JPanel {
 
     private Container createInputProperties(List<ProcessorProperty> props) {
         JPanel panel = new JPanel(null);
+        int width = 0;
 
         for(int i = 0; i < props.size(); i++) {
-            NodeSlotView slot = new NodeSlotView(this, NodeSlotType.INPUT);
-            slot.setSize(SLOT_SIZE, SLOT_SIZE);
-            slot.setLocation(GAP_SIZE, i * SLOT_SIZE + (i + 1) * GAP_SIZE);
-            panel.add(slot);
-            inputSlots.add(slot);
+            InputNodeSlotView slotView = new InputNodeSlotView(props.get(i), this);
+            slotView.setLocation(GAP_SIZE, i * NodeSlotView.SLOT_SIZE + (i + 1) * GAP_SIZE);
+            panel.add(slotView);
+            inputSlots.add(slotView);
 
-            JLabel title = new JLabel(props.get(i).getName());
-            title.setLocation(GAP_SIZE * 2 + SLOT_SIZE, i * SLOT_SIZE + (i + 1) * GAP_SIZE);
-            title.setSize(150, 25);
-            title.setForeground(Color.WHITE);
-            panel.add(title);
+            width = Math.max(width, slotView.getWidth());
         }
 
         panel.setOpaque(false);
-        panel.setSize(new Dimension(SLOT_SIZE + GAP_SIZE * 2, props.size() * (SLOT_SIZE + GAP_SIZE)));
+        panel.setSize(new Dimension(width, props.size() * (NodeSlotView.SLOT_SIZE + GAP_SIZE)));
         return panel;
     }
 
@@ -159,11 +154,11 @@ public class NodeView extends JPanel {
     }
 
     private void repaintConnections() {
-        for(NodeSlotView slot : inputSlots) {
-            for(int i = 0; i < slot.getConnectionCount(); i++) {
-                if(slot.getConnection(i) != null) {
-                    slot.getConnection(i).updateBounds();
-                    slot.getConnection(i).repaint();
+        for(InputNodeSlotView slot : inputSlots) {
+            for(int i = 0; i < slot.getSlotView().getConnectionCount(); i++) {
+                if(slot.getSlotView().getConnection(i) != null) {
+                    slot.getSlotView().getConnection(i).updateBounds();
+                    slot.getSlotView().getConnection(i).repaint();
                 }
             }
         }
@@ -205,19 +200,11 @@ public class NodeView extends JPanel {
         nodeEventListener = listener;
     }
 
-    public int getInputSlotCount() {
-        return inputSlots.size();
+    public List<InputNodeSlotView> getInputSlots() {
+        return inputSlots;
     }
 
-    public int getOutputSlotCount() {
-        return outputSlots.size();
-    }
-
-    public NodeSlotView getInputSlot(int index) {
-        return inputSlots.get(index);
-    }
-
-    public NodeSlotView getOutputSlot(int index) {
-        return outputSlots.get(index);
+    public List<NodeSlotView> getOutputSlots() {
+        return outputSlots;
     }
 }
