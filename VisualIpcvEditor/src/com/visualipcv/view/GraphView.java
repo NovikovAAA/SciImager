@@ -1,12 +1,15 @@
 package com.visualipcv.view;
 
+import com.visualipcv.utils.LocationUtils;
 import com.visualipcv.view.dragdrop.ProcessorDragHandler;
 import com.visualipcv.view.events.DragDropEventListener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.dnd.*;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.logging.Logger;
 
 public class GraphView extends JPanel {
     private static final int GRAPH_WIDTH = 65537;
@@ -42,12 +45,19 @@ public class GraphView extends JPanel {
             public void dragged(int deltaX, int deltaY) {
                 offsetX += deltaX;
                 offsetY += deltaY;
-                updateActiveArea();
                 repaint();
                 revalidate();
+                updateActiveArea();
             }
             @Override
             public void mouseMoved(MouseEvent event) {
+                super.mouseMoved(event);
+                mousePositionX = event.getX();
+                mousePositionY = event.getY();
+            }
+            @Override
+            public void mousePressed(MouseEvent event) {
+                super.mousePressed(event);
                 mousePositionX = event.getX();
                 mousePositionY = event.getY();
             }
@@ -56,7 +66,44 @@ public class GraphView extends JPanel {
         internalPanel.addMouseListener(drag);
         internalPanel.addMouseMotionListener(drag);
         setTransferHandler(new ProcessorDragHandler());
-        updateActiveArea();
+
+        DragSource.getDefaultDragSource().addDragSourceMotionListener(new DragSourceMotionListener() {
+            @Override
+            public void dragMouseMoved(DragSourceDragEvent dsde) {
+                updateActiveArea();
+                Point p = LocationUtils.screenToComponent(dsde.getLocation(), internalPanel);
+                mousePositionX = (int)p.getX();
+                mousePositionY = (int)p.getY();
+                repaintTempConnection();
+            }
+        });
+
+        DragSource.getDefaultDragSource().addDragSourceListener(new DragSourceListener() {
+            @Override
+            public void dragEnter(DragSourceDragEvent dsde) {
+
+            }
+
+            @Override
+            public void dragOver(DragSourceDragEvent dsde) {
+
+            }
+
+            @Override
+            public void dropActionChanged(DragSourceDragEvent dsde) {
+
+            }
+
+            @Override
+            public void dragExit(DragSourceEvent dse) {
+
+            }
+
+            @Override
+            public void dragDropEnd(DragSourceDropEvent dsde) {
+                removeTempSlotConnection();
+            }
+        });
     }
 
     private void updateActiveArea() {
@@ -184,5 +231,12 @@ public class GraphView extends JPanel {
             return;
         }
         dropListener.onDrop(payload, location);
+    }
+
+    public void repaintTempConnection() {
+        if(tempSlotConnection != null) {
+            tempSlotConnection.updateBounds();
+            tempSlotConnection.repaint();
+        }
     }
 }

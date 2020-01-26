@@ -15,19 +15,6 @@ public class TempSlotConnection extends AbstractSlotConnection {
 
     @Override
     public void updateBounds() {
-        /*int x0 = sourceSlot.getGraphRelativeX() + sourceSlot.getWidth() / 2;
-        int x1 = sourceSlot.getNode().getGraph().getMousePositionX();
-        int y0 = sourceSlot.getGraphRelativeY() + sourceSlot.getHeight() / 2;
-        int y1 = sourceSlot.getNode().getGraph().getMousePositionY();
-
-        int xmin = Math.min(x0, x1) - BEZIER_OFFSET - 5;
-        int xmax = Math.max(x0, x1) + BEZIER_OFFSET + 5;
-        int ymin = Math.min(y0, y1) - 5;
-        int ymax = Math.max(y0, y1) + 5;
-
-        setLocation(new Point(xmin, ymin));
-        setSize(new Dimension(xmax - xmin, ymax - ymin));*/
-
         setLocation(new Point(
                 sourceSlot.getNode().getGraph().getActiveArea().x,
                 sourceSlot.getNode().getGraph().getActiveArea().y));
@@ -38,21 +25,33 @@ public class TempSlotConnection extends AbstractSlotConnection {
 
     @Override
     public int getSourceX() {
-        return sourceSlot.getGraphRelativeX() - getX() + sourceSlot.getWidth()  / 2;
+        if(sourceSlot.getType() == NodeSlotType.OUTPUT)
+            return sourceSlot.getGraphRelativeX() - getX() + sourceSlot.getWidth()  / 2;
+        else
+            return sourceSlot.getNode().getGraph().getMousePositionX() - getX();
     }
 
     @Override
     public int getSourceY() {
-        return sourceSlot.getGraphRelativeY() - getY() + sourceSlot.getHeight() / 2;
+        if(sourceSlot.getType() == NodeSlotType.OUTPUT)
+            return sourceSlot.getGraphRelativeY() - getY() + sourceSlot.getHeight() / 2;
+        else
+            return sourceSlot.getNode().getGraph().getMousePositionY() - getY();
     }
 
     @Override
     public int getTargetX() {
-        return sourceSlot.getNode().getGraph().getMousePositionX() - getX();
+        if(sourceSlot.getType() == NodeSlotType.INPUT)
+            return sourceSlot.getGraphRelativeX() - getX() + sourceSlot.getWidth()  / 2;
+        else
+            return sourceSlot.getNode().getGraph().getMousePositionX() - getX();
     }
 
     @Override
     public int getTargetY() {
-        return sourceSlot.getNode().getGraph().getMousePositionY() - getY();
+        if(sourceSlot.getType() == NodeSlotType.INPUT)
+            return sourceSlot.getGraphRelativeY() - getY() + sourceSlot.getHeight() / 2;
+        else
+            return sourceSlot.getNode().getGraph().getMousePositionY() - getY();
     }
 }

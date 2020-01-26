@@ -8,6 +8,7 @@ import com.visualipcv.view.events.DragDropEventListener;
 import javax.swing.*;
 import javax.swing.border.StrokeBorder;
 import java.awt.*;
+import java.awt.dnd.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;

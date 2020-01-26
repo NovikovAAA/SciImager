@@ -2,14 +2,28 @@ package com.visualipcv;
 
 import com.visualipcv.view.NodeSlotType;
 import com.visualipcv.view.events.NodeSlotEventListener;
+import sun.util.resources.cldr.ar.CalendarData_ar_YE;
 
 public class InputNodeSlot extends NodeSlot {
     private Object value;
     private OutputNodeSlot input;
 
-    public InputNodeSlot(Node node, ProcessorProperty property, Object value) {
+    public InputNodeSlot(Node node, ProcessorProperty property) {
         super(node, property);
-        this.value = value;
+        value = createDefaultValue();
+    }
+
+    public Object createDefaultValue() {
+        if(getProperty().getType() == DataType.NUMBER) {
+            return 0.0f;
+        } else if(getProperty().getType() == DataType.VECTOR2) {
+            return new Float[] { 0.0f, 0.0f };
+        } else if(getProperty().getType() == DataType.VECTOR3) {
+            return new Float[] { 0.0f, 0.0f, 0.0f };
+        } else if(getProperty().getType() == DataType.VECTOR4) {
+            return new Float[] { 0.0f, 0.0f, 0.0f, 0.0f };
+        }
+        return null;
     }
 
     public void connect(NodeSlot slot) {
