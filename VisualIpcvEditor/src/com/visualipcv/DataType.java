@@ -2,49 +2,28 @@ package com.visualipcv;
 
 import java.awt.*;
 
-public enum DataType {
+public class DataType {
 
-    IMAGE {
-        @Override
-        public Color getColor() {
-            return Color.WHITE;
-        }
-    },
+    public static final String NUMBER = "Number";
+    public static final String VECTOR2 = "Vector2";
+    public static final String VECTOR3 = "Vector3";
+    public static final String VECTOR4 = "Vector4";
+    public static final String IMAGE = "Image";
+    public static final String FILE = "File";
 
-    NUMBER {
-        @Override
-        public Color getColor() {
-            return Color.GREEN;
-        }
-    },
+    private String name;
+    private Color color;
 
-    VECTOR2 {
-        @Override
-        public Color getColor() {
-            return Color.ORANGE;
-        }
-    },
+    public DataType(String name, Color color) {
+        this.name = name;
+        this.color = color;
+    }
 
-    VECTOR3 {
-        @Override
-        public Color getColor() {
-            return Color.ORANGE;
-        }
-    },
+    public String getName() {
+        return name;
+    }
 
-    VECTOR4 {
-        @Override
-        public Color getColor() {
-            return Color.ORANGE;
-        }
-    },
-
-    MATRIX4x4 {
-        @Override
-        public Color getColor() {
-            return Color.BLUE;
-        }
-    };
-
-    public abstract Color getColor();
+    public Color getColor() {
+        return color;
+    }
 }

@@ -3,7 +3,7 @@
 
 extern "C"
 {
-	JNIEXPORT jobjectArray JNICALL Java_com_visualipcv_ProcessorLibrary_getProcessorList(JNIEnv* env, jobject object)
+	JNIEXPORT jobjectArray JNICALL Java_com_visualipcv_ProcessorLibrary_getProcessorList(JNIEnv* env, jclass clazz)
 	{
 		jclass arrayClass = env->FindClass("java/util/ArrayList");
 		assert(arrayClass != nullptr);
@@ -29,19 +29,42 @@ extern "C"
 		jmethodID propertyConstructor = env->GetMethodID(propertyClass, "<init>", "(Ljava/lang/String;Lcom/visualipcv/DataType;)V");
 		assert(propertyConstructor != nullptr);
 
-		jfieldID imageType = env->GetStaticFieldID(dataTypeClass, "IMAGE", "Lcom/visualipcv/DataType;");
+		jclass dataType = env->FindClass("com/visualipcv/DataType");
+		assert(dataType != nullptr);
+
+		jclass dataTypeLibrary = env->FindClass("com/visualipcv/DataTypeLibrary");
+		assert(dataTypeLibrary != nullptr);
+
+		jmethodID findTypeByName = env->GetStaticMethodID(dataTypeLibrary, "getByName", "(Ljava/lang/String;)Lcom/visualipcv/DataType;");
+		assert(findTypeByName != nullptr);
+
+		std::wstring numberStr = L"Number";
+		std::wstring vector2Str = L"Vector2";
+		std::wstring vector3Str = L"Vector3";
+		std::wstring vector4Str = L"Vector4";
+		std::wstring fileStr = L"File";
+		std::wstring imageStr = L"Image";
+
+		jstring numberName = env->NewString((jchar*)numberStr.c_str(), (jsize)numberStr.size());
+		jstring vector2Name = env->NewString((jchar*)vector2Str.c_str(), (jsize)vector2Str.size());
+		jstring vector3Name = env->NewString((jchar*)vector3Str.c_str(), (jsize)vector3Str.size());
+		jstring vector4Name = env->NewString((jchar*)vector4Str.c_str(), (jsize)vector4Str.size());
+		jstring fileName = env->NewString((jchar*)fileStr.c_str(), (jsize)fileStr.size());
+		jstring imageName = env->NewString((jchar*)imageStr.c_str(), (jsize)imageStr.size());
+
+		jobject imageType = env->CallStaticObjectMethod(dataType, findTypeByName, imageName);
 		assert(imageType != nullptr);
 
-		jfieldID numberType = env->GetStaticFieldID(dataTypeClass, "NUMBER", "Lcom/visualipcv/DataType;");
+		jobject numberType = env->CallStaticObjectMethod(dataType, findTypeByName, numberName);
 		assert(numberType != nullptr);
 
-		jfieldID vector2Type = env->GetStaticFieldID(dataTypeClass, "VECTOR2", "Lcom/visualipcv/DataType;");
+		jobject vector2Type = env->CallStaticObjectMethod(dataType, findTypeByName, vector2Name);
 		assert(vector2Type != nullptr);
 
-		jfieldID vector3Type = env->GetStaticFieldID(dataTypeClass, "VECTOR3", "Lcom/visualipcv/DataType;");
+		jobject vector3Type = env->CallStaticObjectMethod(dataType, findTypeByName, vector3Name);
 		assert(vector3Type != nullptr);
 
-		jfieldID vector4Type = env->GetStaticFieldID(dataTypeClass, "VECTOR4", "Lcom/visualipcv/DataType;");
+		jobject vector4Type = env->CallStaticObjectMethod(dataType, findTypeByName, vector4Name);
 		assert(vector4Type != nullptr);
 
 		jobjectArray procs = env->NewObjectArray(1000, procClass, nullptr);
@@ -70,20 +93,14 @@ extern "C"
 			jstring out2 = env->NewString((const jchar*)out2Src.c_str(), (jsize)out2Src.size());
 			jstring out3 = env->NewString((const jchar*)out3Src.c_str(), (jsize)out3Src.size());
 
-			jobject image = env->GetStaticObjectField(dataTypeClass, imageType);
-			jobject number = env->GetStaticObjectField(dataTypeClass, numberType);
-			jobject vector2 = env->GetStaticObjectField(dataTypeClass, vector2Type);
-			jobject vector3 = env->GetStaticObjectField(dataTypeClass, vector3Type);
-			jobject vector4 = env->GetStaticObjectField(dataTypeClass, vector4Type);
-
-			jobject inProp1 = env->NewObject(propertyClass, propertyConstructor, in1, number);
-			jobject inProp2 = env->NewObject(propertyClass, propertyConstructor, in2, image);
-			jobject inProp3 = env->NewObject(propertyClass, propertyConstructor, in3, vector2);
-			jobject inProp4 = env->NewObject(propertyClass, propertyConstructor, in4, vector3);
-			jobject inProp5 = env->NewObject(propertyClass, propertyConstructor, in5, vector4);
-			jobject outProp1 = env->NewObject(propertyClass, propertyConstructor, out1, image);
-			jobject outProp2 = env->NewObject(propertyClass, propertyConstructor, out2, number);
-			jobject outProp3 = env->NewObject(propertyClass, propertyConstructor, out3, number);
+			jobject inProp1 = env->NewObject(propertyClass, propertyConstructor, in1, numberType);
+			jobject inProp2 = env->NewObject(propertyClass, propertyConstructor, in2, imageType);
+			jobject inProp3 = env->NewObject(propertyClass, propertyConstructor, in3, vector2Type);
+			jobject inProp4 = env->NewObject(propertyClass, propertyConstructor, in4, vector3Type);
+			jobject inProp5 = env->NewObject(propertyClass, propertyConstructor, in5, vector4Type);
+			jobject outProp1 = env->NewObject(propertyClass, propertyConstructor, out1, imageType);
+			jobject outProp2 = env->NewObject(propertyClass, propertyConstructor, out2, numberType);
+			jobject outProp3 = env->NewObject(propertyClass, propertyConstructor, out3, numberType);
 			
 			jobject inputProperties = env->NewObject(arrayClass, arrayConstructor);
 			env->CallVoidMethod(inputProperties, arrayAdd, inProp1);

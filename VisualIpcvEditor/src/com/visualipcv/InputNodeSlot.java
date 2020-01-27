@@ -1,9 +1,5 @@
 package com.visualipcv;
 
-import com.visualipcv.view.NodeSlotType;
-import com.visualipcv.view.events.NodeSlotEventListener;
-import sun.util.resources.cldr.ar.CalendarData_ar_YE;
-
 public class InputNodeSlot extends NodeSlot {
     private Object value;
     private OutputNodeSlot input;
@@ -14,16 +10,18 @@ public class InputNodeSlot extends NodeSlot {
     }
 
     public Object createDefaultValue() {
-        if(getProperty().getType() == DataType.NUMBER) {
-            return 0.0f;
-        } else if(getProperty().getType() == DataType.VECTOR2) {
-            return new Float[] { 0.0f, 0.0f };
-        } else if(getProperty().getType() == DataType.VECTOR3) {
-            return new Float[] { 0.0f, 0.0f, 0.0f };
-        } else if(getProperty().getType() == DataType.VECTOR4) {
-            return new Float[] { 0.0f, 0.0f, 0.0f, 0.0f };
+        switch(getProperty().getType().getName()) {
+            case DataType.NUMBER:
+                return 0.0f;
+            case DataType.VECTOR2:
+                return new Float[] { 0.0f, 0.0f };
+            case DataType.VECTOR3:
+                return new Float[] { 0.0f, 0.0f, 0.0f };
+            case DataType.VECTOR4:
+                return new Float[] { 0.0f, 0.0f, 0.0f, 0.0f };
+            default:
+                return null;
         }
-        return null;
     }
 
     public void connect(NodeSlot slot) {

@@ -1,17 +1,14 @@
 package com.visualipcv;
 
-import java.util.List;
-
 public class ProcessorLibrary {
-    private Processor[] processorList;
+    private static Processor[] processors;
+    public static native Processor[] getProcessorList();
 
-    private native Object[] getProcessorList();
-
-    public ProcessorLibrary() {
-        this.processorList = (Processor[])getProcessorList();
+    static {
+        processors = getProcessorList();
     }
 
-    public Processor[] getProcessors() {
-        return processorList;
+    public static Processor[] getProcessors() {
+        return processors;
     }
 }

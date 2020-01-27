@@ -36,11 +36,11 @@ public class InputNodeSlotView extends JPanel {
         title.setForeground(Color.WHITE);
         add(title);
 
-        if(prop.getType() == DataType.NUMBER) {
+        if(prop.getType().getName().equals(DataType.NUMBER)) {
             input1 = createNumberField();
             input1.setSize(150, 20);
             input1.setLocation(10 + NodeSlotView.SLOT_SIZE, 15);
-        } else if(prop.getType() == DataType.VECTOR2) {
+        } else if(prop.getType().getName().equals(DataType.VECTOR2)) {
             input1 = createNumberField();
             input1.setSize(70, 20);
             input1.setLocation(10 + NodeSlotView.SLOT_SIZE, 15);
@@ -48,7 +48,7 @@ public class InputNodeSlotView extends JPanel {
             input2 = createNumberField();
             input2.setSize(70, 20);
             input2.setLocation(10 + NodeSlotView.SLOT_SIZE + 80, 15);
-        } else if(prop.getType() == DataType.VECTOR3) {
+        } else if(prop.getType().getName().equals(DataType.VECTOR3)) {
             input1 = createNumberField();
             input1.setSize(43, 20);
             input1.setLocation(10 + NodeSlotView.SLOT_SIZE, 15);
@@ -60,7 +60,7 @@ public class InputNodeSlotView extends JPanel {
             input3 = createNumberField();
             input3.setSize(43, 20);
             input3.setLocation(10 + NodeSlotView.SLOT_SIZE + 106, 15);
-        } else if(prop.getType() == DataType.VECTOR4) {
+        } else if(prop.getType().getName().equals(DataType.VECTOR4)) {
             input1 = createNumberField();
             input1.setSize(30, 20);
             input1.setLocation(10 + NodeSlotView.SLOT_SIZE, 15);
@@ -76,7 +76,7 @@ public class InputNodeSlotView extends JPanel {
             input4 = createNumberField();
             input4.setSize(30, 20);
             input4.setLocation(10 + NodeSlotView.SLOT_SIZE + 120, 15);
-        } else if(prop.getType() == DataType.IMAGE) {
+        } else if(prop.getType().getName().equals(DataType.IMAGE)) {
 
         }
 
@@ -90,19 +90,19 @@ public class InputNodeSlotView extends JPanel {
     }
 
     public void updateValue(Object value) {
-        if(slotView.getProperty().getType() == DataType.NUMBER) {
+        if(slotView.getProperty().getType().getName().equals(DataType.NUMBER)) {
             assert(value instanceof Float);
             input1.setText(value.toString());
-        } else if(slotView.getProperty().getType() == DataType.VECTOR2) {
+        } else if(slotView.getProperty().getType().getName().equals(DataType.VECTOR2)) {
             assert(value instanceof Float[]);
             input1.setText(((Float[])value)[0].toString());
             input2.setText(((Float[])value)[1].toString());
-        } else if(slotView.getProperty().getType() == DataType.VECTOR3) {
+        } else if(slotView.getProperty().getType().getName().equals(DataType.VECTOR3)) {
             assert(value instanceof Float[]);
             input1.setText(((Float[])value)[0].toString());
             input2.setText(((Float[])value)[1].toString());
             input3.setText(((Float[])value)[2].toString());
-        } else if(slotView.getProperty().getType() == DataType.VECTOR4) {
+        } else if(slotView.getProperty().getType().getName().equals(DataType.VECTOR4)) {
             assert(value instanceof  Float[]);
             input1.setText(((Float[])value)[0].toString());
             input2.setText(((Float[])value)[1].toString());
@@ -116,20 +116,20 @@ public class InputNodeSlotView extends JPanel {
     }
 
     public void onValueChanged() {
-        if(slotView.getProperty().getType() == DataType.NUMBER) {
+        if(slotView.getProperty().getType().getName().equals(DataType.NUMBER)) {
             inputNodeSlotEventListener.onValueChanged(Float.parseFloat(input1.getText()));
-        } else if(slotView.getProperty().getType() == DataType.VECTOR2) {
+        } else if(slotView.getProperty().getType().getName().equals(DataType.VECTOR2)) {
             Float[] values = new Float[2];
             values[0] = Float.parseFloat(input1.getText());
             values[1] = Float.parseFloat(input2.getText());
             inputNodeSlotEventListener.onValueChanged(values);
-        } else if(slotView.getProperty().getType() == DataType.VECTOR3) {
+        } else if(slotView.getProperty().getType().getName().equals(DataType.VECTOR3)) {
             Float[] values = new Float[3];
             values[0] = Float.parseFloat(input1.getText());
             values[1] = Float.parseFloat(input2.getText());
             values[2] = Float.parseFloat(input3.getText());
             inputNodeSlotEventListener.onValueChanged(values);
-        } else if(slotView.getProperty().getType() == DataType.VECTOR4) {
+        } else if(slotView.getProperty().getType().getName().equals(DataType.VECTOR4)) {
             Float[] values = new Float[4];
             values[0] = Float.parseFloat(input1.getText());
             values[1] = Float.parseFloat(input2.getText());
