@@ -353,7 +353,9 @@ MigrationBackup/
 .ionide/
 
 */out/*
-*/ext/*
+*/ext/*.dll
+*/ext/*.lib
+*/ext/*.exp
 */target/*
 .idea
 
