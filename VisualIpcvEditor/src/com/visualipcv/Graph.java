@@ -3,11 +3,14 @@ package com.visualipcv;
 import com.visualipcv.view.events.GraphModifiedEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Graph {
     private ArrayList<Node> nodes = new ArrayList<>();
     private ArrayList<GraphModifiedEventListener> listeners = new ArrayList<>();
+    private Map<Node, Map<String, Object>> cache = new HashMap<>();
 
     public Graph() {
 
@@ -39,5 +42,44 @@ public class Graph {
 
     public void removeGraphEventListener(GraphModifiedEventListener listener) {
         listeners.remove(listener);
+    }
+
+    public List<Node> getOutputNodes() {
+        List<Node> nodes = new ArrayList<>();
+
+        for(Node node : nodes) {
+            if(node.getProcessor().isOutput()) {
+                nodes.add(node);
+            }
+        }
+
+        return nodes;
+    }
+
+    public void writeCache(Node node, String name, Object value) {
+        Map<String, Object> values;
+
+        if(cache.containsKey(node))
+            values = cache.get(node);
+        else
+            values = new HashMap<>();
+
+        values.put(name, value);
+        cache.put(node, values);
+    }
+
+    public Object readCache(Node node, String name) {
+        if(!cache.containsKey(node))
+            return null;
+
+        return cache.get(node).get(name);
+    }
+
+    public void execute() {
+        List<Node> nodes = getOutputNodes();
+
+        for (Node node : nodes) {
+            node.execute();
+        }
     }
 }

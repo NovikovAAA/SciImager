@@ -4,6 +4,7 @@ import com.visualipcv.view.NodeSlotType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Node {
     private Graph graph;
@@ -58,5 +59,33 @@ public class Node {
 
     public int getY() {
         return y;
+    }
+
+    private Object getValueFromInput(InputNodeSlot slot) {
+        if(slot.getConnectedSlot() != null) {
+            Object fromCache = graph.readCache(slot.getConnectedSlot().getNode(), slot.getConnectedSlot().getProperty().getName());
+
+            if(fromCache == null) {
+                slot.getConnectedSlot().getNode().execute();
+            }
+
+            return graph.readCache(slot.getConnectedSlot().getNode(), slot.getConnectedSlot().getProperty().getName());
+        }
+
+        return slot.getValue();
+    }
+
+    public void execute() {
+        List<Object> inputs = new ArrayList<>();
+
+        for(InputNodeSlot slot : inputSlots) {
+            inputs.add(getValueFromInput(slot));
+        }
+
+        List<Object> res = processor.execute(inputs);
+
+        for(int i = 0; i < res.size(); i++) {
+            graph.writeCache(this, outputSots.get(i).getProperty().getName(), res.get(i));
+        }
     }
 }

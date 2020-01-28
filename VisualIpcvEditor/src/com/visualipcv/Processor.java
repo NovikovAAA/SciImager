@@ -26,6 +26,10 @@ public class Processor {
         return category;
     }
 
+    public boolean isOutput() {
+        return outputProperties.isEmpty();
+    }
+
     public int getInputPropertyCount() {
         return inputProperties.size();
     }
@@ -62,5 +66,9 @@ public class Processor {
     @Override
     public String toString() {
         return name;
+    }
+
+    public List<Object> execute(List<Object> inputs) {
+        return null;
     }
 }
