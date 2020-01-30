@@ -1,5 +1,7 @@
 package com.visualipcv.scripts;
 
+import com.visualipcv.DataType;
+import com.visualipcv.DataTypeLibrary;
 import org.scilab.modules.types.ScilabType;
 
 public class SciProperty {

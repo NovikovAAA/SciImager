@@ -1,6 +1,7 @@
 package com.visualipcv;
 
 import com.visualipcv.controller.GraphController;
+import com.visualipcv.utils.LinkUtils;
 import com.visualipcv.view.FunctionListView;
 import com.visualipcv.view.GraphView;
 import com.visualipcv.view.NodeView;
@@ -16,11 +17,8 @@ import java.util.logging.Logger;
 
 public class Main {
 
-    static
-    {
-        System.loadLibrary("ext/opencv_world420d");
-        System.loadLibrary("ext/VisualIPCV");
-        System.loadLibrary("ext/VisualIpcvJava");
+    static {
+        LinkUtils.linkNativeLibraries();
     }
 
     private static ProcessorLibrary processorLibrary = new ProcessorLibrary();

@@ -5,14 +5,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Processor {
+public abstract class Processor {
     private String name;
+    private String module;
     private String category;
-    private ArrayList<ProcessorProperty> inputProperties;
-    private ArrayList<ProcessorProperty> outputProperties;
+    private List<ProcessorProperty> inputProperties;
+    private List<ProcessorProperty> outputProperties;
 
-    public Processor(String name, String category, ArrayList<ProcessorProperty> inputProperties, ArrayList<ProcessorProperty> outputProperties) {
+    public Processor(String name, String module, String category, List<ProcessorProperty> inputProperties, List<ProcessorProperty> outputProperties) {
         this.name = name;
+        this.module = module;
         this.category = category;
         this.inputProperties = inputProperties;
         this.outputProperties = outputProperties;
@@ -20,6 +22,10 @@ public class Processor {
 
     public String getName() {
         return name;
+    }
+
+    public String getModule() {
+        return module;
     }
 
     public String getCategory() {
@@ -30,15 +36,7 @@ public class Processor {
         return outputProperties.isEmpty();
     }
 
-    public int getInputPropertyCount() {
-        return inputProperties.size();
-    }
-
-    public int getOutputPropertyCount() {
-        return outputProperties.size();
-    }
-
-    private ProcessorProperty getProperty(String name, ArrayList<ProcessorProperty> properties) {
+    private ProcessorProperty getProperty(String name, List<ProcessorProperty> properties) {
         for(ProcessorProperty prop : properties) {
             if(prop.getName().equals(name)) {
                 return prop;
@@ -55,11 +53,11 @@ public class Processor {
         return getProperty(name, outputProperties).getType();
     }
 
-    public ArrayList<ProcessorProperty> getInputProperties() {
+    public List<ProcessorProperty> getInputProperties() {
         return inputProperties;
     }
 
-    public ArrayList<ProcessorProperty> getOutputProperties() {
+    public List<ProcessorProperty> getOutputProperties() {
         return outputProperties;
     }
 
@@ -68,7 +66,5 @@ public class Processor {
         return name;
     }
 
-    public List<Object> execute(List<Object> inputs) {
-        return null;
-    }
+    public abstract List<Object> execute(List<Object> inputs);
 }

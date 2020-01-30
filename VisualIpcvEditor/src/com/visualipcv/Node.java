@@ -20,11 +20,11 @@ public class Node {
         inputSlots = new ArrayList<>();
         outputSots = new ArrayList<>();
 
-        for(int i = 0; i < processor.getInputPropertyCount(); i++) {
+        for(int i = 0; i < processor.getInputProperties().size(); i++) {
             inputSlots.add(new InputNodeSlot(this, processor.getInputProperties().get(i)));
         }
 
-        for(int i = 0; i < processor.getOutputPropertyCount(); i++) {
+        for(int i = 0; i < processor.getOutputProperties().size(); i++) {
             outputSots.add(new OutputNodeSlot(this, processor.getOutputProperties().get(i)));
         }
 

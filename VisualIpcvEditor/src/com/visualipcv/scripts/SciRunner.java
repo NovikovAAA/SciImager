@@ -5,10 +5,14 @@ import org.scilab.modules.javasci.Scilab;
 import org.scilab.modules.types.*;
 
 public class SciRunner {
-    private Scilab scilab;
+    private static Scilab scilab;
 
-    public SciRunner() throws JavasciException.InitializationException {
-        scilab = new Scilab(true);
+    static {
+        try {
+            scilab = new Scilab(true);
+        } catch(JavasciException.InitializationException e) {
+            e.printStackTrace();
+        }
 
         try {
             scilab.open();
@@ -17,7 +21,7 @@ public class SciRunner {
         }
     }
 
-    public void set(String name, ScilabType value) {
+    public static void set(String name, ScilabType value) {
         try {
             scilab.put(name, value);
         } catch(JavasciException e) {
@@ -25,7 +29,7 @@ public class SciRunner {
         }
     }
 
-    public ScilabType get(String name) {
+    public static ScilabType get(String name) {
         try {
             return scilab.get(name);
         } catch(JavasciException e) {
@@ -35,7 +39,7 @@ public class SciRunner {
         return null;
     }
 
-    public void execute(String code) {
+    public static void execute(String code) {
         scilab.exec(code);
     }
 }

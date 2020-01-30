@@ -1,5 +1,7 @@
 package com.visualipcv.scripts;
 
+import com.sun.prism.PixelFormat;
+import com.visualipcv.DataType;
 import org.scilab.modules.types.ScilabDouble;
 import org.scilab.modules.types.ScilabInteger;
 import org.scilab.modules.types.ScilabString;
@@ -9,21 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SciConverters {
-    private static final Map<Class, SciConverter> converters = new HashMap<>();
+    private static final Map<String, SciConverter> converters = new HashMap<>();
 
     static {
-        converters.put(Integer.class, new SciConverter() {
-            @Override
-            public ScilabType fromJavaToScilab(Object value) {
-                return new ScilabInteger((Integer) value);
-            }
-            @Override
-            public Object fromScilabToJava(ScilabType value) {
-                return ((ScilabInteger)value).getIntElement(0, 0);
-            }
-        });
-
-        converters.put(Double.class, new SciConverter() {
+        converters.put(DataType.NUMBER, new SciConverter() {
             @Override
             public ScilabType fromJavaToScilab(Object value) {
                 return new ScilabDouble((Double)value);
@@ -34,19 +25,7 @@ public class SciConverters {
             }
         });
 
-        converters.put(Integer[].class, new SciConverter() {
-            @Override
-            public ScilabType fromJavaToScilab(Object value) {
-                int[] values = (int[])value;
-                return new ScilabInteger(new int[][] { values }, false);
-            }
-            @Override
-            public Object fromScilabToJava(ScilabType value) {
-                return ((ScilabInteger)value).getDataAsInt()[0];
-            }
-        });
-
-        converters.put(Double[].class, new SciConverter() {
+        converters.put(DataType.VECTOR2, new SciConverter() {
             @Override
             public ScilabType fromJavaToScilab(Object value) {
                 double[] values = (double[])value;
@@ -58,18 +37,31 @@ public class SciConverters {
             }
         });
 
-        converters.put(Integer[][].class, new SciConverter() {
+        converters.put(DataType.VECTOR3, new SciConverter() {
             @Override
             public ScilabType fromJavaToScilab(Object value) {
-                return new ScilabInteger((int[][])value, false);
+                double[] values = (double[])value;
+                return new ScilabDouble(new double[][] { values });
             }
             @Override
             public Object fromScilabToJava(ScilabType value) {
-                return ((ScilabInteger)value).getDataAsInt();
+                return ((ScilabDouble)value).getRealPart()[0];
             }
         });
 
-        converters.put(Double[][].class, new SciConverter() {
+        converters.put(DataType.VECTOR4, new SciConverter() {
+            @Override
+            public ScilabType fromJavaToScilab(Object value) {
+                double[] values = (double[])value;
+                return new ScilabDouble(new double[][] { values });
+            }
+            @Override
+            public Object fromScilabToJava(ScilabType value) {
+                return ((ScilabDouble)value).getRealPart()[0];
+            }
+        });
+
+        converters.put(DataType.IMAGE, new SciConverter() {
             @Override
             public ScilabType fromJavaToScilab(Object value) {
                 return new ScilabDouble((double[][])value);
@@ -79,20 +71,9 @@ public class SciConverters {
                 return ((ScilabDouble)value).getRealPart();
             }
         });
-
-        converters.put(String.class, new SciConverter() {
-            @Override
-            public ScilabType fromJavaToScilab(Object value) {
-                return new ScilabString((String)value);
-            }
-            @Override
-            public Object fromScilabToJava(ScilabType value) {
-                return ((ScilabString)value).getData()[0][0];
-            }
-        });
     }
 
-    public static SciConverter getConverterForClass(Class clazz) {
-        return converters.get(clazz);
+    public static SciConverter getConverterForType(DataType type) {
+        return converters.get(type.getName());
     }
 }

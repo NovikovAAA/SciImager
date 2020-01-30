@@ -19,8 +19,8 @@ public class FunctionListView extends JScrollPane {
         this.library = library;
         HashMap<String, ArrayList<Processor>> processors = new HashMap<>();
 
-        for(int i = 0; i < library.getProcessors().length; i++) {
-            Processor proc = library.getProcessors()[i];
+        for(int i = 0; i < ProcessorLibrary.getProcessors().size(); i++) {
+            Processor proc = ProcessorLibrary.getProcessors().get(i);
             if(!processors.containsKey(proc.getCategory())) {
                 processors.put(proc.getCategory(), new ArrayList<>());
             }

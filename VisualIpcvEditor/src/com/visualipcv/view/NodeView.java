@@ -86,8 +86,8 @@ public class NodeView extends JPanel {
 
         Component header = createHeader(processor.getName());
         Container properties = createContentPanel(
-                processor.getInputPropertyCount(),
-                processor.getOutputPropertyCount());
+                processor.getInputProperties().size(),
+                processor.getOutputProperties().size());
 
         constraints.gridx = 0;
         constraints.gridy = 0;
