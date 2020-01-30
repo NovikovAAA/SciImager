@@ -10,6 +10,7 @@ public class DataType {
     public static final String VECTOR4 = "Vector4";
     public static final String IMAGE = "Image";
     public static final String FILE = "File";
+    public static final String STRING = "String";
 
     private String name;
     private Color color;

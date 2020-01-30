@@ -17,7 +17,7 @@ extern "C"
 		jmethodID colorConstructor = env->GetMethodID(colorType, "<init>", "(IIII)V");
 		assert(colorConstructor != nullptr);
 
-		jobjectArray types = env->NewObjectArray(6, dataType, nullptr);
+		jobjectArray types = env->NewObjectArray(7, dataType, nullptr);
 
 		std::wstring numberStr = L"Number";
 		std::wstring vector2Str = L"Vector2";
@@ -25,6 +25,7 @@ extern "C"
 		std::wstring vector4Str = L"Vector4";
 		std::wstring fileStr = L"File";
 		std::wstring imageStr = L"Image";
+		std::wstring stringStr = L"String";
 
 		jstring numberName = env->NewString((jchar*)numberStr.c_str(), (int)numberStr.size());
 		jobject numberColor = env->NewObject(colorType, colorConstructor, 0, 255, 0, 255);
@@ -50,12 +51,17 @@ extern "C"
 		jobject imageColor = env->NewObject(colorType, colorConstructor, 255, 255, 255, 255);
 		jobject image = env->NewObject(dataType, dataTypeConstructor, imageName, imageColor);
 
+		jstring stringName = env->NewString((jchar*)stringStr.c_str(), (int)stringStr.size());
+		jobject stringColor = env->NewObject(colorType, colorConstructor, 255, 0, 200, 255);
+		jobject str = env->NewObject(dataType, dataTypeConstructor, stringName, stringColor);
+
 		env->SetObjectArrayElement(types, 0, number);
 		env->SetObjectArrayElement(types, 1, vector2);
 		env->SetObjectArrayElement(types, 2, vector3);
 		env->SetObjectArrayElement(types, 3, vector4);
 		env->SetObjectArrayElement(types, 4, file);
 		env->SetObjectArrayElement(types, 5, image);
+		env->SetObjectArrayElement(types, 6, str);
 
 		return types;
 	}

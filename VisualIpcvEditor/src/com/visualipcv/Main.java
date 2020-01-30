@@ -2,6 +2,7 @@ package com.visualipcv;
 
 import com.visualipcv.controller.GraphController;
 import com.visualipcv.utils.LinkUtils;
+import com.visualipcv.view.ConsoleView;
 import com.visualipcv.view.FunctionListView;
 import com.visualipcv.view.GraphView;
 import com.visualipcv.view.NodeView;
@@ -38,7 +39,14 @@ public class Main {
                 Graph graph = new Graph();
                 controller = new GraphController(graph, graphView);
 
-                split.setRightComponent(graphView);
+                JSplitPane split2 = new JSplitPane();
+                split2.setTopComponent(graphView);
+                split2.setBottomComponent(new ConsoleView());
+                split2.setContinuousLayout(true);
+                split2.setDividerLocation(700);
+                split2.setOrientation(JSplitPane.VERTICAL_SPLIT);
+
+                split.setRightComponent(split2);
                 split.setContinuousLayout(true);
                 split.setDividerLocation(300);
                 frame.add(split);

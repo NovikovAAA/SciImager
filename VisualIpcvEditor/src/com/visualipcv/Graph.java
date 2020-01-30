@@ -45,15 +45,15 @@ public class Graph {
     }
 
     public List<Node> getOutputNodes() {
-        List<Node> nodes = new ArrayList<>();
+        List<Node> outputs = new ArrayList<>();
 
         for(Node node : nodes) {
             if(node.getProcessor().isOutput()) {
-                nodes.add(node);
+                outputs.add(node);
             }
         }
 
-        return nodes;
+        return outputs;
     }
 
     public void writeCache(Node node, String name, Object value) {
@@ -76,6 +76,7 @@ public class Graph {
     }
 
     public void execute() {
+        cache.clear();
         List<Node> nodes = getOutputNodes();
 
         for (Node node : nodes) {

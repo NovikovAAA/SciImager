@@ -4,7 +4,10 @@ import com.visualipcv.*;
 import com.visualipcv.view.*;
 import com.visualipcv.view.events.*;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 
 public class GraphController implements GraphModifiedEventListener {
@@ -33,6 +36,14 @@ public class GraphController implements GraphModifiedEventListener {
 
             }
         });
+
+        Timer timer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                graph.execute();
+            }
+        });
+        timer.start();
     }
 
     private NodeSlot findSlotByView(Node node, NodeView nodeView, NodeSlotView slotView) {

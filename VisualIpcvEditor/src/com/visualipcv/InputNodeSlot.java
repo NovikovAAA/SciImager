@@ -12,13 +12,15 @@ public class InputNodeSlot extends NodeSlot {
     public Object createDefaultValue() {
         switch(getProperty().getType().getName()) {
             case DataType.NUMBER:
-                return 0.0f;
+                return 0.0;
             case DataType.VECTOR2:
-                return new Float[] { 0.0f, 0.0f };
+                return new Double[] { 0.0, 0.0 };
             case DataType.VECTOR3:
-                return new Float[] { 0.0f, 0.0f, 0.0f };
+                return new Double[] { 0.0, 0.0, 0.0 };
             case DataType.VECTOR4:
-                return new Float[] { 0.0f, 0.0f, 0.0f, 0.0f };
+                return new Double[] { 0.0, 0.0, 0.0, 0.0 };
+            case DataType.STRING:
+                return "";
             default:
                 return null;
         }
