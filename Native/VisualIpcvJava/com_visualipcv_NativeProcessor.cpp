@@ -3,15 +3,15 @@
 
 extern "C"
 {
-	JNIEXPORT jobject JNICALL Java_com_visualipcv_NativeProcessor_getInputPropertyList(JNIEnv* env, jclass clazz, jobject uid)
+	JNIEXPORT jobject JNICALL Java_com_visualipcv_core_NativeProcessor_getInputPropertyList(JNIEnv* env, jclass clazz, jobject uid)
 	{
 		jclass arrayClass = env->FindClass("java/util/ArrayList");
 		assert(arrayClass != nullptr);
 
-		jclass propertyClass = env->FindClass("com/visualipcv/ProcessorProperty");
+		jclass propertyClass = env->FindClass("com/visualipcv/core/ProcessorProperty");
 		assert(propertyClass != nullptr);
 
-		jclass processorUidClass = env->FindClass("com/visualipcv/ProcessorUID");
+		jclass processorUidClass = env->FindClass("com/visualipcv/core/ProcessorUID");
 		assert(processorUidClass != nullptr);
 
 		jmethodID arrayConstructor = env->GetMethodID(arrayClass, "<init>", "()V");
@@ -20,10 +20,10 @@ extern "C"
 		jmethodID arrayAdd = env->GetMethodID(arrayClass, "add", "(Ljava/lang/Object;)Z");
 		assert(arrayAdd != nullptr);
 
-		jmethodID propertyConstructor = env->GetMethodID(propertyClass, "<init>", "(Ljava/lang/String;Lcom/visualipcv/DataType;)V");
+		jmethodID propertyConstructor = env->GetMethodID(propertyClass, "<init>", "(Ljava/lang/String;Lcom/visualipcv/core/DataType;)V");
 		assert(propertyConstructor != nullptr);
 
-		jclass dataType = env->FindClass("com/visualipcv/DataType");
+		jclass dataType = env->FindClass("com/visualipcv/core/DataType");
 		assert(dataType != nullptr);
 
 		std::wstring numberStr = L"Number";
@@ -40,10 +40,10 @@ extern "C"
 		jstring fileName = env->NewString((jchar*)fileStr.c_str(), (jsize)fileStr.size());
 		jstring imageName = env->NewString((jchar*)imageStr.c_str(), (jsize)imageStr.size());
 
-		jclass dataTypeLibrary = env->FindClass("com/visualipcv/DataTypeLibrary");
+		jclass dataTypeLibrary = env->FindClass("com/visualipcv/core/DataTypeLibrary");
 		assert(dataTypeLibrary != nullptr);
 
-		jmethodID findTypeByName = env->GetStaticMethodID(dataTypeLibrary, "getByName", "(Ljava/lang/String;)Lcom/visualipcv/DataType;");
+		jmethodID findTypeByName = env->GetStaticMethodID(dataTypeLibrary, "getByName", "(Ljava/lang/String;)Lcom/visualipcv/core/DataType;");
 		assert(findTypeByName != nullptr);
 
 		jobject imageType = env->CallStaticObjectMethod(dataType, findTypeByName, imageName);
@@ -89,15 +89,15 @@ extern "C"
 		return inputProperties;
 	}
 
-	JNIEXPORT jobject JNICALL Java_com_visualipcv_NativeProcessor_getOutputPropertyList(JNIEnv* env, jclass clazz, jobject uid)
+	JNIEXPORT jobject JNICALL Java_com_visualipcv_core_NativeProcessor_getOutputPropertyList(JNIEnv* env, jclass clazz, jobject uid)
 	{
 		jclass arrayClass = env->FindClass("java/util/ArrayList");
 		assert(arrayClass != nullptr);
 
-		jclass propertyClass = env->FindClass("com/visualipcv/ProcessorProperty");
+		jclass propertyClass = env->FindClass("com/visualipcv/core/ProcessorProperty");
 		assert(propertyClass != nullptr);
 
-		jclass processorUidClass = env->FindClass("com/visualipcv/ProcessorUID");
+		jclass processorUidClass = env->FindClass("com/visualipcv/core/ProcessorUID");
 		assert(processorUidClass != nullptr);
 
 		jmethodID arrayConstructor = env->GetMethodID(arrayClass, "<init>", "()V");
@@ -106,10 +106,10 @@ extern "C"
 		jmethodID arrayAdd = env->GetMethodID(arrayClass, "add", "(Ljava/lang/Object;)Z");
 		assert(arrayAdd != nullptr);
 
-		jmethodID propertyConstructor = env->GetMethodID(propertyClass, "<init>", "(Ljava/lang/String;Lcom/visualipcv/DataType;)V");
+		jmethodID propertyConstructor = env->GetMethodID(propertyClass, "<init>", "(Ljava/lang/String;Lcom/visualipcv/core/DataType;)V");
 		assert(propertyConstructor != nullptr);
 
-		jclass dataType = env->FindClass("com/visualipcv/DataType");
+		jclass dataType = env->FindClass("com/visualipcv/core/DataType");
 		assert(dataType != nullptr);
 
 		std::wstring numberStr = L"Number";
@@ -126,10 +126,10 @@ extern "C"
 		jstring fileName = env->NewString((jchar*)fileStr.c_str(), (jsize)fileStr.size());
 		jstring imageName = env->NewString((jchar*)imageStr.c_str(), (jsize)imageStr.size());
 
-		jclass dataTypeLibrary = env->FindClass("com/visualipcv/DataTypeLibrary");
+		jclass dataTypeLibrary = env->FindClass("com/visualipcv/core/DataTypeLibrary");
 		assert(dataTypeLibrary != nullptr);
 
-		jmethodID findTypeByName = env->GetStaticMethodID(dataTypeLibrary, "getByName", "(Ljava/lang/String;)Lcom/visualipcv/DataType;");
+		jmethodID findTypeByName = env->GetStaticMethodID(dataTypeLibrary, "getByName", "(Ljava/lang/String;)Lcom/visualipcv/core/DataType;");
 		assert(findTypeByName != nullptr);
 
 		jobject imageType = env->CallStaticObjectMethod(dataType, findTypeByName, imageName);
@@ -167,16 +167,16 @@ extern "C"
 		return outputProperties;
 	}
 
-	JNIEXPORT jstring JNICALL Java_com_visualipcv_NativeProcessor_getCategory(JNIEnv* env, jclass clazz, jobject uid)
+	JNIEXPORT jstring JNICALL Java_com_visualipcv_core_NativeProcessor_getCategory(JNIEnv* env, jclass clazz, jobject uid)
 	{
-		jclass uidClass = env->FindClass("com/visualipcv/ProcessorUID");
+		jclass uidClass = env->FindClass("com/visualipcv/core/ProcessorUID");
 		assert(uidClass != nullptr);
 
 		std::wstring category = L"Native processors";
 		return env->NewString((jchar*)category.c_str(), category.size());
 	}
 
-	JNIEXPORT jobject JNICALL Java_com_visualipcv_NativeProcessor_execute(JNIEnv* env, jclass clazz, jobject uid, jobject inputs)
+	JNIEXPORT jobject JNICALL Java_com_visualipcv_core_NativeProcessor_execute(JNIEnv* env, jclass clazz, jobject uid, jobject inputs)
 	{
 		jclass arrayClass = env->FindClass("java/util/ArrayList");
 		assert(arrayClass != nullptr);

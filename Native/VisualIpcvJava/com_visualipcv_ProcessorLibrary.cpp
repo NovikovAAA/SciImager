@@ -3,7 +3,7 @@
 
 extern "C"
 {
-	JNIEXPORT jobject JNICALL Java_com_visualipcv_ProcessorLibrary_getProcessorList(JNIEnv* env, jclass clazz)
+	JNIEXPORT jobject JNICALL Java_com_visualipcv_core_ProcessorLibrary_getProcessorList(JNIEnv* env, jclass clazz)
 	{
 		jclass arrayClass = env->FindClass("java/util/ArrayList");
 		assert(arrayClass != nullptr);
@@ -14,7 +14,7 @@ extern "C"
 		jmethodID arrayAdd = env->GetMethodID(arrayClass, "add", "(Ljava/lang/Object;)Z");
 		assert(arrayAdd != nullptr);
 
-		jclass processorUidClass = env->FindClass("com/visualipcv/ProcessorUID");
+		jclass processorUidClass = env->FindClass("com/visualipcv/core/ProcessorUID");
 		assert(processorUidClass != nullptr);
 
 		jmethodID processorConstructor = env->GetMethodID(processorUidClass, "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");

@@ -3,9 +3,9 @@
 
 extern "C"
 {
-	JNIEXPORT jobjectArray JNICALL Java_com_visualipcv_DataTypeLibrary_getDataTypeList(JNIEnv* env, jclass clazz)
+	JNIEXPORT jobjectArray JNICALL Java_com_visualipcv_core_DataTypeLibrary_getDataTypeList(JNIEnv* env, jclass clazz)
 	{
-		jclass dataType = env->FindClass("com/visualipcv/DataType");
+		jclass dataType = env->FindClass("com/visualipcv/core/DataType");
 		assert(dataType != nullptr);
 
 		jclass colorType = env->FindClass("java/awt/Color");

@@ -1,7 +1,7 @@
 package com.visualipcv.view.events;
 
-import com.visualipcv.Graph;
-import com.visualipcv.Node;
+import com.visualipcv.core.Graph;
+import com.visualipcv.core.Node;
 
 public interface GraphModifiedEventListener {
     void onNodeAdded(Graph graph, Node node);

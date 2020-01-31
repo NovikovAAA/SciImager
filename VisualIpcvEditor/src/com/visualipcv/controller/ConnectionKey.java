@@ -1,6 +1,6 @@
 package com.visualipcv.controller;
 
-import com.visualipcv.NodeSlot;
+import com.visualipcv.core.NodeSlot;
 
 import java.util.Objects;
 

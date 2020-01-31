@@ -1,17 +1,14 @@
 package com.visualipcv.scripts;
 
-import com.sun.prism.PixelFormat;
-import com.visualipcv.DataType;
+import com.visualipcv.core.DataType;
 import org.scilab.modules.types.ScilabDouble;
-import org.scilab.modules.types.ScilabInteger;
-import org.scilab.modules.types.ScilabString;
 import org.scilab.modules.types.ScilabType;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class SciConverters {
-    private static final Map<String, SciConverter> converters = new HashMap<>();
+    private static final Map<DataType, SciConverter> converters = new HashMap<>();
 
     static {
         converters.put(DataType.NUMBER, new SciConverter() {
@@ -74,6 +71,6 @@ public class SciConverters {
     }
 
     public static SciConverter getConverterForType(DataType type) {
-        return converters.get(type.getName());
+        return converters.get(type);
     }
 }

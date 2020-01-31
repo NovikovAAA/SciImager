@@ -1,9 +1,6 @@
 package com.visualipcv.procs;
 
-import com.visualipcv.DataType;
-import com.visualipcv.DataTypeLibrary;
-import com.visualipcv.Processor;
-import com.visualipcv.ProcessorProperty;
+import com.visualipcv.core.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,18 +10,20 @@ public class StringSourceProcessor extends Processor {
         super("StringSource", "Core", "Input",
                 new ArrayList<ProcessorProperty>() {
                     {
-                        add(new ProcessorProperty("String", DataTypeLibrary.getByName(DataType.STRING)));
+                        add(new ProcessorProperty("String", DataType.STRING, true, false));
                     }
                 },
                 new ArrayList<ProcessorProperty>() {
                     {
-                        add(new ProcessorProperty("String", DataTypeLibrary.getByName(DataType.STRING)));
+                        add(new ProcessorProperty("String", DataType.STRING));
                     }
                 });
     }
 
     @Override
-    public List<Object> execute(List<Object> inputs) {
-        return new ArrayList<>(inputs);
+    public DataBundle execute(DataBundle inputs) {
+        DataBundle res = new DataBundle();
+        res.write("String", inputs.read("String"));
+        return res;
     }
 }

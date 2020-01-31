@@ -1,18 +1,11 @@
 package com.visualipcv.view.dragdrop;
 
-import com.visualipcv.NodeSlot;
-import com.visualipcv.Processor;
 import com.visualipcv.view.NodeSlotType;
 import com.visualipcv.view.NodeSlotView;
-import com.visualipcv.view.SlotConnection;
 import com.visualipcv.view.TempSlotConnection;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 
 public class SlotDragHandler extends TransferHandler {
 
@@ -55,14 +48,8 @@ public class SlotDragHandler extends TransferHandler {
             if(slot.getNode() == target.getNode()) {
                 return false;
             }
-            if(slot.getType() == target.getType()) {
-                return false;
-            }
 
-            if(slot.getConnectionCount() >= 1 && slot.getType() == NodeSlotType.INPUT) {
-                return false;
-            }
-            if(target.getConnectionCount() >= 1 && target.getType() == NodeSlotType.INPUT) {
+            if(slot.getType() == target.getType()) {
                 return false;
             }
 

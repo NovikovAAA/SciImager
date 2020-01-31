@@ -1,9 +1,6 @@
 package com.visualipcv.procs;
 
-import com.visualipcv.DataType;
-import com.visualipcv.DataTypeLibrary;
-import com.visualipcv.Processor;
-import com.visualipcv.ProcessorProperty;
+import com.visualipcv.core.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,23 +10,21 @@ public class SumProcessor extends Processor {
         super("Sum", "Core", "Math",
                 new ArrayList<ProcessorProperty>() {
                     {
-                        add(new ProcessorProperty("A", DataTypeLibrary.getByName(DataType.NUMBER)));
-                        add(new ProcessorProperty("B", DataTypeLibrary.getByName(DataType.NUMBER)));
+                        add(new ProcessorProperty("A", DataType.NUMBER));
+                        add(new ProcessorProperty("B", DataType.NUMBER));
                     }
                 },
                 new ArrayList<ProcessorProperty>() {
                     {
-                        add(new ProcessorProperty("Result", DataTypeLibrary.getByName(DataType.NUMBER)));
+                        add(new ProcessorProperty("Result", DataType.NUMBER));
                     }
                 });
     }
 
     @Override
-    public List<Object> execute(List<Object> inputs) {
-        return new ArrayList<Object>() {
-            {
-                add((double)inputs.get(0) + (double)inputs.get(1));
-            }
-        };
+    public DataBundle execute(DataBundle inputs) {
+        DataBundle res = new DataBundle();
+        res.write("Result", inputs.<Double>read("A") + inputs.<Double>read("B"));
+        return res;
     }
 }

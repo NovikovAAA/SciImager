@@ -1,7 +1,7 @@
 package com.visualipcv.view;
 
-import com.visualipcv.Processor;
-import com.visualipcv.ProcessorLibrary;
+import com.visualipcv.core.Processor;
+import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.view.dragdrop.ProcessorDragHandler;
 
 import javax.swing.*;

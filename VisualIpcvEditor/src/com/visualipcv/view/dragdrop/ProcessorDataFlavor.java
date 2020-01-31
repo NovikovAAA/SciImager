@@ -1,8 +1,6 @@
 package com.visualipcv.view.dragdrop;
 
-import com.visualipcv.Processor;
-import com.visualipcv.view.NodeSlotView;
-import com.visualipcv.view.NodeView;
+import com.visualipcv.core.Processor;
 
 import java.awt.datatransfer.DataFlavor;
 

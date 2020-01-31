@@ -1,18 +1,16 @@
 package com.visualipcv;
 
 import com.visualipcv.controller.GraphController;
+import com.visualipcv.core.Graph;
+import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.utils.LinkUtils;
 import com.visualipcv.view.ConsoleView;
 import com.visualipcv.view.FunctionListView;
 import com.visualipcv.view.GraphView;
-import com.visualipcv.view.NodeView;
 
 import javax.swing.*;
 import java.awt.*;
 
-import java.awt.event.AWTEventListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.logging.Logger;
 

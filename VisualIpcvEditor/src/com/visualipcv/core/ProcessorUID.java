@@ -1,4 +1,4 @@
-package com.visualipcv;
+package com.visualipcv.core;
 
 import java.util.Objects;
 

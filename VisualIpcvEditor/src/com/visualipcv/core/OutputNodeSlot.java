@@ -1,4 +1,4 @@
-package com.visualipcv;
+package com.visualipcv.core;
 
 public class OutputNodeSlot extends NodeSlot {
     public OutputNodeSlot(Node node, ProcessorProperty property) {

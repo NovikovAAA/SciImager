@@ -1,6 +1,7 @@
 package com.visualipcv.scripts;
 
-import com.visualipcv.ProcessorProperty;
+import com.visualipcv.core.DataBundle;
+import com.visualipcv.core.ProcessorProperty;
 import org.scilab.modules.types.ScilabType;
 
 import java.util.ArrayList;
@@ -53,22 +54,20 @@ public class SciScript {
         this.code = code;
     }
 
-    public List<Object> run(List<Object> inputs) {
-        assert(inputProperties.size() == inputs.size());
-
-        for(int i = 0; i < inputs.size(); i++) {
-            SciConverter converter = SciConverters.getConverterForType(inputProperties.get(i).getType());
-            ScilabType sciValue = converter.fromJavaToScilab(inputs.get(i));
-            SciRunner.set(inputProperties.get(i).getName(), sciValue);
+    public DataBundle run(DataBundle inputs) {
+        for(ProcessorProperty property : inputProperties) {
+            SciConverter converter = SciConverters.getConverterForType(property.getType());
+            ScilabType sciValue = converter.fromJavaToScilab(inputs.read(property.getName()));
+            SciRunner.set(property.getName(), sciValue);
         }
 
         SciRunner.execute(code);
-        List<Object> result = new ArrayList<>();
+        DataBundle result = new DataBundle();
 
-        for(int i = 0; i < outputProperties.size(); i++) {
-            SciConverter converter = SciConverters.getConverterForType(outputProperties.get(i).getType());
-            Object value = converter.fromScilabToJava(SciRunner.get(outputProperties.get(i).getName()));
-            result.add(value);
+        for(ProcessorProperty property : outputProperties) {
+            SciConverter converter = SciConverters.getConverterForType(property.getType());
+            Object value = converter.fromScilabToJava(SciRunner.get(property.getName()));
+            result.write(property.getName(), value);
         }
 
         return result;

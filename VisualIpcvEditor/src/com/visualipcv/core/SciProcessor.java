@@ -1,10 +1,6 @@
-package com.visualipcv;
+package com.visualipcv.core;
 
-import com.visualipcv.scripts.SciProperty;
 import com.visualipcv.scripts.SciScript;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SciProcessor extends Processor {
     SciScript script;
@@ -14,7 +10,7 @@ public class SciProcessor extends Processor {
         this.script = script;
     }
 
-    public List<Object> execute(List<Object> inputs) {
+    public DataBundle execute(DataBundle inputs) {
         return script.run(inputs);
     }
 }

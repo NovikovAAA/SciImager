@@ -1,10 +1,7 @@
 package com.visualipcv.view.dragdrop;
 
-import com.visualipcv.Processor;
+import com.visualipcv.core.Processor;
 import com.visualipcv.view.GraphView;
-import com.visualipcv.view.NodeView;
-import com.visualipcv.view.dragdrop.ProcessorDataFlavor;
-import com.visualipcv.view.dragdrop.ProcessorTransferable;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;

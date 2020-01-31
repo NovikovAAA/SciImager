@@ -5,25 +5,23 @@ import com.visualipcv.core.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NumberSourceProcessor extends Processor {
-    public NumberSourceProcessor() {
-        super("NumberSource", "Core", "Input",
+public class FileLoaderProcessor extends Processor {
+    public FileLoaderProcessor() {
+        super("FileLoader", "Core", "Input",
                 new ArrayList<ProcessorProperty>() {
                     {
-                        add(new ProcessorProperty("Number", DataType.NUMBER, true, false));
+                        add(new ProcessorProperty("Path", DataType.STRING));
                     }
                 },
                 new ArrayList<ProcessorProperty>() {
                     {
-                        add(new ProcessorProperty("Number", DataType.NUMBER));
+                        add(new ProcessorProperty("File", DataType.BYTES));
                     }
                 });
     }
 
     @Override
     public DataBundle execute(DataBundle inputs) {
-        DataBundle res = new DataBundle();
-        res.write("Number", inputs.read("Number"));
-        return res;
+        return new DataBundle();
     }
 }

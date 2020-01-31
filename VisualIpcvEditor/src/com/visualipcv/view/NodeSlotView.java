@@ -1,14 +1,11 @@
 package com.visualipcv.view;
 
-import com.visualipcv.NodeSlot;
-import com.visualipcv.ProcessorProperty;
+import com.visualipcv.core.ProcessorProperty;
 import com.visualipcv.view.dragdrop.SlotDragHandler;
 import com.visualipcv.view.events.DragDropEventListener;
 
 import javax.swing.*;
-import javax.swing.border.StrokeBorder;
 import java.awt.*;
-import java.awt.dnd.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;

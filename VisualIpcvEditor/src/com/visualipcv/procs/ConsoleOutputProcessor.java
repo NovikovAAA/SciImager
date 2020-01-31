@@ -1,6 +1,7 @@
 package com.visualipcv.procs;
 
 import com.visualipcv.*;
+import com.visualipcv.core.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,15 +11,16 @@ public class ConsoleOutputProcessor extends Processor {
         super("ConsoleOutput", "Core", "Output",
                 new ArrayList<ProcessorProperty>() {
                     {
-                        add(new ProcessorProperty("Text", DataTypeLibrary.getByName(DataType.STRING)));
+                        add(new ProcessorProperty("Text", DataType.STRING, false, true));
                     }
                 },
                 new ArrayList<>());
     }
 
     @Override
-    public List<Object> execute(List<Object> inputs) {
-        Console.output((String)inputs.get(0));
-        return new ArrayList<>();
+    public DataBundle execute(DataBundle inputs) {
+        DataBundle bundle = new DataBundle();
+        Console.output(inputs.read("Text"));
+        return new DataBundle();
     }
 }

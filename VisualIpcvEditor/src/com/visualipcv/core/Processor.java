@@ -1,9 +1,6 @@
-package com.visualipcv;
+package com.visualipcv.core;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public abstract class Processor {
     private String name;
@@ -66,5 +63,5 @@ public abstract class Processor {
         return name;
     }
 
-    public abstract List<Object> execute(List<Object> inputs);
+    public abstract DataBundle execute(DataBundle bundle);
 }

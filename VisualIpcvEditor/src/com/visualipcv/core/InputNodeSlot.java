@@ -1,4 +1,4 @@
-package com.visualipcv;
+package com.visualipcv.core;
 
 public class InputNodeSlot extends NodeSlot {
     private Object value;
@@ -6,24 +6,7 @@ public class InputNodeSlot extends NodeSlot {
 
     public InputNodeSlot(Node node, ProcessorProperty property) {
         super(node, property);
-        value = createDefaultValue();
-    }
-
-    public Object createDefaultValue() {
-        switch(getProperty().getType().getName()) {
-            case DataType.NUMBER:
-                return 0.0;
-            case DataType.VECTOR2:
-                return new Double[] { 0.0, 0.0 };
-            case DataType.VECTOR3:
-                return new Double[] { 0.0, 0.0, 0.0 };
-            case DataType.VECTOR4:
-                return new Double[] { 0.0, 0.0, 0.0, 0.0 };
-            case DataType.STRING:
-                return "";
-            default:
-                return null;
-        }
+        value = property.getType().getDefaultValue();
     }
 
     public void connect(NodeSlot slot) {
@@ -31,12 +14,12 @@ public class InputNodeSlot extends NodeSlot {
             throw new IllegalArgumentException("Cannot connect input slot to input slot");
         }
 
-        if(input != null) {
-            throw new IllegalArgumentException("Input slot can be connected to only one other slot");
-        }
-
         if(slot.getProperty().getType() != getProperty().getType()) {
             throw new IllegalArgumentException("Slot types mismatch");
+        }
+
+        if(input != null) {
+            disconnect();
         }
 
         this.input = (OutputNodeSlot)slot;

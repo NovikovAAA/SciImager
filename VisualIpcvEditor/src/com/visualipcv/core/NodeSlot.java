@@ -1,6 +1,5 @@
-package com.visualipcv;
+package com.visualipcv.core;
 
-import com.visualipcv.view.NodeSlotType;
 import com.visualipcv.view.events.NodeSlotEventListener;
 
 import java.util.ArrayList;

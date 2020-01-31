@@ -1,6 +1,6 @@
 package com.visualipcv.view.events;
 
-import com.visualipcv.NodeSlot;
+import com.visualipcv.core.NodeSlot;
 
 public interface NodeSlotEventListener {
     void onConnected(NodeSlot source, NodeSlot target);

@@ -1,8 +1,7 @@
 package com.visualipcv.view;
 
-import com.visualipcv.NodeSlot;
-import com.visualipcv.Processor;
-import com.visualipcv.ProcessorProperty;
+import com.visualipcv.core.Processor;
+import com.visualipcv.core.ProcessorProperty;
 import com.visualipcv.view.events.NodeEventListener;
 
 import javax.swing.*;
@@ -155,6 +154,9 @@ public class NodeView extends JPanel {
 
     private void repaintConnections() {
         for(InputNodeSlotView slot : inputSlots) {
+            if(slot.getSlotView() == null)
+                continue;
+
             for(int i = 0; i < slot.getSlotView().getConnectionCount(); i++) {
                 if(slot.getSlotView().getConnection(i) != null) {
                     slot.getSlotView().getConnection(i).updateBounds();

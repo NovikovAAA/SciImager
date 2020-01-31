@@ -1,16 +1,13 @@
-package com.visualipcv;
-
-import com.visualipcv.view.NodeSlotType;
+package com.visualipcv.core;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class Node {
     private Graph graph;
     private Processor processor;
     private List<InputNodeSlot> inputSlots;
-    private List<OutputNodeSlot> outputSots;
+    private List<OutputNodeSlot> outputSlots;
     private int x;
     private int y;
 
@@ -18,14 +15,14 @@ public class Node {
         this.graph = graph;
         this.processor = processor;
         inputSlots = new ArrayList<>();
-        outputSots = new ArrayList<>();
+        outputSlots = new ArrayList<>();
 
         for(int i = 0; i < processor.getInputProperties().size(); i++) {
             inputSlots.add(new InputNodeSlot(this, processor.getInputProperties().get(i)));
         }
 
         for(int i = 0; i < processor.getOutputProperties().size(); i++) {
-            outputSots.add(new OutputNodeSlot(this, processor.getOutputProperties().get(i)));
+            outputSlots.add(new OutputNodeSlot(this, processor.getOutputProperties().get(i)));
         }
 
         this.x = x;
@@ -44,8 +41,8 @@ public class Node {
         return inputSlots;
     }
 
-    public List<OutputNodeSlot> getOutputSots() {
-        return outputSots;
+    public List<OutputNodeSlot> getOutputSlots() {
+        return outputSlots;
     }
 
     public void setLocation(int x, int y) {
@@ -76,16 +73,16 @@ public class Node {
     }
 
     public void execute() {
-        List<Object> inputs = new ArrayList<>();
+        DataBundle inputs = new DataBundle();
 
         for(InputNodeSlot slot : inputSlots) {
-            inputs.add(getValueFromInput(slot));
+            inputs.write(slot.getProperty().getName(), getValueFromInput(slot));
         }
 
-        List<Object> res = processor.execute(inputs);
+        DataBundle res = processor.execute(inputs);
 
-        for(int i = 0; i < res.size(); i++) {
-            graph.writeCache(this, outputSots.get(i).getProperty().getName(), res.get(i));
+        for (OutputNodeSlot outputSlot : outputSlots) {
+            graph.writeCache(this, outputSlot.getProperty().getName(), res.read(outputSlot.getProperty().getName()));
         }
     }
 }
