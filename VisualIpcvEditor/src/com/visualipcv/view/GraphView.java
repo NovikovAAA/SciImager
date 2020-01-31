@@ -7,9 +7,11 @@ import com.visualipcv.view.events.DragDropEventListener;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.dnd.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.logging.Logger;
+import java.util.List;
 
 public class GraphView extends JPanel {
     private static final int GRAPH_WIDTH = 65537;
@@ -28,7 +30,7 @@ public class GraphView extends JPanel {
 
     private JPanel internalPanel;
     private TempSlotConnection tempSlotConnection;
-    private ArrayList<NodeView> nodes = new ArrayList<NodeView>();
+    private ArrayList<AbstractNodeView> nodes = new ArrayList<>();
 
     private DragDropEventListener dropListener;
 
@@ -40,11 +42,12 @@ public class GraphView extends JPanel {
         internalPanel.setOpaque(false);
         super.add(internalPanel);
 
-        DragListener drag = new DragListener() {
+        NodeMouseEventListener drag = new NodeMouseEventListener() {
             @Override
             public void dragged(int deltaX, int deltaY) {
                 offsetX += deltaX;
                 offsetY += deltaY;
+                internalPanel.setLocation(offsetX, offsetY);
                 repaint();
                 revalidate();
                 updateActiveArea();
@@ -60,6 +63,7 @@ public class GraphView extends JPanel {
                 super.mousePressed(event);
                 mousePositionX = event.getX();
                 mousePositionY = event.getY();
+                clearSelection();
             }
         };
 
@@ -238,5 +242,52 @@ public class GraphView extends JPanel {
             tempSlotConnection.updateBounds();
             tempSlotConnection.repaint();
         }
+    }
+
+    public void clearSelection() {
+        for(AbstractNodeView node : nodes) {
+            node.setSelected(false);
+        }
+    }
+
+    public List<AbstractNodeView> getSelectedNodes() {
+        List<AbstractNodeView> res = new ArrayList<>();
+
+        for(AbstractNodeView node : nodes) {
+            if (node.isSelected()) {
+                res.add(node);
+            }
+        }
+
+        return res;
+    }
+
+    public void dragSelectedNodes(int delatX, int deltaY) {
+        for(AbstractNodeView node : getSelectedNodes()) {
+            node.setLocation(node.getX() + delatX, node.getY() + deltaY);
+        }
+    }
+
+    public void deleteSelectedNodes() {
+        List<AbstractNodeView> selected = getSelectedNodes();
+
+        for(AbstractNodeView node : selected) {
+            node.onDelete();
+            internalPanel.remove(node);
+        }
+
+        for(int i = 0; i < internalPanel.getComponentCount(); i++) {
+            Component c = internalPanel.getComponent(i);
+
+            if(c instanceof SlotConnection) {
+                SlotConnection connection = (SlotConnection)c;
+
+                if(selected.contains(connection.getTargetSlot().getNode()) || selected.contains(connection.getSourceSlot().getNode())) {
+                    internalPanel.remove(c);
+                }
+            }
+        }
+
+        nodes.removeAll(selected);
     }
 }

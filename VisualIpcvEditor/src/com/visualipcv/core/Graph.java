@@ -27,6 +27,21 @@ public class Graph {
     public void removeNode(Node node) {
         nodes.remove(node);
 
+        for(Node n : nodes) {
+            for(InputNodeSlot slot : n.getInputSlots()) {
+                if(slot.getConnectedSlot() == null)
+                    continue;
+
+                if(slot.getConnectedSlot().getNode() == node) {
+                    slot.disconnect();
+                }
+            }
+        }
+
+        for(InputNodeSlot slot : node.getInputSlots()) {
+            slot.disconnect();
+        }
+
         for(GraphModifiedEventListener listener : listeners) {
             listener.onNodeRemoved(this, node);
         }

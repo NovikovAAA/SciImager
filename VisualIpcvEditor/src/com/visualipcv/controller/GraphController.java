@@ -3,6 +3,7 @@ package com.visualipcv.controller;
 import com.visualipcv.core.*;
 import com.visualipcv.view.*;
 import com.visualipcv.view.events.*;
+import org.w3c.dom.views.AbstractView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -90,10 +91,14 @@ public class GraphController implements GraphModifiedEventListener {
 
         view.setNodeEventListener(new NodeEventListener() {
             @Override
-            public void onMove(NodeView view, int deltaX, int deltaY) {
+            public void onMove(AbstractNodeView view, int deltaX, int deltaY) {
                 Node node = viewToNode.get(view);
-                node.setLocation(node.getX() + deltaX, node.getY() + deltaY);
-                updateNodeView(view);
+                updateNodeModel(view);
+            }
+            @Override
+            public void onDelete(AbstractNodeView view) {
+                Node node = viewToNode.get(view);
+                graph.removeNode(node);
             }
         });
 
@@ -182,9 +187,15 @@ public class GraphController implements GraphModifiedEventListener {
         nodeToView.remove(node);
     }
 
-    public void updateNodeView(NodeView view) {
+    public void updateNodeView(AbstractNodeView view) {
         Node node = viewToNode.get(view);
         view.setLocation(node.getX(), node.getY());
+        graphView.repaint();
+    }
+
+    public void updateNodeModel(AbstractNodeView view) {
+        Node node = viewToNode.get(view);
+        node.setLocation(view.getX(), view.getY());
         graphView.repaint();
     }
 }

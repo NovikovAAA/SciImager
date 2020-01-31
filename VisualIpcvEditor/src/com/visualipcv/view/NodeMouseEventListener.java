@@ -4,7 +4,7 @@ import javax.swing.event.MouseInputAdapter;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
-public class DragListener extends MouseInputAdapter {
+public class NodeMouseEventListener extends MouseInputAdapter {
     Point location;
     MouseEvent pressed;
 
@@ -16,14 +16,10 @@ public class DragListener extends MouseInputAdapter {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        Component c = e.getComponent();
-        location = c.getLocation();
-        int deltaX = e.getX() - pressed.getX();
-        int deltaY = e.getY() - pressed.getY();
-        int x = location.x + deltaX;
-        int y = location.y + deltaY;
-        c.setLocation(x, y);
+        int deltaX = e.getLocationOnScreen().x - pressed.getLocationOnScreen().x;
+        int deltaY = e.getLocationOnScreen().y - pressed.getLocationOnScreen().y;
         dragged(deltaX, deltaY);
+        pressed = e;
     }
 
     public void dragged(int deltaX, int deltaY) {

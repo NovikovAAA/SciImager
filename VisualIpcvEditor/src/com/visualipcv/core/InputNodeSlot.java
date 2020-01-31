@@ -27,8 +27,10 @@ public class InputNodeSlot extends NodeSlot {
     }
 
     public void disconnect() {
-        onDisconnected(input);
-        this.input = null;
+        if(input != null) {
+            onDisconnected(input);
+            this.input = null;
+        }
     }
 
     public OutputNodeSlot getConnectedSlot() {

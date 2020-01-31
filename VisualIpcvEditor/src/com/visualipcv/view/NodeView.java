@@ -6,18 +6,16 @@ import com.visualipcv.view.events.NodeEventListener;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NodeView extends JPanel {
+public class NodeView extends AbstractNodeView {
     public static final int GAP_SIZE = 10;
-
-    private GraphView graph;
 
     private ArrayList<InputNodeSlotView> inputSlots = new ArrayList<>();
     private ArrayList<NodeSlotView> outputSlots = new ArrayList<>();
-
-    private NodeEventListener nodeEventListener;
 
     private Component createHeader(String text) {
         HeaderView title = new HeaderView();
@@ -75,7 +73,7 @@ public class NodeView extends JPanel {
     }
 
     public NodeView(Processor processor, GraphView graph) {
-        this.graph = graph;
+        super(graph);
 
         GridBagLayout rootLayout = new GridBagLayout();
         GridBagConstraints constraints = new GridBagConstraints();
@@ -126,19 +124,6 @@ public class NodeView extends JPanel {
                                     SpringLayout.EAST, properties);
         springLayout.putConstraint(SpringLayout.EAST, inputs, 0,
                                     SpringLayout.WEST, outputs);
-
-        DragListener drag = new DragListener() {
-            @Override
-            public void dragged(int deltaX, int deltaY) {
-                if(nodeEventListener != null) {
-                    nodeEventListener.onMove(NodeView.this, deltaX, deltaY);
-                }
-            }
-        };
-
-        this.addMouseListener(drag);
-        this.addMouseMotionListener(drag);
-        this.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
     }
 
     @Override
@@ -146,10 +131,6 @@ public class NodeView extends JPanel {
         Graphics2D graphics2D = (Graphics2D)graphics;
         graphics2D.setColor(getBackground());
         graphics2D.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
-    }
-
-    public GraphView getGraph() {
-        return graph;
     }
 
     private void repaintConnections() {
@@ -198,15 +179,25 @@ public class NodeView extends JPanel {
         repaintConnections();
     }
 
-    public void setNodeEventListener(NodeEventListener listener) {
-        nodeEventListener = listener;
-    }
-
     public List<InputNodeSlotView> getInputSlots() {
         return inputSlots;
     }
 
     public List<NodeSlotView> getOutputSlots() {
         return outputSlots;
+    }
+
+    @Override
+    public void setSelected(boolean selected) {
+        super.setSelected(selected);
+
+        if(isSelected()) {
+            setBorder(BorderFactory.createLineBorder(Color.ORANGE, 4));
+        } else {
+            setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        }
+
+        repaint();
+        revalidate();
     }
 }
