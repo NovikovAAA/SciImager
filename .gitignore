@@ -353,7 +353,9 @@ MigrationBackup/
 .ionide/
 
 */out/*
+*/ext/*
 */target/*
 .idea
 
-opencv_world411d.dll
+/Build/
+/OpenCV/

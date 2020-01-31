@@ -13,7 +13,7 @@
 #include <Windows.h>
 
 #include "jni.h"
-#include "VisualIPCV.h"
+#include "VisualIpCV/VisualIPCV.h"
 
 #include "opencv2/opencv.hpp"
 
