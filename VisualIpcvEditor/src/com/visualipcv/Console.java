@@ -1,7 +1,6 @@
 package com.visualipcv;
 
 import com.visualipcv.events.ConsoleEventListener;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +9,7 @@ public class Console {
     private static List<ConsoleEventListener> eventListeners = new ArrayList<>();
 
     public static String write(String cmd, boolean showCmd) {
-        throw new NotImplementedException();
+        throw new RuntimeException();
     }
 
     public static void output(String text) {
