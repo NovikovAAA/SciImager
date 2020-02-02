@@ -23,12 +23,10 @@ public class InputNodeSlot extends NodeSlot {
         }
 
         this.input = (OutputNodeSlot)slot;
-        onConnected(slot);
     }
 
     public void disconnect() {
         if(input != null) {
-            onDisconnected(input);
             this.input = null;
         }
     }
