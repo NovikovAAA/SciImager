@@ -3,14 +3,18 @@ package com.visualipcv;
 import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.utils.LinkUtils;
 import com.visualipcv.view.FunctionListView;
+import com.visualipcv.view.GraphView;
 import com.visualipcv.view.NodeSlotView;
 import javafx.application.Application;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.SplitPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.concurrent.CancellationException;
 import java.util.logging.Logger;
 
 public class Main extends Application {
@@ -33,7 +37,7 @@ public class Main extends Application {
         SplitPane root = new SplitPane();
         root.setOrientation(Orientation.HORIZONTAL);
         root.getItems().add(new FunctionListView());
-        root.getItems().add(new NodeSlotView());
+        root.getItems().add(new GraphView());
 
         primaryStage.setScene(new Scene(root, 1280, 720));
         primaryStage.show();

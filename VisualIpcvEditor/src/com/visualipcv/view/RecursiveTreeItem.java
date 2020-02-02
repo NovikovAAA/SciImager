@@ -9,8 +9,6 @@ import javafx.util.Callback;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
-
 public class RecursiveTreeItem<T> extends TreeItem<T> {
     private Callback<T, ObservableList<T>> childrenFactory;
     private Callback<T, Node> graphicsFactory;

@@ -23,6 +23,15 @@ public class ProcessorLibrary {
         return processors;
     }
 
+    public static Processor findProcessor(String module, String name) {
+        for(Processor processor : getProcessors()) {
+            if(processor.getModule().equals(module) && processor.getName().equals(name)) {
+                return processor;
+            }
+        }
+        return null;
+    }
+
     private static void initDefaultProcessors() {
         processors.add(new ConsoleOutputProcessor());
         processors.add(new StringSourceProcessor());

@@ -8,10 +8,10 @@ public class Node {
     private Processor processor;
     private List<InputNodeSlot> inputSlots;
     private List<OutputNodeSlot> outputSlots;
-    private int x;
-    private int y;
+    private double x;
+    private double y;
 
-    public Node(Graph graph, Processor processor, int x, int y) {
+    public Node(Graph graph, Processor processor, double x, double y) {
         this.graph = graph;
         this.processor = processor;
         inputSlots = new ArrayList<>();
@@ -45,16 +45,16 @@ public class Node {
         return outputSlots;
     }
 
-    public void setLocation(int x, int y) {
+    public void setLocation(double x, double y) {
         this.x = x;
         this.y = y;
     }
 
-    public int getX() {
+    public double getX() {
         return x;
     }
 
-    public int getY() {
+    public double getY() {
         return y;
     }
 
