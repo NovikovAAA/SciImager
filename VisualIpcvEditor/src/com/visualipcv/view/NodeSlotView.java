@@ -15,14 +15,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class NodeSlotView extends AnchorPane {
+    private NodeSlotViewModel viewModel;
+
     @FXML
     private Circle backgroundCircle;
     @FXML
     private Circle fillCircle;
 
-    private NodeSlotViewModel viewModel = new NodeSlotViewModel();
+    public NodeSlotView(NodeSlot slot) {
+        viewModel = new NodeSlotViewModel(slot);
 
-    public NodeSlotView() {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("NodeSlotView.fxml"));
         loader.setRoot(this);
         loader.setController(this);
@@ -33,6 +35,9 @@ public class NodeSlotView extends AnchorPane {
             e.printStackTrace();
         }
 
-        fillCircle.visibleProperty().bind(viewModel.nodeSlotProperty().isNotNull());
+        fillCircle.visibleProperty().bind(viewModel.getIsConnectedProperty());
+        fillCircle.fillProperty().bind(viewModel.getStrokeProperty());
+        backgroundCircle.fillProperty().bind(viewModel.getBackgroundProperty());
+        backgroundCircle.strokeProperty().bind(viewModel.getStrokeProperty());
     }
 }

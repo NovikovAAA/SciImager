@@ -3,16 +3,32 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<fx:root onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" prefHeight="200.0" prefWidth="200.0" type="AnchorPane" xmlns:fx="http://javafx.com/fxml/1">
-   <VBox style="-fx-border-radius: 10; -fx-background-color: #dddddd;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+<fx:root type="AnchorPane" xmlns:fx="http://javafx.com/fxml/1">
+   <VBox mouseTransparent="true" style="-fx-background-color: #dddddd; -fx-border-radius: 10px;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <Text fx:id="title" strokeType="OUTSIDE" strokeWidth="0.0" text="Text">
          <VBox.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </VBox.margin>
       </Text>
+      <GridPane alignment="CENTER">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="163.20001220703125" minWidth="10.0" prefWidth="159.20001220703125" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="30" minWidth="30.0" prefWidth="30" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <VBox fx:id="inputContainer" alignment="CENTER_LEFT" />
+            <VBox fx:id="outputContainer" alignment="CENTER_RIGHT" GridPane.columnIndex="1" />
+         </children>
+      </GridPane>
    </VBox>
    <effect>
       <DropShadow />

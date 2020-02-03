@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.Pane?>
 <fx:root onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" onDragOver="#onDragOver" onDragDropped="#onDragDropped" onScroll="#onScroll" type="AnchorPane" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-       <Canvas fx:id="canvas" height="600.0" width="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+       <Canvas fx:id="canvas" height="600.0" width="600.0" mouseTransparent="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
        <Pane fx:id="container" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
    </children>
 </fx:root>

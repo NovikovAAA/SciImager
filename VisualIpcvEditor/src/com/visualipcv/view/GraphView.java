@@ -6,23 +6,23 @@ import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.viewmodel.GraphViewModel;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.DoublePropertyBase;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.effect.BoxBlur;
-import javafx.scene.effect.Effect;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
+import javafx.scene.transform.NonInvertibleTransformException;
+import javafx.scene.transform.Scale;
+import javafx.scene.transform.Transform;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GraphView extends AnchorPane {
     private GraphViewModel viewModel = new GraphViewModel();
@@ -155,20 +155,71 @@ public class GraphView extends AnchorPane {
         return viewModel;
     }
 
+    public List<NodeView> getSelectedNodes() {
+        List<NodeView> selectedNodes = new ArrayList<>();
+
+        for(javafx.scene.Node node : container.getChildren()) {
+            if(!(node instanceof NodeView))
+                continue;
+
+            NodeView nodeView = (NodeView)node;
+
+            if(nodeView.isSelected())
+                selectedNodes.add(nodeView);
+        }
+
+        return selectedNodes;
+    }
+
+    public void clearSelection() {
+        for(javafx.scene.Node node : container.getChildren()) {
+            if(node instanceof NodeView) {
+                NodeView nodeView = (NodeView)node;
+                nodeView.setSelected(false);
+            }
+        }
+    }
+
     @FXML
-    public void onMousePressed(MouseEvent event) {
+    public void onMousePressed(MouseEvent event) throws NonInvertibleTransformException {
         previousMouseX = event.getScreenX();
         previousMouseY = event.getScreenY();
+
+        if(event.getTarget() instanceof NodeView) {
+            NodeView nodeView = (NodeView)event.getTarget();
+
+            if(!event.isControlDown() && !nodeView.isSelected())
+                clearSelection();
+
+            nodeView.setSelected(true);
+            nodeView.toFront();
+        } else {
+            clearSelection();
+        }
+
+        event.consume();
     }
 
     @FXML
     public void onMouseDragged(MouseEvent event) {
         double deltaX = event.getScreenX() - previousMouseX;
         double deltaY = event.getScreenY() - previousMouseY;
-        xOffset.setValue(xOffset.getValue() + deltaX);
-        yOffset.setValue(yOffset.getValue() + deltaY);
         previousMouseX = event.getScreenX();
         previousMouseY = event.getScreenY();
+
+        if(event.getTarget() == this || event.getTarget() == container) {
+            xOffset.setValue(xOffset.getValue() + deltaX / container.getScaleX());
+            yOffset.setValue(yOffset.getValue() + deltaY / container.getScaleY());
+        } else if(event.getTarget() instanceof NodeView) {
+            NodeView nodeView = (NodeView)event.getTarget();
+
+            for(NodeView node : getSelectedNodes()) {
+                node.setLayoutX(node.getLayoutX() + deltaX / container.getScaleX());
+                node.setLayoutY(node.getLayoutY() + deltaY / container.getScaleY());
+            }
+        }
+
+        event.consume();
     }
 
     @FXML
@@ -218,5 +269,7 @@ public class GraphView extends AnchorPane {
         container.setScaleX(x);
         container.setScaleY(y);
         repaintGrid();
+
+        event.consume();
     }
 }

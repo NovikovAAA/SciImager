@@ -1,10 +1,14 @@
 package com.visualipcv.viewmodel;
 
+import com.visualipcv.core.InputNodeSlot;
 import com.visualipcv.core.Node;
+import com.visualipcv.core.NodeSlot;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.DoublePropertyBase;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public class NodeViewModel {
     private Node node;
@@ -44,6 +48,8 @@ public class NodeViewModel {
     };
 
     private StringProperty title = new SimpleStringProperty();
+    private ObservableList<InputNodeSlot> inputNodeSlots = FXCollections.observableArrayList();
+    private ObservableList<NodeSlot> outputNodeSlots = FXCollections.observableArrayList();
 
     public NodeViewModel(Node node) {
         this.node = node;
@@ -53,6 +59,15 @@ public class NodeViewModel {
         double y = node.getY();
         layoutX.setValue(x);
         layoutY.setValue(y);
+    }
+
+    public void init() {
+        for(InputNodeSlot slot : node.getInputSlots()) {
+            if(slot.getProperty().showConnector()) {
+                inputNodeSlots.add(slot);
+            }
+        }
+        outputNodeSlots.addAll(node.getOutputSlots());
     }
 
     public DoubleProperty getLayoutXProperty() {
@@ -65,5 +80,13 @@ public class NodeViewModel {
 
     public StringProperty getTitleProperty() {
         return title;
+    }
+
+    public ObservableList<InputNodeSlot> getInputNodeSlots() {
+        return inputNodeSlots;
+    }
+
+    public ObservableList<NodeSlot> getOutputNodeSlots() {
+        return outputNodeSlots;
     }
 }
