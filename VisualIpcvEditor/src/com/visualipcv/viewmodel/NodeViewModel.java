@@ -12,6 +12,7 @@ import javafx.collections.ObservableList;
 
 public class NodeViewModel {
     private Node node;
+    private GraphViewModel graph;
 
     private DoubleProperty layoutX = new DoublePropertyBase() {
         @Override
@@ -51,8 +52,9 @@ public class NodeViewModel {
     private ObservableList<InputNodeSlot> inputNodeSlots = FXCollections.observableArrayList();
     private ObservableList<NodeSlot> outputNodeSlots = FXCollections.observableArrayList();
 
-    public NodeViewModel(Node node) {
+    public NodeViewModel(GraphViewModel graph, Node node) {
         this.node = node;
+        this.graph = graph;
         title.setValue(node.getProcessor().getName());
 
         double x = node.getX();
@@ -68,6 +70,14 @@ public class NodeViewModel {
             }
         }
         outputNodeSlots.addAll(node.getOutputSlots());
+    }
+
+    public GraphViewModel getGraph() {
+        return graph;
+    }
+
+    public Node getNode() {
+        return node;
     }
 
     public DoubleProperty getLayoutXProperty() {

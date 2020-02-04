@@ -12,13 +12,16 @@ import javafx.scene.paint.Paint;
 
 public class NodeSlotViewModel {
     private NodeSlot nodeSlot;
+    private NodeViewModel node;
 
     private BooleanProperty isConnected = new SimpleBooleanProperty();
     private ObjectProperty<Paint> background = new SimpleObjectProperty<>();
     private ObjectProperty<Paint> stroke = new SimpleObjectProperty<>();
 
-    public NodeSlotViewModel(NodeSlot slot) {
+    public NodeSlotViewModel(NodeViewModel node, NodeSlot slot) {
         this.nodeSlot = slot;
+        this.node = node;
+
         isConnected.setValue(false);
         stroke.set(new Color(
                 slot.getProperty().getType().getColor().getRed() / 255.0,
@@ -32,6 +35,10 @@ public class NodeSlotViewModel {
                 1.0));
     }
 
+    public NodeSlot getNodeSlot() {
+        return nodeSlot;
+    }
+
     public BooleanProperty getIsConnectedProperty() {
         return isConnected;
     }
@@ -42,5 +49,18 @@ public class NodeSlotViewModel {
 
     public ObjectProperty<Paint> getStrokeProperty() {
         return stroke;
+    }
+
+    public void connect(NodeSlotViewModel other) {
+        nodeSlot.connect(other.getNodeSlot());
+        node.getGraph().updateConnections();
+        isConnected.set(true);
+        other.isConnected.set(true);
+    }
+
+    public void disconnect() {
+        nodeSlot.disconnect();
+        node.getGraph().updateConnections();
+        isConnected.set(true);
     }
 }

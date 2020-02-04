@@ -2,12 +2,15 @@ package com.visualipcv.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Graph {
     private ArrayList<Node> nodes = new ArrayList<>();
     private Map<Node, Map<String, Object>> cache = new HashMap<>();
+    private Set<Connection> connections = new HashSet<>();
 
     public Graph() {
 
@@ -36,8 +39,28 @@ public class Graph {
         }
     }
 
+    public void addConnectionRecord(NodeSlot slot1, NodeSlot slot2) {
+        connections.add(new Connection(slot1, slot2));
+    }
+
+    public void removeConnectionRecords(NodeSlot slot) {
+        List<Connection> connectionsToRemove = new ArrayList<>();
+
+        for(Connection connection : connections) {
+            if(connection.getSource() == slot || connection.getTarget() == slot) {
+                connectionsToRemove.add(connection);
+            }
+        }
+
+        connections.removeAll(connectionsToRemove);
+    }
+
     public List<Node> getNodes() {
         return nodes;
+    }
+
+    public Set<Connection> getConnections() {
+        return connections;
     }
 
     public List<Node> getOutputNodes() {

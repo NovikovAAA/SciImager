@@ -23,12 +23,14 @@ public class InputNodeSlot extends NodeSlot {
         }
 
         this.input = (OutputNodeSlot)slot;
+        getNode().getGraph().addConnectionRecord(slot, this);
     }
 
     public void disconnect() {
         if(input != null) {
             this.input = null;
         }
+        getNode().getGraph().removeConnectionRecords(this);
     }
 
     public OutputNodeSlot getConnectedSlot() {

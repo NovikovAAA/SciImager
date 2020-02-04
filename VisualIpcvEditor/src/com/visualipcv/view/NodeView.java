@@ -1,5 +1,6 @@
 package com.visualipcv.view;
 
+import com.visualipcv.core.Graph;
 import com.visualipcv.core.InputNodeSlot;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
@@ -28,6 +29,10 @@ import java.io.IOException;
 
 public class NodeView extends AnchorPane {
     private NodeViewModel viewModel;
+    private GraphView graphView;
+
+    private double previousMouseX;
+    private double previousMouseY;
 
     @FXML
     private Text title;
@@ -60,8 +65,9 @@ public class NodeView extends AnchorPane {
     private ObservableList<NodeSlotView> inputSlots = FXCollections.observableArrayList();
     private ObservableList<NodeSlotView> outputSlots = FXCollections.observableArrayList();
 
-    public NodeView(Node node) {
-        viewModel = new NodeViewModel(node);
+    public NodeView(GraphView graphView, Node node) {
+        viewModel = new NodeViewModel(graphView.getViewModel(), node);
+        this.graphView = graphView;
 
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("NodeView.fxml"));
         loader.setRoot(this);
@@ -84,7 +90,7 @@ public class NodeView extends AnchorPane {
                 while(c.next()) {
                     if(c.wasAdded()) {
                         for(NodeSlot slot : c.getAddedSubList()) {
-                            inputSlots.add(new NodeSlotView(slot));
+                            inputSlots.add(new NodeSlotView(NodeView.this, slot));
                         }
                     }
                 }
@@ -97,7 +103,7 @@ public class NodeView extends AnchorPane {
                 while(c.next()) {
                     if(c.wasAdded()) {
                         for(NodeSlot slot : c.getAddedSubList()) {
-                            outputSlots.add(new NodeSlotView(slot));
+                            outputSlots.add(new NodeSlotView(NodeView.this, slot));
                         }
                     }
                 }
@@ -133,6 +139,24 @@ public class NodeView extends AnchorPane {
         viewModel.init();
     }
 
+    public NodeSlotView findSlotViewByModel(NodeSlot slot) {
+        for(NodeSlotView view : inputSlots) {
+            if(view.getViewModel().getNodeSlot() == slot) {
+                return view;
+            }
+        }
+        for(NodeSlotView view : outputSlots) {
+            if(view.getViewModel().getNodeSlot() == slot) {
+                return view;
+            }
+        }
+        return null;
+    }
+
+    public NodeViewModel getViewModel() {
+        return viewModel;
+    }
+
     public BooleanProperty getSelectedProperty() {
         return selected;
     }
@@ -143,5 +167,23 @@ public class NodeView extends AnchorPane {
 
     public void setSelected(boolean selected) {
         this.selected.set(selected);
+    }
+
+    @FXML
+    public void onMousePressed(MouseEvent event) {
+        previousMouseX = event.getScreenX();
+        previousMouseY = event.getScreenY();
+        graphView.selectNode(this, event.isControlDown());
+        event.consume();
+    }
+
+    @FXML
+    public void onMouseDragged(MouseEvent event) {
+        double deltaX = event.getScreenX() - previousMouseX;
+        double deltaY = event.getScreenY() - previousMouseY;
+        previousMouseX = event.getScreenX();
+        previousMouseY = event.getScreenY();
+        graphView.moveSelectedNodes(deltaX, deltaY);
+        event.consume();
     }
 }

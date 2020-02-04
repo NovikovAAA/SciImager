@@ -1,5 +1,6 @@
 package com.visualipcv.viewmodel;
 
+import com.visualipcv.core.Connection;
 import com.visualipcv.core.Graph;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.Processor;
@@ -9,7 +10,9 @@ import javafx.collections.ObservableList;
 
 public class GraphViewModel {
     private Graph graph = new Graph();
+
     private ObservableList<Node> nodes = FXCollections.observableArrayList();
+    private ObservableList<Connection> connections = FXCollections.observableArrayList();
 
     public GraphViewModel() {
         nodes.addListener(new ListChangeListener<Node>() {
@@ -30,8 +33,17 @@ public class GraphViewModel {
         });
     }
 
+    public void updateConnections() {
+        connections.clear();
+        connections.addAll(graph.getConnections());
+    }
+
     public ObservableList<Node> getNodeList() {
         return nodes;
+    }
+
+    public ObservableList<Connection> getConnections() {
+        return connections;
     }
 
     public void addNode(Processor processor, double x, double y) {

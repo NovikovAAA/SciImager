@@ -1,8 +1,12 @@
 package com.visualipcv.view;
 
+import com.sun.corba.se.pept.transport.ConnectionCache;
+import com.visualipcv.core.Connection;
 import com.visualipcv.core.Node;
+import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorLibrary;
+import com.visualipcv.core.command.ConnectCommand;
 import com.visualipcv.viewmodel.GraphViewModel;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.DoublePropertyBase;
@@ -103,20 +107,58 @@ public class GraphView extends AnchorPane {
         viewModel.getNodeList().addListener(new ListChangeListener<Node>() {
             @Override
             public void onChanged(Change<? extends Node> c) {
-                if(c.next()) {
+                while(c.next()) {
                     if(c.wasAdded()) {
                         for(Node node : c.getAddedSubList()) {
-                            container.getChildren().add(new NodeView(node));
+                            container.getChildren().add(new NodeView(GraphView.this, node));
                         }
                     }
-                    /*if(c.wasRemoved()) {
+                    if(c.wasRemoved()) {
                         for(Node node : c.getRemoved()) {
-                            nodes.remove();
+                            container.getChildren().remove(findNodeViewByModel(node));
                         }
-                    }*/
+                    }
                 }
             }
         });
+
+        viewModel.getConnections().addListener(new ListChangeListener<Connection>() {
+            @Override
+            public void onChanged(Change<? extends Connection> c) {
+                while(c.next()) {
+                    if(c.wasAdded()) {
+                        for(Connection connection : c.getAddedSubList()) {
+                            container.getChildren().add(new ConnectionView(findSlotViewByModel(connection.getSource()), findSlotViewByModel(connection.getTarget())));
+                        }
+                    }
+                    if(c.wasRemoved()) {
+                        for(Connection connection : c.getRemoved()) {
+
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    private NodeView findNodeViewByModel(Node node) {
+        for(javafx.scene.Node n : container.getChildren()) {
+            if(n instanceof NodeView) {
+                if(((NodeView) n).getViewModel().getNode() == node) {
+                    return (NodeView)n;
+                }
+            }
+        }
+        return null;
+    }
+
+    private NodeSlotView findSlotViewByModel(NodeSlot nodeSlot) {
+        NodeView view = findNodeViewByModel(nodeSlot.getNode());
+
+        if(view == null)
+            return null;
+
+        return view.findSlotViewByModel(nodeSlot);
     }
 
     @Override
@@ -180,23 +222,45 @@ public class GraphView extends AnchorPane {
         }
     }
 
+    public void moveSelectedNodes(double deltaX, double deltaY) {
+        for(NodeView node : getSelectedNodes()) {
+            node.setLayoutX(node.getLayoutX() + deltaX / container.getScaleX());
+            node.setLayoutY(node.getLayoutY() + deltaY / container.getScaleY());
+        }
+    }
+
+    public void selectNode(NodeView nodeView, boolean ctrlPressed) {
+        if(!ctrlPressed && !nodeView.isSelected())
+            clearSelection();
+
+        nodeView.setSelected(true);
+        updateOrder();
+    }
+
+    public void updateOrder() {
+        getChildren().sort((javafx.scene.Node n1, javafx.scene.Node n2) -> {
+            if(n1.getClass() == n2.getClass()) {
+                if(n1 instanceof NodeView) {
+                    if(((NodeView) n1).isSelected())
+                        return 1;
+                    else if(((NodeView) n2).isSelected())
+                        return -1;
+                    return 0;
+                }
+            } else if(n1 instanceof ConnectionView) {
+                return 1;
+            } else if(n2 instanceof ConnectionView) {
+                return -1;
+            }
+            return 0;
+        });
+    }
+
     @FXML
     public void onMousePressed(MouseEvent event) throws NonInvertibleTransformException {
         previousMouseX = event.getScreenX();
         previousMouseY = event.getScreenY();
-
-        if(event.getTarget() instanceof NodeView) {
-            NodeView nodeView = (NodeView)event.getTarget();
-
-            if(!event.isControlDown() && !nodeView.isSelected())
-                clearSelection();
-
-            nodeView.setSelected(true);
-            nodeView.toFront();
-        } else {
-            clearSelection();
-        }
-
+        clearSelection();
         event.consume();
     }
 
@@ -210,35 +274,38 @@ public class GraphView extends AnchorPane {
         if(event.getTarget() == this || event.getTarget() == container) {
             xOffset.setValue(xOffset.getValue() + deltaX / container.getScaleX());
             yOffset.setValue(yOffset.getValue() + deltaY / container.getScaleY());
-        } else if(event.getTarget() instanceof NodeView) {
-            NodeView nodeView = (NodeView)event.getTarget();
-
-            for(NodeView node : getSelectedNodes()) {
-                node.setLayoutX(node.getLayoutX() + deltaX / container.getScaleX());
-                node.setLayoutY(node.getLayoutY() + deltaY / container.getScaleY());
-            }
         }
 
         event.consume();
     }
 
+    private Processor getProcessorFromDragEvent(DragEvent event) {
+        Dragboard db = event.getDragboard();
+
+        if(!db.hasString())
+            return null;
+
+        String content = db.getString();
+        String[] params = content.split("/");
+
+        if(params.length != 2)
+            return null;
+
+        String module = params[0];
+        String name = params[1];
+
+        return ProcessorLibrary.findProcessor(module, name);
+    }
+
     @FXML
     public void onDragOver(DragEvent event) {
-        event.acceptTransferModes(TransferMode.ANY);
+        if(getProcessorFromDragEvent(event) != null)
+            event.acceptTransferModes(TransferMode.ANY);
     }
 
     @FXML
     public void onDragDropped(DragEvent event) {
-        Dragboard db = event.getDragboard();
-
-        if(!db.hasString())
-            return;
-
-        String content = db.getString();
-        String module = content.split("/")[0];
-        String name = content.split("/")[1];
-
-        Processor processor = ProcessorLibrary.findProcessor(module, name);
+        Processor processor = getProcessorFromDragEvent(event);
 
         if(processor == null) {
             event.setDropCompleted(false);
