@@ -1,9 +1,14 @@
 package com.visualipcv.view;
 
+import com.visualipcv.controller.GraphViewController;
+import com.visualipcv.controller.IGraphViewElement;
 import com.visualipcv.core.Graph;
 import com.visualipcv.core.InputNodeSlot;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
+import com.visualipcv.core.OutputNodeSlot;
+import com.visualipcv.core.Processor;
+import com.visualipcv.core.ProcessorProperty;
 import com.visualipcv.viewmodel.NodeViewModel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
@@ -13,6 +18,8 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Border;
@@ -24,10 +31,12 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import jdk.internal.util.xml.impl.Input;
 
 import java.io.IOException;
+import java.util.List;
 
-public class NodeView extends AnchorPane {
+public class NodeView extends AnchorPane implements IGraphViewElement {
     private NodeViewModel viewModel;
     private GraphView graphView;
 
@@ -65,8 +74,8 @@ public class NodeView extends AnchorPane {
     private ObservableList<NodeSlotView> inputSlots = FXCollections.observableArrayList();
     private ObservableList<NodeSlotView> outputSlots = FXCollections.observableArrayList();
 
-    public NodeView(GraphView graphView, Node node) {
-        viewModel = new NodeViewModel(graphView.getViewModel(), node);
+    public NodeView(GraphView graphView, Processor processor, double x, double y) {
+        viewModel = new NodeViewModel(graphView.getViewModel(), processor);
         this.graphView = graphView;
 
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("NodeView.fxml"));
@@ -84,39 +93,23 @@ public class NodeView extends AnchorPane {
         title.textProperty().bind(viewModel.getTitleProperty());
         selected.set(false);
 
-        viewModel.getInputNodeSlots().addListener(new ListChangeListener<InputNodeSlot>() {
-            @Override
-            public void onChanged(Change<? extends InputNodeSlot> c) {
-                while(c.next()) {
-                    if(c.wasAdded()) {
-                        for(NodeSlot slot : c.getAddedSubList()) {
-                            inputSlots.add(new NodeSlotView(NodeView.this, slot));
-                        }
-                    }
-                }
-            }
-        });
-
-        viewModel.getOutputNodeSlots().addListener(new ListChangeListener<NodeSlot>() {
-            @Override
-            public void onChanged(Change<? extends NodeSlot> c) {
-                while(c.next()) {
-                    if(c.wasAdded()) {
-                        for(NodeSlot slot : c.getAddedSubList()) {
-                            outputSlots.add(new NodeSlotView(NodeView.this, slot));
-                        }
-                    }
-                }
-            }
-        });
+        setLayoutX(x);
+        setLayoutY(y);
 
         inputSlots.addListener(new ListChangeListener<NodeSlotView>() {
             @Override
             public void onChanged(Change<? extends NodeSlotView> c) {
                 while(c.next()) {
                     if(c.wasAdded()) {
-                        for(NodeSlotView view : c.getAddedSubList()) {
-                            inputContainer.getChildren().add(view);
+                        for(NodeSlotView slotView : c.getAddedSubList()) {
+                            viewModel.getInputNodeSlots().add(slotView.getViewModel());
+                            inputContainer.getChildren().add(slotView);
+                        }
+                    }
+                    if(c.wasRemoved()) {
+                        for(NodeSlotView slotView : c.getRemoved()) {
+                            viewModel.getInputNodeSlots().remove(slotView.getViewModel());
+                            inputContainer.getChildren().remove(slotView);
                         }
                     }
                 }
@@ -128,15 +121,20 @@ public class NodeView extends AnchorPane {
             public void onChanged(Change<? extends NodeSlotView> c) {
                 while(c.next()) {
                     if(c.wasAdded()) {
-                        for(NodeSlotView view : c.getAddedSubList()) {
-                            outputContainer.getChildren().add(view);
+                        for(NodeSlotView slotView : c.getAddedSubList()) {
+                            viewModel.getOutputNodeSlots().add(slotView.getViewModel());
+                            outputContainer.getChildren().add(slotView);
+                        }
+                    }
+                    if(c.wasRemoved()) {
+                        for(NodeSlotView slotView : c.getRemoved()) {
+                            viewModel.getOutputNodeSlots().remove(slotView.getViewModel());
+                            outputContainer.getChildren().remove(slotView);
                         }
                     }
                 }
             }
         });
-
-        viewModel.init();
     }
 
     public NodeSlotView findSlotViewByModel(NodeSlot slot) {
@@ -151,6 +149,14 @@ public class NodeView extends AnchorPane {
             }
         }
         return null;
+    }
+
+    public List<NodeSlotView> getInputSlots() {
+        return inputSlots;
+    }
+
+    public List<NodeSlotView> getOutputSlots() {
+        return outputSlots;
     }
 
     public NodeViewModel getViewModel() {
@@ -174,6 +180,7 @@ public class NodeView extends AnchorPane {
         previousMouseX = event.getScreenX();
         previousMouseY = event.getScreenY();
         graphView.selectNode(this, event.isControlDown());
+        requestFocus();
         event.consume();
     }
 
@@ -185,5 +192,22 @@ public class NodeView extends AnchorPane {
         previousMouseY = event.getScreenY();
         graphView.moveSelectedNodes(deltaX, deltaY);
         event.consume();
+    }
+
+    @FXML
+    public void onKeyPressed(KeyEvent event) {
+        if(event.getCode() == KeyCode.DELETE) {
+            graphView.removeSelectedNodes();
+        }
+    }
+
+    @Override
+    public GraphViewController getController() {
+        return getGraphView().getController();
+    }
+
+    @Override
+    public GraphView getGraphView() {
+        return graphView;
     }
 }

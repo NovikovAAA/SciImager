@@ -3,6 +3,8 @@ package com.visualipcv.viewmodel;
 import com.visualipcv.core.InputNodeSlot;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
+import com.visualipcv.core.Processor;
+import com.visualipcv.view.NodeSlotView;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.DoublePropertyBase;
 import javafx.beans.property.SimpleStringProperty;
@@ -49,27 +51,13 @@ public class NodeViewModel {
     };
 
     private StringProperty title = new SimpleStringProperty();
-    private ObservableList<InputNodeSlot> inputNodeSlots = FXCollections.observableArrayList();
-    private ObservableList<NodeSlot> outputNodeSlots = FXCollections.observableArrayList();
+    private ObservableList<NodeSlotViewModel> inputNodeSlots = FXCollections.observableArrayList();
+    private ObservableList<NodeSlotViewModel> outputNodeSlots = FXCollections.observableArrayList();
 
-    public NodeViewModel(GraphViewModel graph, Node node) {
-        this.node = node;
+    public NodeViewModel(GraphViewModel graph, Processor processor) {
+        this.node = new Node(graph.getGraph(), processor, layoutX.get(), layoutY.get());
         this.graph = graph;
         title.setValue(node.getProcessor().getName());
-
-        double x = node.getX();
-        double y = node.getY();
-        layoutX.setValue(x);
-        layoutY.setValue(y);
-    }
-
-    public void init() {
-        for(InputNodeSlot slot : node.getInputSlots()) {
-            if(slot.getProperty().showConnector()) {
-                inputNodeSlots.add(slot);
-            }
-        }
-        outputNodeSlots.addAll(node.getOutputSlots());
     }
 
     public GraphViewModel getGraph() {
@@ -92,11 +80,11 @@ public class NodeViewModel {
         return title;
     }
 
-    public ObservableList<InputNodeSlot> getInputNodeSlots() {
+    public ObservableList<NodeSlotViewModel> getInputNodeSlots() {
         return inputNodeSlots;
     }
 
-    public ObservableList<NodeSlot> getOutputNodeSlots() {
+    public ObservableList<NodeSlotViewModel> getOutputNodeSlots() {
         return outputNodeSlots;
     }
 }

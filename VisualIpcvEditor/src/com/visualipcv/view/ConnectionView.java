@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Point2D;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Background;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.CubicCurve;
@@ -15,6 +16,8 @@ import javafx.scene.transform.NonInvertibleTransformException;
 import javafx.scene.transform.Transform;
 
 public class ConnectionView extends CubicCurve {
+    private static final double BEZIER_OFFSET = 100.0;
+
     private NodeSlotView source;
     private NodeSlotView target;
 
@@ -29,6 +32,7 @@ public class ConnectionView extends CubicCurve {
         setStrokeWidth(3.0);
         setFill(Color.TRANSPARENT);
         setStroke(Color.BLACK);
+        setEffect(new DropShadow(5.0, Color.BLACK));
 
         strokeProperty().bind(source.getViewModel().getStrokeProperty());
 
@@ -81,9 +85,17 @@ public class ConnectionView extends CubicCurve {
         setStartY(src.getY());
         setEndX(dst.getX());
         setEndY(dst.getY());
-        setControlX1(src.getX() + 50.0);
+        setControlX1(src.getX() + BEZIER_OFFSET);
         setControlY1(src.getY());
-        setControlX2(dst.getX() - 50.0);
+        setControlX2(dst.getX() - BEZIER_OFFSET);
         setControlY2(dst.getY());
+    }
+
+    public NodeSlotView getSource() {
+        return source;
+    }
+
+    public NodeSlotView getTarget() {
+        return target;
     }
 }

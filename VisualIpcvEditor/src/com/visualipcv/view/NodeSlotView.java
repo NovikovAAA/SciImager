@@ -1,5 +1,7 @@
 package com.visualipcv.view;
 
+import com.visualipcv.controller.GraphViewController;
+import com.visualipcv.controller.IGraphViewElement;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.ProcessorProperty;
@@ -21,7 +23,7 @@ import javax.sound.sampled.Clip;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class NodeSlotView extends AnchorPane {
+public class NodeSlotView extends AnchorPane implements IGraphViewElement {
     private NodeSlotViewModel viewModel;
     private NodeView node;
 
@@ -94,5 +96,15 @@ public class NodeSlotView extends AnchorPane {
         NodeSlotView slotView = (NodeSlotView)event.getGestureSource();
         viewModel.connect(slotView.getViewModel());
         event.consume();
+    }
+
+    @Override
+    public GraphViewController getController() {
+        return getGraphView().getController();
+    }
+
+    @Override
+    public GraphView getGraphView() {
+        return getNode().getGraphView();
     }
 }

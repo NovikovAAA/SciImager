@@ -1,6 +1,8 @@
 package com.visualipcv.view;
 
 import com.sun.corba.se.pept.transport.ConnectionCache;
+import com.visualipcv.controller.GraphViewController;
+import com.visualipcv.controller.IGraphViewElement;
 import com.visualipcv.core.Connection;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
@@ -8,9 +10,12 @@ import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.core.command.ConnectCommand;
 import com.visualipcv.viewmodel.GraphViewModel;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.DoublePropertyBase;
+import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Point2D;
@@ -26,10 +31,13 @@ import javafx.scene.transform.Transform;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-public class GraphView extends AnchorPane {
-    private GraphViewModel viewModel = new GraphViewModel();
+public class GraphView extends AnchorPane implements IGraphViewElement {
+    private GraphViewController controller = new GraphViewController(this);
+    private GraphViewModel viewModel = new GraphViewModel(controller);
 
     @FXML
     private Pane container;
@@ -38,6 +46,9 @@ public class GraphView extends AnchorPane {
 
     private double previousMouseX;
     private double previousMouseY;
+
+    private ObservableList<NodeView> nodes = FXCollections.observableArrayList();
+    private ObservableList<ConnectionView> connections = FXCollections.observableArrayList();
 
     private DoubleProperty cellSize = new DoublePropertyBase(40.0) {
         @Override
@@ -104,36 +115,20 @@ public class GraphView extends AnchorPane {
         container.layoutXProperty().bind(xOffset);
         container.layoutYProperty().bind(yOffset);
 
-        viewModel.getNodeList().addListener(new ListChangeListener<Node>() {
+        nodes.addListener(new ListChangeListener<NodeView>() {
             @Override
-            public void onChanged(Change<? extends Node> c) {
+            public void onChanged(Change<? extends NodeView> c) {
                 while(c.next()) {
                     if(c.wasAdded()) {
-                        for(Node node : c.getAddedSubList()) {
-                            container.getChildren().add(new NodeView(GraphView.this, node));
+                        for (NodeView view : c.getAddedSubList()) {
+                            viewModel.getNodes().add(view.getViewModel());
+                            container.getChildren().add(view);
                         }
                     }
                     if(c.wasRemoved()) {
-                        for(Node node : c.getRemoved()) {
-                            container.getChildren().remove(findNodeViewByModel(node));
-                        }
-                    }
-                }
-            }
-        });
-
-        viewModel.getConnections().addListener(new ListChangeListener<Connection>() {
-            @Override
-            public void onChanged(Change<? extends Connection> c) {
-                while(c.next()) {
-                    if(c.wasAdded()) {
-                        for(Connection connection : c.getAddedSubList()) {
-                            container.getChildren().add(new ConnectionView(findSlotViewByModel(connection.getSource()), findSlotViewByModel(connection.getTarget())));
-                        }
-                    }
-                    if(c.wasRemoved()) {
-                        for(Connection connection : c.getRemoved()) {
-
+                        for(NodeView view : c.getRemoved()) {
+                            viewModel.getNodes().remove(view.getViewModel());
+                            container.getChildren().remove(view);
                         }
                     }
                 }
@@ -159,6 +154,14 @@ public class GraphView extends AnchorPane {
             return null;
 
         return view.findSlotViewByModel(nodeSlot);
+    }
+
+    public List<NodeView> getNodes() {
+        return nodes;
+    }
+
+    public List<ConnectionView> getConnections() {
+        return connections;
     }
 
     @Override
@@ -227,6 +230,12 @@ public class GraphView extends AnchorPane {
             node.setLayoutX(node.getLayoutX() + deltaX / container.getScaleX());
             node.setLayoutY(node.getLayoutY() + deltaY / container.getScaleY());
         }
+    }
+
+    public void removeSelectedNodes() {
+        /*for(NodeView nodeView : getSelectedNodes()) {
+            viewModel.removeNode(nodeView.getViewModel().getNode());
+        }*/
     }
 
     public void selectNode(NodeView nodeView, boolean ctrlPressed) {
@@ -338,5 +347,15 @@ public class GraphView extends AnchorPane {
         repaintGrid();
 
         event.consume();
+    }
+
+    @Override
+    public GraphViewController getController() {
+        return controller;
+    }
+
+    @Override
+    public GraphView getGraphView() {
+        return this;
     }
 }

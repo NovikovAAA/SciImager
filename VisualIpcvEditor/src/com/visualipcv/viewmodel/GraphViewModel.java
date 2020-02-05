@@ -1,5 +1,6 @@
 package com.visualipcv.viewmodel;
 
+import com.visualipcv.controller.GraphViewController;
 import com.visualipcv.core.Connection;
 import com.visualipcv.core.Graph;
 import com.visualipcv.core.Node;
@@ -8,24 +9,30 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
+import java.util.List;
+
 public class GraphViewModel {
     private Graph graph = new Graph();
+    private GraphViewController controller;
 
-    private ObservableList<Node> nodes = FXCollections.observableArrayList();
+    private ObservableList<NodeViewModel> nodes = FXCollections.observableArrayList();
     private ObservableList<Connection> connections = FXCollections.observableArrayList();
 
-    public GraphViewModel() {
-        nodes.addListener(new ListChangeListener<Node>() {
+    public GraphViewModel(GraphViewController controller) {
+        this.controller = controller;
+
+        nodes.addListener(new ListChangeListener<NodeViewModel>() {
             @Override
-            public void onChanged(Change<? extends Node> c) {
+            public void onChanged(Change<? extends NodeViewModel> c) {
                 while(c.next()) {
-                    if(c.wasRemoved()) {
-                        for(Node node : c.getRemoved()) {
-                            graph.removeNode(node);
+                    if(c.wasAdded()) {
+                        for(NodeViewModel vm : c.getAddedSubList()) {
+                            graph.addNode(vm.getNode());
                         }
-                    } else if(c.wasAdded()) {
-                        for(Node node : c.getAddedSubList()) {
-                            graph.addNode(node);
+                    }
+                    if(c.wasRemoved()) {
+                        for(NodeViewModel vm : c.getRemoved()) {
+                            graph.removeNode(vm.getNode());
                         }
                     }
                 }
@@ -38,16 +45,15 @@ public class GraphViewModel {
         connections.addAll(graph.getConnections());
     }
 
-    public ObservableList<Node> getNodeList() {
+    public List<NodeViewModel> getNodes() {
         return nodes;
     }
 
-    public ObservableList<Connection> getConnections() {
-        return connections;
+    public Graph getGraph() {
+        return graph;
     }
 
     public void addNode(Processor processor, double x, double y) {
-        Node node = new Node(graph, processor, x, y);
-        nodes.add(node);
+        controller.addNode(processor, x, y);
     }
 }
