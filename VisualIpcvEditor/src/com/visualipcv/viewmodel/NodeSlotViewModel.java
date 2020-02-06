@@ -10,7 +10,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
-public class NodeSlotViewModel {
+public class NodeSlotViewModel extends ViewModel {
     private NodeSlot nodeSlot;
     private NodeViewModel node;
 
@@ -21,18 +21,7 @@ public class NodeSlotViewModel {
     public NodeSlotViewModel(NodeViewModel node, NodeSlot slot) {
         this.nodeSlot = slot;
         this.node = node;
-
-        isConnected.setValue(false);
-        stroke.set(new Color(
-                slot.getProperty().getType().getColor().getRed() / 255.0,
-                slot.getProperty().getType().getColor().getGreen() / 255.0,
-                slot.getProperty().getType().getColor().getBlue() / 255.0,
-                1.0));
-        background.set(new Color(
-                slot.getProperty().getType().getColor().getRed() / 500.0,
-                slot.getProperty().getType().getColor().getGreen() / 500.0,
-                slot.getProperty().getType().getColor().getBlue() / 500.0,
-                1.0));
+        update();
     }
 
     public NodeSlot getNodeSlot() {
@@ -53,14 +42,28 @@ public class NodeSlotViewModel {
 
     public void connect(NodeSlotViewModel other) {
         nodeSlot.connect(other.getNodeSlot());
-        node.getGraph().updateConnections();
-        isConnected.set(true);
-        other.isConnected.set(true);
+        node.getGraph().update();
     }
 
     public void disconnect() {
         nodeSlot.disconnect();
-        node.getGraph().updateConnections();
-        isConnected.set(true);
+        node.getGraph().update();
+    }
+
+    @Override
+    public void update() {
+        isConnected.set(nodeSlot.isConnected());
+
+        stroke.set(new Color(
+                nodeSlot.getProperty().getType().getColor().getRed() / 255.0,
+                nodeSlot.getProperty().getType().getColor().getGreen() / 255.0,
+                nodeSlot.getProperty().getType().getColor().getBlue() / 255.0,
+                1.0));
+
+        background.set(new Color(
+                nodeSlot.getProperty().getType().getColor().getRed() / 500.0,
+                nodeSlot.getProperty().getType().getColor().getGreen() / 500.0,
+                nodeSlot.getProperty().getType().getColor().getBlue() / 500.0,
+                1.0));
     }
 }

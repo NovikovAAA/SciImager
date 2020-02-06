@@ -15,10 +15,11 @@ public abstract class NodeSlot {
         return property;
     }
 
-    public abstract void connect(NodeSlot other);
-    public abstract void disconnect();
-
     public Node getNode() {
         return node;
     }
+
+    public abstract void connect(NodeSlot other);
+    public abstract void disconnect();
+    public abstract boolean isConnected();
 }

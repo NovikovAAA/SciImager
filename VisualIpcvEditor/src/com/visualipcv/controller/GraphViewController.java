@@ -11,7 +11,18 @@ public class GraphViewController {
         this.graphView = view;
     }
 
-    public void addNode(Processor processor, double x, double y) {
-        graphView.getNodes().add(new NodeView(graphView, processor, x, y));
+    public void removeSelected() {
+        graphView.getNodes().removeAll(graphView.getSelectedNodes());
+    }
+
+    public void moveSelected(double deltaX, double deltaY) {
+        graphView.getSelectedNodes().forEach((NodeView view) -> {
+            view.setLayoutX(view.getLayoutX() + deltaX / graphView.getZoom());
+            view.setLayoutY(view.getLayoutY() + deltaY / graphView.getZoom());
+        });
+    }
+
+    public void addConnection() {
+
     }
 }

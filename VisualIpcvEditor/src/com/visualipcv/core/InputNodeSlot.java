@@ -33,6 +33,10 @@ public class InputNodeSlot extends NodeSlot {
         getNode().getGraph().removeConnectionRecords(this);
     }
 
+    public boolean isConnected() {
+        return input != null;
+    }
+
     public OutputNodeSlot getConnectedSlot() {
         return input;
     }

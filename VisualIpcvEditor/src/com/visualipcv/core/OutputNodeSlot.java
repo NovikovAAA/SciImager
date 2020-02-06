@@ -26,4 +26,20 @@ public class OutputNodeSlot extends NodeSlot {
             }
         }
     }
+
+    public boolean isConnected() {
+        for(Node n : getNode().getGraph().getNodes()) {
+            if(n == getNode()) {
+                continue;
+            }
+
+            for(InputNodeSlot is : n.getInputSlots()) {
+                if(is.getConnectedSlot() == this) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 }
