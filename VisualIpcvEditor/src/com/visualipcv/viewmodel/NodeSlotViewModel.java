@@ -1,6 +1,8 @@
 package com.visualipcv.viewmodel;
 
+import com.visualipcv.core.InputNodeSlot;
 import com.visualipcv.core.NodeSlot;
+import com.visualipcv.core.OutputNodeSlot;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
@@ -17,11 +19,17 @@ public class NodeSlotViewModel extends ViewModel {
     private BooleanProperty isConnected = new SimpleBooleanProperty();
     private ObjectProperty<Paint> background = new SimpleObjectProperty<>();
     private ObjectProperty<Paint> stroke = new SimpleObjectProperty<>();
+    private BooleanProperty isOutputProperty = new SimpleBooleanProperty();
 
     public NodeSlotViewModel(NodeViewModel node, NodeSlot slot) {
         this.nodeSlot = slot;
         this.node = node;
+        isOutputProperty.set(slot instanceof OutputNodeSlot);
         update();
+    }
+
+    public NodeViewModel getNode() {
+        return node;
     }
 
     public NodeSlot getNodeSlot() {
@@ -38,6 +46,10 @@ public class NodeSlotViewModel extends ViewModel {
 
     public ObjectProperty<Paint> getStrokeProperty() {
         return stroke;
+    }
+
+    public BooleanProperty getIsOutputProperty() {
+        return isOutputProperty;
     }
 
     public void connect(NodeSlotViewModel other) {

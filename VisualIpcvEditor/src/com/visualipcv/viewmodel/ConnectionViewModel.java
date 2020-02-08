@@ -1,7 +1,13 @@
 package com.visualipcv.viewmodel;
 
+import com.visualipcv.core.Connection;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Point2D;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
@@ -14,6 +20,7 @@ public class ConnectionViewModel extends ViewModel {
     public ConnectionViewModel(NodeSlotViewModel source, NodeSlotViewModel target) {
         this.source = source;
         this.target = target;
+        update();
     }
 
     @Override

@@ -6,19 +6,14 @@
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.shape.Circle?>
 
+<?import javafx.scene.effect.DropShadow?>
 <fx:root maxHeight="30.0" maxWidth="30.0" minHeight="30.0" minWidth="30.0" onDragDetected="#onDragDetected" onDragDropped="#onDragDropped" onDragOver="#onDragOver" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" prefHeight="30.0" prefWidth="30.0" style="-fx-background-color: #ffffff00;" type="AnchorPane" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Circle fx:id="backgroundCircle" fill="#590000" layoutX="10.0" layoutY="10.0" radius="10.0" strokeType="INSIDE" strokeWidth="3.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <stroke>
-            <RadialGradient centerX="0.5" centerY="0.503816808453043" radius="0.5">
-               <stops>
-                  <Stop color="#f00000" />
-                  <Stop color="#cf0000" offset="0.7630115633329155" />
-                  <Stop color="BLACK" offset="0.9432866255359195" />
-                  <Stop color="WHITE" offset="1.0" />
-               </stops>
-            </RadialGradient>
-         </stroke></Circle>
+         <effect>
+            <DropShadow radius="2.0"/>
+         </effect>
+      </Circle>
       <Circle fx:id="fillCircle" fill="RED" layoutX="10.0" layoutY="10.0" radius="5.0" stroke="BLACK" strokeType="INSIDE" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0" />
    </children>
    <padding>

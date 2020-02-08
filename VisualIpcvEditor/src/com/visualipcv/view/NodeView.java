@@ -1,20 +1,13 @@
 package com.visualipcv.view;
 
-import com.visualipcv.controller.GraphViewController;
 import com.visualipcv.controller.IGraphViewElement;
-import com.visualipcv.core.Graph;
-import com.visualipcv.core.InputNodeSlot;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
-import com.visualipcv.core.OutputNodeSlot;
-import com.visualipcv.core.Processor;
-import com.visualipcv.core.ProcessorProperty;
-import com.visualipcv.viewmodel.NodeSlotViewModel;
 import com.visualipcv.viewmodel.NodeViewModel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -33,7 +26,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import jdk.internal.util.xml.impl.Input;
 
 import java.io.IOException;
 import java.util.List;
@@ -51,6 +43,10 @@ public class NodeView extends AnchorPane implements IGraphViewElement {
     private VBox inputContainer;
     @FXML
     private VBox outputContainer;
+    @FXML
+    private Text error;
+    @FXML
+    private Pane errorPane;
 
     private BooleanProperty selected = new BooleanPropertyBase() {
         @Override
@@ -73,7 +69,7 @@ public class NodeView extends AnchorPane implements IGraphViewElement {
         }
     };
 
-    private ObservableList<NodeSlotView> inputSlots = FXCollections.observableArrayList();
+    private ObservableList<AdvancedNodeSlotView> inputSlots = FXCollections.observableArrayList();
     private ObservableList<NodeSlotView> outputSlots = FXCollections.observableArrayList();
 
     public NodeView(GraphView graphView, Node node) {
@@ -93,15 +89,17 @@ public class NodeView extends AnchorPane implements IGraphViewElement {
         layoutXProperty().bindBidirectional(viewModel.getLayoutXProperty());
         layoutYProperty().bindBidirectional(viewModel.getLayoutYProperty());
         title.textProperty().bind(viewModel.getTitleProperty());
+        error.textProperty().bind(viewModel.getErrorProperty());
+        errorPane.visibleProperty().bind(viewModel.getErrorProperty().isNotEmpty());
         selected.bind(viewModel.getIsSelected());
 
         for(NodeSlot slot : getViewModel().getNode().getInputSlots()) {
-            if(!slot.getProperty().showConnector())
-                continue;
-            NodeSlotView slotView = new NodeSlotView(this, slot);
+            AdvancedNodeSlotView slotView = new AdvancedNodeSlotView(this, slot, false);
             inputSlots.add(slotView);
-            viewModel.getInputNodeSlots().add(slotView.getViewModel());
             inputContainer.getChildren().add(slotView);
+
+            if(slotView.getSlotView() != null)
+                viewModel.getInputNodeSlots().add(slotView.getSlotView().getViewModel());
         }
 
         for(NodeSlot slot : getViewModel().getNode().getOutputSlots()) {
@@ -113,19 +111,19 @@ public class NodeView extends AnchorPane implements IGraphViewElement {
             outputContainer.getChildren().add(slotView);
         }
 
-        inputSlots.addListener(new ListChangeListener<NodeSlotView>() {
+        inputSlots.addListener(new ListChangeListener<AdvancedNodeSlotView>() {
             @Override
-            public void onChanged(Change<? extends NodeSlotView> c) {
+            public void onChanged(Change<? extends AdvancedNodeSlotView> c) {
                 while(c.next()) {
                     if(c.wasAdded()) {
-                        for(NodeSlotView slotView : c.getAddedSubList()) {
-                            viewModel.getInputNodeSlots().add(slotView.getViewModel());
+                        for(AdvancedNodeSlotView slotView : c.getAddedSubList()) {
+                            viewModel.getInputNodeSlots().add(slotView.getSlotView().getViewModel());
                             inputContainer.getChildren().add(slotView);
                         }
                     }
                     if(c.wasRemoved()) {
-                        for(NodeSlotView slotView : c.getRemoved()) {
-                            viewModel.getInputNodeSlots().remove(slotView.getViewModel());
+                        for(AdvancedNodeSlotView slotView : c.getRemoved()) {
+                            viewModel.getInputNodeSlots().remove(slotView.getSlotView().getViewModel());
                             inputContainer.getChildren().remove(slotView);
                         }
                     }
@@ -154,21 +152,7 @@ public class NodeView extends AnchorPane implements IGraphViewElement {
         });
     }
 
-    public NodeSlotView findSlotViewByModel(NodeSlot slot) {
-        for(NodeSlotView view : inputSlots) {
-            if(view.getViewModel().getNodeSlot() == slot) {
-                return view;
-            }
-        }
-        for(NodeSlotView view : outputSlots) {
-            if(view.getViewModel().getNodeSlot() == slot) {
-                return view;
-            }
-        }
-        return null;
-    }
-
-    public List<NodeSlotView> getInputSlots() {
+    public List<AdvancedNodeSlotView> getInputSlots() {
         return inputSlots;
     }
 
@@ -212,11 +196,6 @@ public class NodeView extends AnchorPane implements IGraphViewElement {
         if(event.getCode() == KeyCode.DELETE) {
             viewModel.removeSelected();
         }
-    }
-
-    @Override
-    public GraphViewController getController() {
-        return getGraphView().getController();
     }
 
     @Override

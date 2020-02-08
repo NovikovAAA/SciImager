@@ -58,7 +58,7 @@ public class Node {
         return y;
     }
 
-    private Object getValueFromInput(InputNodeSlot slot) {
+    private Object getValueFromInput(InputNodeSlot slot) throws GraphExecutionException {
         if(slot.getConnectedSlot() != null) {
             Object fromCache = graph.readCache(slot.getConnectedSlot().getNode(), slot.getConnectedSlot().getProperty().getName());
 
@@ -72,14 +72,20 @@ public class Node {
         return slot.getValue();
     }
 
-    public void execute() {
+    public void execute() throws GraphExecutionException {
         DataBundle inputs = new DataBundle();
 
         for(InputNodeSlot slot : inputSlots) {
             inputs.write(slot.getProperty().getName(), getValueFromInput(slot));
         }
 
-        DataBundle res = processor.execute(inputs);
+        DataBundle res = null;
+
+        try {
+            res = processor.execute(inputs);
+        } catch (Exception e) {
+            throw new GraphExecutionException(this, e.getMessage());
+        }
 
         for (OutputNodeSlot outputSlot : outputSlots) {
             graph.writeCache(this, outputSlot.getProperty().getName(), res.read(outputSlot.getProperty().getName()));

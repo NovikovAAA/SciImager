@@ -56,6 +56,7 @@ public class NodeViewModel extends ViewModel {
     private BooleanProperty isSelected = new SimpleBooleanProperty(false);
 
     private StringProperty title = new SimpleStringProperty();
+    private StringProperty error = new SimpleStringProperty("");
     private ObservableList<NodeSlotViewModel> inputNodeSlots = FXCollections.observableArrayList();
     private ObservableList<NodeSlotViewModel> outputNodeSlots = FXCollections.observableArrayList();
 
@@ -86,6 +87,10 @@ public class NodeViewModel extends ViewModel {
         return title;
     }
 
+    public StringProperty getErrorProperty() {
+        return error;
+    }
+
     public BooleanProperty getIsSelected() {
         return isSelected;
     }
@@ -99,11 +104,11 @@ public class NodeViewModel extends ViewModel {
     }
 
     public void removeSelected() {
-        //graph.getController().removeSelected();
+        graph.removeSelected();
     }
 
     public void moveSelected(double deltaX, double deltaY) {
-        //graph.getController().moveSelected(deltaX, deltaY);
+        graph.moveSelected(deltaX, deltaY);
     }
 
     public void selectNode(boolean ctrlPressed) {

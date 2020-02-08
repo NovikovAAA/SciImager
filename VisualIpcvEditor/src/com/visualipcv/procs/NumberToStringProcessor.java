@@ -9,7 +9,7 @@ public class NumberToStringProcessor extends Processor {
         super("Number->String", "Core", "Converters",
                 new ArrayList<ProcessorProperty>() {
                     {
-                        add(new ProcessorProperty("Number", DataType.NUMBER));
+                        add(new ProcessorProperty("Number", DataType.NUMBER, false, true));
                     }
                 },
                 new ArrayList<ProcessorProperty>() {

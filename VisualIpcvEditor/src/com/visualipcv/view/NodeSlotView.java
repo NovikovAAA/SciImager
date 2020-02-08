@@ -1,16 +1,14 @@
 package com.visualipcv.view;
 
-import com.visualipcv.controller.GraphViewController;
 import com.visualipcv.controller.IGraphViewElement;
-import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
-import com.visualipcv.core.ProcessorProperty;
 import com.visualipcv.viewmodel.NodeSlotViewModel;
-import com.visualipcv.viewmodel.NodeViewModel;
-import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Control;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
@@ -19,13 +17,16 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.shape.Circle;
 
-import javax.sound.sampled.Clip;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class NodeSlotView extends AnchorPane implements IGraphViewElement {
     private NodeSlotViewModel viewModel;
     private NodeView node;
+
+    private ObservableList<ConnectionView> connections = FXCollections.observableArrayList();
+    private BooleanProperty isOutputProperty = new SimpleBooleanProperty();
 
     @FXML
     private Circle backgroundCircle;
@@ -50,6 +51,7 @@ public class NodeSlotView extends AnchorPane implements IGraphViewElement {
         fillCircle.fillProperty().bind(viewModel.getStrokeProperty());
         backgroundCircle.fillProperty().bind(viewModel.getBackgroundProperty());
         backgroundCircle.strokeProperty().bind(viewModel.getStrokeProperty());
+        isOutputProperty.bind(viewModel.getIsOutputProperty());
     }
 
     public NodeSlotViewModel getViewModel() {
@@ -58,6 +60,25 @@ public class NodeSlotView extends AnchorPane implements IGraphViewElement {
 
     public NodeView getNode() {
         return node;
+    }
+
+    public List<ConnectionView> getConnections() {
+        List<ConnectionView> connections = new ArrayList<>();
+
+        for(ConnectionView view : node.getGraphView().getConnections()) {
+            if(view.getSourceView() == this || view.getTargetView() == this)
+                connections.add(view);
+        }
+
+        return connections;
+    }
+
+    public boolean isOutput() {
+        return isOutputProperty.get();
+    }
+
+    public boolean isInput() {
+        return !isOutputProperty.get();
     }
 
     @FXML
@@ -70,14 +91,37 @@ public class NodeSlotView extends AnchorPane implements IGraphViewElement {
         event.consume();
     }
 
-    @FXML
-    public void onDragDetected(MouseEvent event) {
-        Dragboard dragboard = startDragAndDrop(TransferMode.LINK);
+    private void startConnectionDrag(MouseEvent event, NodeSlotView source) {
+        Dragboard dragboard = source.startDragAndDrop(TransferMode.LINK);
         ClipboardContent content = new ClipboardContent();
         content.putString("Link");
         dragboard.setContent(content);
-        dragboard.setDragView(this.snapshot(null, null));
         event.consume();
+
+        getGraphView().startConnectionDrag(source);
+    }
+
+    @FXML
+    public void onDragDetected(MouseEvent event) {
+        if(isOutput()) {
+            startConnectionDrag(event, this);
+        } else if(isInput()) {
+            List<ConnectionView> connections = getConnections();
+
+            if(connections.isEmpty()) {
+                startConnectionDrag(event, this);
+            } else {
+                NodeSlotView source = null;
+                viewModel.disconnect();
+
+                if(connections.get(0).getSourceView() == this)
+                    source = connections.get(0).getTargetView();
+                else
+                    source = connections.get(0).getSourceView();
+
+                startConnectionDrag(event, source);
+            }
+        }
     }
 
     @FXML
@@ -96,11 +140,6 @@ public class NodeSlotView extends AnchorPane implements IGraphViewElement {
         NodeSlotView slotView = (NodeSlotView)event.getGestureSource();
         viewModel.connect(slotView.getViewModel());
         event.consume();
-    }
-
-    @Override
-    public GraphViewController getController() {
-        return getGraphView().getController();
     }
 
     @Override

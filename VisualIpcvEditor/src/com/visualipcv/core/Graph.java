@@ -94,7 +94,7 @@ public class Graph {
         return cache.get(node).get(name);
     }
 
-    public void execute() {
+    public void execute() throws GraphExecutionException {
         cache.clear();
         List<Node> nodes = getOutputNodes();
 

@@ -1,42 +1,40 @@
 package com.visualipcv.view;
 
-import com.sun.corba.se.pept.transport.ConnectionCache;
-import com.visualipcv.controller.GraphViewController;
 import com.visualipcv.controller.IGraphViewElement;
 import com.visualipcv.core.Connection;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorLibrary;
-import com.visualipcv.core.command.ConnectCommand;
 import com.visualipcv.viewmodel.GraphViewModel;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.DoublePropertyBase;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.NonInvertibleTransformException;
-import javafx.scene.transform.Scale;
-import javafx.scene.transform.Transform;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class GraphView extends AnchorPane implements IGraphViewElement {
-    private GraphViewController controller = new GraphViewController(this);
     private GraphViewModel viewModel = new GraphViewModel();
 
     @FXML
@@ -49,6 +47,7 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
 
     private ObservableList<NodeView> nodes = FXCollections.observableArrayList();
     private ObservableList<ConnectionView> connections = FXCollections.observableArrayList();
+    private ConnectionPreview connectionPreview;
 
     private DoubleProperty cellSize = new DoublePropertyBase(40.0) {
         @Override
@@ -131,8 +130,28 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
 
         container.layoutXProperty().bind(xOffset);
         container.layoutYProperty().bind(yOffset);
+        zoom.bind(viewModel.getZoomProperty());
         container.scaleXProperty().bind(zoom);
         container.scaleYProperty().bind(zoom);
+
+        addEventFilter(DragEvent.DRAG_OVER, new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event) {
+                if(connectionPreview != null) {
+                    Point2D containerPoint = container.parentToLocal(new Point2D(event.getX(), event.getY()));
+                    connectionPreview.setTarget(containerPoint.getX(), containerPoint.getY());
+                }
+            }
+        });
+
+        addEventFilter(DragEvent.DRAG_DONE, new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event) {
+                if(connectionPreview != null) {
+                    stopConnectionDrag();
+                }
+            }
+        });
 
         nodes.addListener(new ListChangeListener<NodeView>() {
             @Override
@@ -147,6 +166,26 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
                     if(c.wasRemoved()) {
                         for(NodeView view : c.getRemoved()) {
                             viewModel.getNodes().remove(view.getViewModel());
+                            container.getChildren().remove(view);
+                        }
+                    }
+                }
+            }
+        });
+
+        connections.addListener(new ListChangeListener<ConnectionView>() {
+            @Override
+            public void onChanged(Change<? extends ConnectionView> c) {
+                while(c.next()) {
+                    if(c.wasAdded()) {
+                        for(ConnectionView view : c.getAddedSubList()) {
+                            viewModel.getConnections().add(view.getViewModel());
+                            container.getChildren().add(view);
+                        }
+                    }
+                    if(c.wasRemoved()) {
+                        for(ConnectionView view : c.getRemoved()) {
+                            viewModel.getConnections().remove(view.getViewModel());
                             container.getChildren().remove(view);
                         }
                     }
@@ -172,22 +211,40 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
             }
 
             @Override
-            public void onConnected() {
-
+            public void onConnected(Connection connection) {
+                connections.add(new ConnectionView(findNodeSlotView(connection.getSource()), findNodeSlotView(connection.getTarget())));
             }
 
             @Override
-            public void onDisconnected() {
+            public void onDisconnected(Connection connection) {
+                for(ConnectionView view : connections) {
+                    if(view.getViewModel().getSource().getNodeSlot() == connection.getSource() &&
+                        view.getViewModel().getTarget().getNodeSlot() == connection.getTarget()) {
+                        connections.remove(view);
+                        break;
+                    }
+                }
+            }
 
+            @Override
+            public void onRequestSort() {
+                updateOrder();
             }
         });
     }
 
-    private NodeView findNodeViewByModel(Node node) {
-        for(javafx.scene.Node n : container.getChildren()) {
-            if(n instanceof NodeView) {
-                if(((NodeView) n).getViewModel().getNode() == node) {
-                    return (NodeView)n;
+    public NodeSlotView findNodeSlotView(NodeSlot slot) {
+        for(NodeView node : nodes) {
+            for(AdvancedNodeSlotView slotView : node.getInputSlots()) {
+                if(slotView.getSlotView() == null)
+                    continue;
+                if(slotView.getSlotView().getViewModel().getNodeSlot() == slot) {
+                    return slotView.getSlotView();
+                }
+            }
+            for(NodeSlotView slotView : node.getOutputSlots()) {
+                if(slotView.getViewModel().getNodeSlot() == slot) {
+                    return slotView;
                 }
             }
         }
@@ -204,6 +261,7 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
 
     @Override
     public void layoutChildren() {
+        super.layoutChildren();
         canvas.setWidth(getWidth());
         canvas.setHeight(getHeight());
         repaintGrid();
@@ -255,7 +313,7 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
     }
 
     public void updateOrder() {
-        getChildren().sort((javafx.scene.Node n1, javafx.scene.Node n2) -> {
+        FXCollections.sort(container.getChildren(), (javafx.scene.Node n1, javafx.scene.Node n2) -> {
             if(n1.getClass() == n2.getClass()) {
                 if(n1 instanceof NodeView) {
                     if(((NodeView) n1).isSelected())
@@ -271,6 +329,16 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
             }
             return 0;
         });
+    }
+
+    public void startConnectionDrag(NodeSlotView source) {
+        connectionPreview = new ConnectionPreview(source);
+        container.getChildren().add(connectionPreview);
+    }
+
+    public void stopConnectionDrag() {
+        container.getChildren().remove(connectionPreview);
+        connectionPreview = null;
     }
 
     @FXML
@@ -289,8 +357,8 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
         previousMouseY = event.getScreenY();
 
         if(event.getTarget() == this || event.getTarget() == container) {
-            xOffset.setValue(xOffset.getValue() + deltaX/* / container.getScaleX()*/);
-            yOffset.setValue(yOffset.getValue() + deltaY/* / container.getScaleY()*/);
+            xOffset.setValue(xOffset.getValue() + deltaX);
+            yOffset.setValue(yOffset.getValue() + deltaY);
         }
 
         event.consume();
@@ -342,15 +410,9 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
 
     @FXML
     public void onScroll(ScrollEvent event) {
-        double value = zoom.get() + event.getDeltaY() * 0.01;
-        zoom.set(Math.min(10.0, Math.max(0.2, value)));
+        viewModel.zoom(event.getDeltaY() * 0.003);
         repaintGrid();
         event.consume();
-    }
-
-    @Override
-    public GraphViewController getController() {
-        return controller;
     }
 
     @Override
@@ -384,10 +446,6 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
 
     public double getZoom() {
         return zoom.get();
-    }
-
-    public void setZoom(double zoom) {
-        this.zoom.set(zoom);
     }
 
     public DoubleProperty getXOffsetProperty() {

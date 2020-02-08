@@ -10,11 +10,11 @@ public class ProcessorLibrary {
     public static native List<ProcessorUID> getProcessorList();
 
     static {
-        List<ProcessorUID> processorList = getProcessorList();
+        /*List<ProcessorUID> processorList = getProcessorList();
 
         for(ProcessorUID uid : processorList) {
             processors.add(new NativeProcessor(uid));
-        }
+        }*/
 
         initDefaultProcessors();
     }
@@ -38,5 +38,8 @@ public class ProcessorLibrary {
         processors.add(new NumberSourceProcessor());
         processors.add(new SumProcessor());
         processors.add(new NumberToStringProcessor());
+        processors.add(new ImageSourceProcessor());
+        processors.add(new ImageOutputProcessor());
+        processors.add(new BlurProcessor());
     }
 }
