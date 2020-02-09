@@ -1,6 +1,5 @@
 package com.visualipcv.editor;
 
-import com.visualipcv.core.CommonException;
 import com.visualipcv.view.ConsoleView;
 import com.visualipcv.view.FunctionListView;
 import com.visualipcv.view.GraphView;
@@ -11,6 +10,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -19,15 +20,15 @@ import org.dockfx.DockPane;
 import org.dockfx.DockPos;
 import org.reflections.Reflections;
 
-import javax.swing.plaf.MenuBarUI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 public class Editor {
     private static Stage primaryStage;
     private static DockPane primaryPane;
+    private static TabPane docsPane;
+    private static MenuBar menuBar;
 
     private static MenuItem createMenuItem(Menu menu, String path, EventHandler<ActionEvent> handler) {
         String[] items = path.split("/");
@@ -67,9 +68,26 @@ public class Editor {
         return null;
     }
 
-    private static Menu[] createAppMenu() {
-        List<Menu> menus = new ArrayList<>();
+    public static void addMenuCommand(String path, EventHandler<ActionEvent> handler) {
+        String[] items = path.split("/");
+        Menu submenu = null;
 
+        for(Menu menu : menuBar.getMenus()) {
+            if(menu.getText().equals(items[0])) {
+                submenu = menu;
+                break;
+            }
+        }
+
+        if(submenu == null) {
+            submenu = new Menu(items[0]);
+            menuBar.getMenus().add(submenu);
+        }
+
+        createMenuItem(submenu, path, handler);
+    }
+
+    private static void createAppMenu() {
         Reflections reflections = new Reflections("com.visualipcv");
         Set<Class<?>> classes = reflections.getTypesAnnotatedWith(EditorWindow.class);
 
@@ -78,30 +96,34 @@ public class Editor {
             String path = clazz.getAnnotation(EditorWindow.class).path();
             DockPos dockPos = clazz.getAnnotation(EditorWindow.class).dockPos();
 
-            String firstItem = path.split("/")[0];
-            Menu targetMenu = null;
-
-            targetMenu = menus.stream().filter((Menu menu) -> menu.getText().equals(firstItem)).findFirst().orElse(null);
-
-            if(targetMenu == null) {
-                targetMenu = new Menu(firstItem);
-                menus.add(targetMenu);
-            }
-
-            MenuItem item = createMenuItem(targetMenu, path, new EventHandler<ActionEvent>() {
+            Editor.addMenuCommand(path, new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
                     try {
-                        DockNode node = new DockNode((Node)clazz.newInstance(), clazz.getAnnotation(EditorWindow.class).name());
-                        node.dock(getPrimaryPane(), clazz.getAnnotation(EditorWindow.class).dockPos());
+                        DockNode node = new DockNode((Node)clazz.newInstance(), name);
+                        node.dock(getPrimaryPane(), dockPos);
                     } catch(Exception e) {
                         e.printStackTrace();
                     }
                 }
             });
         }
+    }
 
-        return menus.toArray(new Menu[0]);
+    private static void createSysMenu() {
+        addMenuCommand("File/New", new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                getDocsPane().getTabs().add(new Tab("Graph", new GraphView()));
+            }
+        });
+
+        addMenuCommand("File/Exit", new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                getPrimaryStage().close();
+            }
+        });
     }
 
     public static void initPrimaryStage(Stage stage) {
@@ -110,15 +132,22 @@ public class Editor {
         primaryStage.setTitle("VisualIPCV");
 
         VBox root = new VBox();
-        root.getChildren().add(new MenuBar(createAppMenu()));
+        menuBar = new MenuBar();
+        root.getChildren().add(menuBar);
+
+        createSysMenu();
+        createAppMenu();
 
         DockPane dockPane = new DockPane();
         primaryPane = dockPane;
         VBox.setVgrow(dockPane, Priority.ALWAYS);
         root.getChildren().add(dockPane);
 
+        docsPane = new TabPane();
+        docsPane.getTabs().add(new Tab("Graph", new GraphView()));
+
         DockNode functionListPanel = new DockNode(new FunctionListView(), "Functions");
-        DockNode graphPanel = new DockNode(new GraphView(), "Graph");
+        DockNode graphPanel = new DockNode(docsPane, "Graph");
         DockNode consolePanel = new DockNode(new ConsoleView(), "Console");
 
         graphPanel.setDockTitleBar(null);
@@ -139,5 +168,13 @@ public class Editor {
 
     public static DockPane getPrimaryPane() {
         return primaryPane;
+    }
+
+    public static TabPane getDocsPane() {
+        return docsPane;
+    }
+
+    public static MenuBar getMenuBar() {
+        return menuBar;
     }
 }
