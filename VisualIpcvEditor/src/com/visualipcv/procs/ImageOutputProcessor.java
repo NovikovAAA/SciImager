@@ -12,6 +12,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.dockfx.DockNode;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -20,7 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 
 public class ImageOutputProcessor extends Processor {
-    private Stage demoStage = null;
+    private DockNode demoStage = null;
     private ImageView output = null;
 
     public ImageOutputProcessor() {
@@ -31,6 +32,13 @@ public class ImageOutputProcessor extends Processor {
                     }
                 },
                 new ArrayList<>());
+    }
+
+    private DockNode createWindow() {
+        output = new ImageView();
+        demoStage = new DockNode(output, "Output");
+        demoStage.setFloating(true);
+        return demoStage;
     }
 
     @Override
@@ -44,21 +52,7 @@ public class ImageOutputProcessor extends Processor {
         Imgcodecs.imencode(".png", image, buffer);
 
         if(demoStage == null) {
-            demoStage = new Stage();
-            demoStage.setTitle("Output");
-            demoStage.setAlwaysOnTop(true);
-            demoStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-                @Override
-                public void handle(WindowEvent event) {
-                    demoStage = null;
-                }
-            });
-
-            output = new ImageView();
-            Pane root = new Pane();
-            root.getChildren().add(output);
-            demoStage.setScene(new Scene(root, image.width(), image.height()));
-            demoStage.show();
+            demoStage = createWindow();
         }
 
         output.setImage(new Image(new ByteArrayInputStream(buffer.toArray())));

@@ -63,5 +63,5 @@ public abstract class Processor {
         return name;
     }
 
-    public abstract DataBundle execute(DataBundle bundle);
+    public abstract DataBundle execute(DataBundle bundle) throws CommonException;
 }

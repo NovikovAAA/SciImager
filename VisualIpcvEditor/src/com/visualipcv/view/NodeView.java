@@ -91,6 +91,7 @@ public class NodeView extends AnchorPane implements IGraphViewElement {
         title.textProperty().bind(viewModel.getTitleProperty());
         error.textProperty().bind(viewModel.getErrorProperty());
         errorPane.visibleProperty().bind(viewModel.getErrorProperty().isNotEmpty());
+        errorPane.managedProperty().bind(viewModel.getErrorProperty().isNotEmpty());
         selected.bind(viewModel.getIsSelected());
 
         for(NodeSlot slot : getViewModel().getNode().getInputSlots()) {

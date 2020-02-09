@@ -42,14 +42,16 @@ public class GraphViewModel extends ViewModel {
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1.0), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                for(NodeViewModel viewModel : nodes) {
+                    viewModel.getErrorProperty().set("");
+                }
+
                 try {
                     graph.execute();
                 } catch (GraphExecutionException e) {
                     for(NodeViewModel viewModel : nodes) {
                         if(viewModel.getNode() == e.getNode()) {
                             viewModel.getErrorProperty().set(e.getMessage());
-                        } else {
-                            viewModel.getErrorProperty().set("");
                         }
                     }
                 }

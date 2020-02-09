@@ -28,6 +28,7 @@ import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.transform.NonInvertibleTransformException;
 
 import java.io.IOException;
@@ -37,6 +38,9 @@ import java.util.List;
 public class GraphView extends AnchorPane implements IGraphViewElement {
     private GraphViewModel viewModel = new GraphViewModel();
 
+    private MouseButton selectionButton = MouseButton.PRIMARY;
+    private MouseButton dragButton = MouseButton.SECONDARY;
+
     @FXML
     private Pane container;
     @FXML
@@ -44,10 +48,14 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
 
     private double previousMouseX;
     private double previousMouseY;
+    private double initialMouseX;
+    private double initialMouseY;
 
     private ObservableList<NodeView> nodes = FXCollections.observableArrayList();
     private ObservableList<ConnectionView> connections = FXCollections.observableArrayList();
+
     private ConnectionPreview connectionPreview;
+    private Rectangle selectionPreview;
 
     private DoubleProperty cellSize = new DoublePropertyBase(40.0) {
         @Override
@@ -345,7 +353,23 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
     public void onMousePressed(MouseEvent event) throws NonInvertibleTransformException {
         previousMouseX = event.getScreenX();
         previousMouseY = event.getScreenY();
-        viewModel.clearSelection();
+
+        Point2D initial = container.parentToLocal(event.getX(), event.getY());
+        initialMouseX = initial.getX();
+        initialMouseY = initial.getY();
+
+        if(event.getButton() == selectionButton) {
+            selectionPreview = new Rectangle();
+            selectionPreview.setX(initialMouseX);
+            selectionPreview.setY(initialMouseY);
+            selectionPreview.setFill(new Color(1.0, 1.0, 1.0, 0.5));
+            selectionPreview.setStroke(new Color(0, 0, 0, 1));
+            container.getChildren().add(selectionPreview);
+        }
+
+        if(event.getButton() == selectionButton)
+            viewModel.clearSelection();
+
         event.consume();
     }
 
@@ -356,12 +380,47 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
         previousMouseX = event.getScreenX();
         previousMouseY = event.getScreenY();
 
-        if(event.getTarget() == this || event.getTarget() == container) {
+        if(event.getButton() == dragButton && (event.getTarget() == this || event.getTarget() == container)) {
             xOffset.setValue(xOffset.getValue() + deltaX);
             yOffset.setValue(yOffset.getValue() + deltaY);
         }
 
+        if(event.getButton() == selectionButton) {
+            Point2D newPos = container.parentToLocal(event.getX(), event.getY());
+
+            double minX = Math.min(initialMouseX, newPos.getX());
+            double maxX = Math.max(initialMouseX, newPos.getX());
+            double minY = Math.min(initialMouseY, newPos.getY());
+            double maxY = Math.max(initialMouseY, newPos.getY());
+
+            selectionPreview.setWidth(maxX - minX);
+            selectionPreview.setHeight(maxY - minY);
+            selectionPreview.setX(minX);
+            selectionPreview.setY(minY);
+        }
+
         event.consume();
+    }
+
+    @FXML
+    public void onMouseReleased(MouseEvent event) {
+        if(event.getButton() == selectionButton && selectionPreview != null) {
+            container.getChildren().remove(selectionPreview);
+            selectionPreview = null;
+
+            Point2D newPos = container.parentToLocal(event.getX(), event.getY());
+            double minX = Math.min(initialMouseX, newPos.getX());
+            double maxX = Math.max(initialMouseX, newPos.getX());
+            double minY = Math.min(initialMouseY, newPos.getY());
+            double maxY = Math.max(initialMouseY, newPos.getY());
+
+            for(NodeView view : nodes) {
+                if(view.getLayoutX() >= minX && view.getLayoutX() + view.getWidth() < maxX &&
+                    view.getLayoutY() >= minY && view.getLayoutY() + view.getHeight() < maxY) {
+                    viewModel.selectNode(view.getViewModel());
+                }
+            }
+        }
     }
 
     private Processor getProcessorFromDragEvent(DragEvent event) {

@@ -10,7 +10,7 @@ import java.util.Map;
 public class SciConverters {
     private static final Map<DataType, SciConverter> converters = new HashMap<>();
 
-    static {
+    public static void load() {
         converters.put(DataType.NUMBER, new SciConverter() {
             @Override
             public ScilabType fromJavaToScilab(Object value) {

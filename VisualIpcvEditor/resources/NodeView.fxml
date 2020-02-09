@@ -34,7 +34,7 @@
       </GridPane>
        <Pane fx:id="errorPane" prefHeight="34.0" prefWidth="200.0" style="-fx-background-color: #aa0000; -fx-background-radius: 0 0 10 10; -fx-border-color: transparent;">
            <children>
-               <Text fx:id="error" layoutX="20.0" layoutY="20.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+               <Text fx:id="error" style="-fx-font-weight: bold;" layoutX="20.0" layoutY="20.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
            </children>
        </Pane>
    </VBox>
