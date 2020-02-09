@@ -1,118 +1,149 @@
 package com.visualipcv.view;
 
-import com.visualipcv.view.dragdrop.SlotDragHandler;
-import com.visualipcv.view.events.DragDropEventListener;
+import com.visualipcv.controller.IGraphViewElement;
+import com.visualipcv.core.NodeSlot;
+import com.visualipcv.viewmodel.NodeSlotViewModel;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.shape.Circle;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
-public class NodeSlotView extends JComponent {
-    private static final int STROKE_THICKNESS = 3;
-
-    private ArrayList<SlotConnection> connections = new ArrayList<>();
+public class NodeSlotView extends AnchorPane implements IGraphViewElement {
+    private NodeSlotViewModel viewModel;
     private NodeView node;
-    private NodeSlotType slotType;
 
-    private DragDropEventListener dragDropEventListener;
+    private ObservableList<ConnectionView> connections = FXCollections.observableArrayList();
+    private BooleanProperty isOutputProperty = new SimpleBooleanProperty();
 
-    public NodeSlotView(NodeView node, NodeSlotType type) {
-        this.slotType = type;
+    @FXML
+    private Circle backgroundCircle;
+    @FXML
+    private Circle fillCircle;
+
+    public NodeSlotView(NodeView node, NodeSlot slot) {
+        viewModel = new NodeSlotViewModel(node.getViewModel(), slot);
         this.node = node;
-        setBackground(new Color(50, 0, 0, 255));
-        setForeground(new Color(200, 0, 0, 255));
-        setTransferHandler(new SlotDragHandler());
-        addMouseListener(new DragMouseAdapter());
+
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("NodeSlotView.fxml"));
+        loader.setRoot(this);
+        loader.setController(this);
+
+        try {
+            loader.load();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        fillCircle.visibleProperty().bind(viewModel.getIsConnectedProperty());
+        fillCircle.fillProperty().bind(viewModel.getStrokeProperty());
+        backgroundCircle.fillProperty().bind(viewModel.getBackgroundProperty());
+        backgroundCircle.strokeProperty().bind(viewModel.getStrokeProperty());
+        isOutputProperty.bind(viewModel.getIsOutputProperty());
     }
 
-    @Override
-    protected void paintComponent(Graphics graphics) {
-        Graphics2D graphics2D = (Graphics2D)graphics;
-        graphics2D.setColor(getBackground());
-        graphics2D.fillOval(0, 0, getWidth(), getHeight());
-        graphics2D.setColor(getForeground());
-        graphics2D.setStroke(new BasicStroke(STROKE_THICKNESS));
-        graphics2D.drawOval(
-                STROKE_THICKNESS / 2,
-                STROKE_THICKNESS / 2,
-                getWidth() - STROKE_THICKNESS + 1,
-                getHeight() - STROKE_THICKNESS + 1);
-    }
-
-    public NodeSlotType getType() {
-        return slotType;
+    public NodeSlotViewModel getViewModel() {
+        return viewModel;
     }
 
     public NodeView getNode() {
         return node;
     }
 
-    public int getConnectionCount() {
-        return connections.size();
-    }
+    public List<ConnectionView> getConnections() {
+        List<ConnectionView> connections = new ArrayList<>();
 
-    public void connect(SlotConnection connection) {
-        if(getType() == NodeSlotType.INPUT && connections.size() > 1) {
-            throw new IllegalArgumentException("Input slot can have only one connection");
-        }
-        connections.add(connection);
-    }
-
-    public SlotConnection getConnection(int index) {
-        return connections.get(index);
-    }
-
-    public void disconnect(SlotConnection connection) {
-        connections.remove(connection);
-    }
-
-    public int getGraphRelativeX() {
-        Component current = this;
-        int x = 0;
-
-        while(current != getNode().getGraph().getInternalPanel()) {
-            x += current.getX();
-            current = current.getParent();
+        for(ConnectionView view : node.getGraphView().getConnections()) {
+            if(view.getSourceView() == this || view.getTargetView() == this)
+                connections.add(view);
         }
 
-        return x;
+        return connections;
     }
 
-    public int getGraphRelativeY() {
-        Component current = this;
-        int y = 0;
+    public boolean isOutput() {
+        return isOutputProperty.get();
+    }
 
-        while(current != getNode().getGraph().getInternalPanel()) {
-            y += current.getY();
-            current = current.getParent();
+    public boolean isInput() {
+        return !isOutputProperty.get();
+    }
+
+    @FXML
+    public void onMousePressed(MouseEvent event) {
+        event.consume();
+    }
+
+    @FXML
+    public void onMouseDragged(MouseEvent event) {
+        event.consume();
+    }
+
+    private void startConnectionDrag(MouseEvent event, NodeSlotView source) {
+        Dragboard dragboard = source.startDragAndDrop(TransferMode.LINK);
+        ClipboardContent content = new ClipboardContent();
+        content.putString("Link");
+        dragboard.setContent(content);
+        event.consume();
+
+        getGraphView().startConnectionDrag(source);
+    }
+
+    @FXML
+    public void onDragDetected(MouseEvent event) {
+        if(isOutput()) {
+            startConnectionDrag(event, this);
+        } else if(isInput()) {
+            List<ConnectionView> connections = getConnections();
+
+            if(connections.isEmpty()) {
+                startConnectionDrag(event, this);
+            } else {
+                NodeSlotView source = null;
+                viewModel.disconnect();
+
+                if(connections.get(0).getSourceView() == this)
+                    source = connections.get(0).getTargetView();
+                else
+                    source = connections.get(0).getSourceView();
+
+                startConnectionDrag(event, source);
+            }
         }
-
-        return y;
     }
 
-    public void onDrop(Object payload, Point location) {
-        if(dragDropEventListener != null) {
-            dragDropEventListener.onDrop(payload, location);
+    @FXML
+    public void onDragOver(DragEvent event) {
+        if(event.getGestureSource() instanceof NodeSlotView) {
+            event.acceptTransferModes(TransferMode.LINK);
+            event.consume();
         }
     }
 
-    public void onBeginDrag(Object payload) {
-        if(dragDropEventListener != null) {
-            dragDropEventListener.onBeginDrag(payload);
-        }
+    @FXML
+    public void onDragDropped(DragEvent event) {
+        if(!(event.getGestureSource() instanceof NodeSlotView))
+            return;
+
+        NodeSlotView slotView = (NodeSlotView)event.getGestureSource();
+        viewModel.connect(slotView.getViewModel());
+        event.consume();
     }
 
-    public void setDragDropEventListener(DragDropEventListener listener) {
-        this.dragDropEventListener = listener;
-    }
-
-    public class DragMouseAdapter extends MouseAdapter {
-        @Override
-        public void mousePressed(MouseEvent e) {
-            JComponent source = (JComponent)e.getSource();
-            source.getTransferHandler().exportAsDrag(source, e, TransferHandler.LINK);
-        }
+    @Override
+    public GraphView getGraphView() {
+        return getNode().getGraphView();
     }
 }

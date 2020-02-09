@@ -1,223 +1,205 @@
 package com.visualipcv.view;
 
-import com.visualipcv.Processor;
-import com.visualipcv.ProcessorProperty;
-import com.visualipcv.view.events.NodeEventListener;
+import com.visualipcv.controller.IGraphViewElement;
+import com.visualipcv.core.Node;
+import com.visualipcv.core.NodeSlot;
+import com.visualipcv.viewmodel.NodeViewModel;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.BooleanPropertyBase;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Border;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
-public class NodeView extends JPanel {
-    private static final int SLOT_SIZE = 25;
-    private static final int GAP_SIZE = 10;
+public class NodeView extends AnchorPane implements IGraphViewElement {
+    private NodeViewModel viewModel;
+    private GraphView graphView;
 
-    private GraphView graph;
+    private double previousMouseX;
+    private double previousMouseY;
 
-    private ArrayList<NodeSlotView> inputSlots = new ArrayList<>();
-    private ArrayList<NodeSlotView> outputSlots = new ArrayList<>();
+    @FXML
+    private Text title;
+    @FXML
+    private VBox inputContainer;
+    @FXML
+    private VBox outputContainer;
+    @FXML
+    private Text error;
+    @FXML
+    private Pane errorPane;
 
-    private NodeEventListener nodeEventListener;
-
-    private Component createHeader(String text) {
-        HeaderView title = new HeaderView();
-        title.setText(text);
-        title.setBackground(Color.GRAY);
-        title.setForeground(Color.WHITE);
-        title.setOpaque(true);
-        title.setSize(new Dimension(0, 25));
-        int fontSize = Math.min(25, (int)(title.getFont().getSize() * 1.5f));
-        Font font = new Font(title.getFont().getFontName(), Font.PLAIN, fontSize);
-        title.setFont(font);
-        return title;
-    }
-
-    private Container createContentPanel(int inSlotCount, int outSlotCount) {
-        JPanel properties = new JPanel();
-        properties.setOpaque(false);
-        int count = Math.max(1, Math.max(inSlotCount, outSlotCount));
-        properties.setSize(new Dimension(300, count * (SLOT_SIZE + GAP_SIZE) + GAP_SIZE));
-        return properties;
-    }
-
-    private Container createOutputProperties(List<ProcessorProperty> props) {
-        JPanel panel = new JPanel(null);
-
-        for(int i = 0; i < props.size(); i++) {
-            NodeSlotView slot = new NodeSlotView(this, NodeSlotType.OUTPUT);
-            slot.setSize(SLOT_SIZE, SLOT_SIZE);
-            slot.setLocation(GAP_SIZE, i * SLOT_SIZE + (i + 1) * GAP_SIZE);
-            panel.add(slot);
-            outputSlots.add(slot);
+    private BooleanProperty selected = new BooleanPropertyBase() {
+        @Override
+        public Object getBean() {
+            return this;
         }
 
-        panel.setSize(new Dimension(SLOT_SIZE + GAP_SIZE * 2, props.size() * (SLOT_SIZE + GAP_SIZE)));
-        panel.setPreferredSize(panel.getSize());
-        panel.setOpaque(false);
-        return panel;
-    }
-
-    private Container createInputProperties(List<ProcessorProperty> props) {
-        JPanel panel = new JPanel(null);
-
-        for(int i = 0; i < props.size(); i++) {
-            NodeSlotView slot = new NodeSlotView(this, NodeSlotType.INPUT);
-            slot.setSize(SLOT_SIZE, SLOT_SIZE);
-            slot.setLocation(GAP_SIZE, i * SLOT_SIZE + (i + 1) * GAP_SIZE);
-            panel.add(slot);
-            inputSlots.add(slot);
-
-            JLabel title = new JLabel(props.get(i).getName());
-            title.setLocation(GAP_SIZE * 2 + SLOT_SIZE, i * SLOT_SIZE + (i + 1) * GAP_SIZE);
-            title.setSize(150, 25);
-            title.setForeground(Color.WHITE);
-            panel.add(title);
+        @Override
+        public String getName() {
+            return "selected";
         }
 
-        panel.setOpaque(false);
-        panel.setSize(new Dimension(SLOT_SIZE + GAP_SIZE * 2, props.size() * (SLOT_SIZE + GAP_SIZE)));
-        return panel;
-    }
+        @Override
+        public void invalidated() {
+            if (selected.get()) {
+                setBorder(new Border(new BorderStroke(Color.ORANGE, BorderStrokeStyle.SOLID, new CornerRadii(10.0), new BorderWidths(3.0))));
+            } else {
+                setBorder(new Border(new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID, new CornerRadii(10.0), new BorderWidths(1.0))));
+            }
+        }
+    };
 
-    public NodeView(Processor processor, GraphView graph) {
-        this.graph = graph;
+    private ObservableList<AdvancedNodeSlotView> inputSlots = FXCollections.observableArrayList();
+    private ObservableList<NodeSlotView> outputSlots = FXCollections.observableArrayList();
 
-        GridBagLayout rootLayout = new GridBagLayout();
-        GridBagConstraints constraints = new GridBagConstraints();
-        this.setLayout(rootLayout);
-        this.setBackground(new Color(80, 80, 80, 200));
-        rootLayout.getLayoutDimensions();
+    public NodeView(GraphView graphView, Node node) {
+        viewModel = new NodeViewModel(graphView.getViewModel(), node);
+        this.graphView = graphView;
 
-        Component header = createHeader(processor.getName());
-        Container properties = createContentPanel(
-                processor.getInputPropertyCount(),
-                processor.getOutputPropertyCount());
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("NodeView.fxml"));
+        loader.setRoot(this);
+        loader.setController(this);
 
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        constraints.weightx = 0.5;
-        constraints.weighty = 0.0;
-        constraints.fill = GridBagConstraints.HORIZONTAL;
-        this.add(header, constraints);
+        try {
+            loader.load();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
 
-        constraints.gridx = 0;
-        constraints.gridy = 1;
-        constraints.weightx = 0.5;
-        constraints.weighty = 1.0;
-        constraints.fill = GridBagConstraints.BOTH;
-        this.add(properties, constraints);
+        layoutXProperty().bindBidirectional(viewModel.getLayoutXProperty());
+        layoutYProperty().bindBidirectional(viewModel.getLayoutYProperty());
+        title.textProperty().bind(viewModel.getTitleProperty());
+        error.textProperty().bind(viewModel.getErrorProperty());
+        errorPane.visibleProperty().bind(viewModel.getErrorProperty().isNotEmpty());
+        selected.bind(viewModel.getIsSelected());
 
-        this.setSize(new Dimension(properties.getWidth(), properties.getHeight() + header.getHeight()));
+        for(NodeSlot slot : getViewModel().getNode().getInputSlots()) {
+            AdvancedNodeSlotView slotView = new AdvancedNodeSlotView(this, slot, false);
+            inputSlots.add(slotView);
+            inputContainer.getChildren().add(slotView);
 
-        Container outputs = createOutputProperties(processor.getOutputProperties());
-        Container inputs = createInputProperties(processor.getInputProperties());
+            if(slotView.getSlotView() != null)
+                viewModel.getInputNodeSlots().add(slotView.getSlotView().getViewModel());
+        }
 
-        SpringLayout springLayout = new SpringLayout();
-        properties.setLayout(springLayout);
-        properties.add(inputs, constraints);
-        properties.add(outputs, constraints);
+        for(NodeSlot slot : getViewModel().getNode().getOutputSlots()) {
+            if(!slot.getProperty().showConnector())
+                continue;
+            NodeSlotView slotView = new NodeSlotView(this, slot);
+            outputSlots.add(slotView);
+            viewModel.getOutputNodeSlots().add(slotView.getViewModel());
+            outputContainer.getChildren().add(slotView);
+        }
 
-        springLayout.putConstraint(SpringLayout.NORTH, inputs, 0,
-                                    SpringLayout.NORTH, properties);
-        springLayout.putConstraint(SpringLayout.SOUTH, inputs, 0,
-                                    SpringLayout.SOUTH, properties);
-        springLayout.putConstraint(SpringLayout.WEST, inputs, 0,
-                                    SpringLayout.WEST, properties);
-        springLayout.putConstraint(SpringLayout.NORTH, outputs, 0,
-                                    SpringLayout.NORTH, properties);
-        springLayout.putConstraint(SpringLayout.SOUTH, outputs, 0,
-                                    SpringLayout.SOUTH, properties);
-        springLayout.putConstraint(SpringLayout.EAST, outputs, 0,
-                                    SpringLayout.EAST, properties);
-        springLayout.putConstraint(SpringLayout.EAST, inputs, 0,
-                                    SpringLayout.WEST, outputs);
-
-        DragListener drag = new DragListener() {
+        inputSlots.addListener(new ListChangeListener<AdvancedNodeSlotView>() {
             @Override
-            public void dragged(int deltaX, int deltaY) {
-                if(nodeEventListener != null) {
-                    nodeEventListener.onMove(NodeView.this, deltaX, deltaY);
+            public void onChanged(Change<? extends AdvancedNodeSlotView> c) {
+                while(c.next()) {
+                    if(c.wasAdded()) {
+                        for(AdvancedNodeSlotView slotView : c.getAddedSubList()) {
+                            viewModel.getInputNodeSlots().add(slotView.getSlotView().getViewModel());
+                            inputContainer.getChildren().add(slotView);
+                        }
+                    }
+                    if(c.wasRemoved()) {
+                        for(AdvancedNodeSlotView slotView : c.getRemoved()) {
+                            viewModel.getInputNodeSlots().remove(slotView.getSlotView().getViewModel());
+                            inputContainer.getChildren().remove(slotView);
+                        }
+                    }
                 }
             }
-        };
+        });
 
-        this.addMouseListener(drag);
-        this.addMouseMotionListener(drag);
-        this.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-    }
-
-    @Override
-    protected void paintComponent(Graphics graphics) {
-        Graphics2D graphics2D = (Graphics2D)graphics;
-        graphics2D.setColor(getBackground());
-        graphics2D.fillRoundRect(0, 0, getWidth(), getHeight(), 10, 10);
-    }
-
-    public GraphView getGraph() {
-        return graph;
-    }
-
-    private void repaintConnections() {
-        for(NodeSlotView slot : inputSlots) {
-            for(int i = 0; i < slot.getConnectionCount(); i++) {
-                if(slot.getConnection(i) != null) {
-                    slot.getConnection(i).updateBounds();
-                    slot.getConnection(i).repaint();
+        outputSlots.addListener(new ListChangeListener<NodeSlotView>() {
+            @Override
+            public void onChanged(Change<? extends NodeSlotView> c) {
+                while(c.next()) {
+                    if(c.wasAdded()) {
+                        for(NodeSlotView slotView : c.getAddedSubList()) {
+                            viewModel.getOutputNodeSlots().add(slotView.getViewModel());
+                            outputContainer.getChildren().add(slotView);
+                        }
+                    }
+                    if(c.wasRemoved()) {
+                        for(NodeSlotView slotView : c.getRemoved()) {
+                            viewModel.getOutputNodeSlots().remove(slotView.getViewModel());
+                            outputContainer.getChildren().remove(slotView);
+                        }
+                    }
                 }
             }
+        });
+    }
+
+    public List<AdvancedNodeSlotView> getInputSlots() {
+        return inputSlots;
+    }
+
+    public List<NodeSlotView> getOutputSlots() {
+        return outputSlots;
+    }
+
+    public NodeViewModel getViewModel() {
+        return viewModel;
+    }
+
+    public BooleanProperty getSelectedProperty() {
+        return selected;
+    }
+
+    public boolean isSelected() {
+        return selected.get();
+    }
+
+    @FXML
+    public void onMousePressed(MouseEvent event) {
+        previousMouseX = event.getScreenX();
+        previousMouseY = event.getScreenY();
+        viewModel.selectNode(event.isControlDown());
+        requestFocus();
+        event.consume();
+    }
+
+    @FXML
+    public void onMouseDragged(MouseEvent event) {
+        double deltaX = event.getScreenX() - previousMouseX;
+        double deltaY = event.getScreenY() - previousMouseY;
+        previousMouseX = event.getScreenX();
+        previousMouseY = event.getScreenY();
+        viewModel.moveSelected(deltaX, deltaY);
+        event.consume();
+    }
+
+    @FXML
+    public void onKeyPressed(KeyEvent event) {
+        if(event.getCode() == KeyCode.DELETE) {
+            viewModel.removeSelected();
         }
-        for(NodeSlotView slot : outputSlots) {
-            for(int i = 0; i < slot.getConnectionCount(); i++) {
-                if(slot.getConnection(i) != null) {
-                    slot.getConnection(i).updateBounds();
-                    slot.getConnection(i).repaint();
-                }
-            }
-        }
     }
 
     @Override
-    public void setLocation(Point p) {
-        super.setLocation(p);
-        repaintConnections();
-    }
-
-    @Override
-    public void setLocation(int x, int y) {
-        super.setLocation(x, y);
-        repaintConnections();
-    }
-
-    @Override
-    public void setSize(Dimension d) {
-        super.setSize(d);
-        repaintConnections();
-    }
-
-    @Override
-    public void setSize(int x, int y) {
-        super.setSize(x, y);
-        repaintConnections();
-    }
-
-    public void setNodeEventListener(NodeEventListener listener) {
-        nodeEventListener = listener;
-    }
-
-    public int getInputSlotCount() {
-        return inputSlots.size();
-    }
-
-    public int getOutputSlotCount() {
-        return outputSlots.size();
-    }
-
-    public NodeSlotView getInputSlot(int index) {
-        return inputSlots.get(index);
-    }
-
-    public NodeSlotView getOutputSlot(int index) {
-        return outputSlots.get(index);
+    public GraphView getGraphView() {
+        return graphView;
     }
 }

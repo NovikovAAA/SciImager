@@ -1,56 +1,81 @@
 package com.visualipcv;
 
-import com.visualipcv.controller.GraphController;
+import com.visualipcv.core.ProcessorLibrary;
+import com.visualipcv.utils.LinkUtils;
+import com.visualipcv.view.ConsoleView;
 import com.visualipcv.view.FunctionListView;
 import com.visualipcv.view.GraphView;
-import com.visualipcv.view.NodeView;
-
-import javax.swing.*;
-import java.awt.*;
+import com.visualipcv.view.NodeSlotView;
+import javafx.application.Application;
+import javafx.geometry.Orientation;
+import javafx.scene.Scene;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Random;
+import java.util.concurrent.CancellationException;
 import java.util.logging.Logger;
 
-public class Main {
+public class Main extends Application {
 
-    static
-    {
-        System.loadLibrary("ext/opencv_world420d");
-        System.loadLibrary("ext/VisualIPCV");
-        System.loadLibrary("ext/VisualIpcvJava");
+    static {
+        LinkUtils.linkNativeLibraries();
     }
 
     private static ProcessorLibrary processorLibrary = new ProcessorLibrary();
     private static final Logger logger = Logger.getLogger(Main.class.toString());
 
-    private static GraphController controller;
-
     public static void main(String[] args) throws IOException {
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                JFrame frame = buildFrame();
-                JSplitPane split = new JSplitPane();
-                split.setLeftComponent(new FunctionListView(processorLibrary));
-
-                GraphView graphView = new GraphView();
-                Graph graph = new Graph();
-                controller = new GraphController(graph, graphView);
-
-                split.setRightComponent(graphView);
-                split.setContinuousLayout(true);
-                split.setDividerLocation(300);
-                frame.add(split);
-            }
-        });
+        launch(args);
     }
 
-    private static JFrame buildFrame() {
-        JFrame frame = new JFrame();
-        frame.setTitle("VisualIPCV");
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setSize(1280, 720);
-        frame.setVisible(true);
-        return frame;
+    private TreeView<String> generateRandomTree() {
+        TreeItem<String> root = new TreeItem<String>("Root");
+        TreeView<String> treeView = new TreeView<String>(root);
+        treeView.setShowRoot(false);
+
+        Random rand = new Random();
+        for (int i = 4 + rand.nextInt(8); i > 0; i--) {
+            TreeItem<String> treeItem = new TreeItem<String>("Item " + i);
+            root.getChildren().add(treeItem);
+            for (int j = 2 + rand.nextInt(4); j > 0; j--) {
+                TreeItem<String> childItem = new TreeItem<String>("Child " + j);
+                treeItem.getChildren().add(childItem);
+            }
+        }
+
+        return treeView;
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("VisualIPCV");
+
+        VBox root = new VBox();
+        root.getChildren().addAll();
+
+        SplitPane hPane = new SplitPane();
+        hPane.setOrientation(Orientation.HORIZONTAL);
+
+        SplitPane vPane = new SplitPane();
+        vPane.setOrientation(Orientation.VERTICAL);
+
+        hPane.getItems().add(new FunctionListView());
+        hPane.getItems().add(vPane);
+        vPane.getItems().add(new GraphView());
+        vPane.getItems().add(new ConsoleView());
+
+        root.getChildren().add(hPane);
+
+        primaryStage.setScene(new Scene(root, 1280, 720));
+        primaryStage.sizeToScene();
+        primaryStage.show();
     }
 }

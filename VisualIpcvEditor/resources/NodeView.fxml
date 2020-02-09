@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<fx:root onKeyPressed="#onKeyPressed" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" style="-fx-border-radius: 10; -fx-background-color: #dddddd; -fx-background-radius: 10; -fx-border-color: black;" type="AnchorPane" xmlns:fx="http://javafx.com/fxml/1">
+   <VBox style="-fx-background-color: #00000000;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <Pane prefHeight="34.0" prefWidth="200.0" style="-fx-background-color: #99aaff; -fx-background-radius: 10 10 0 0; -fx-border-color: transparent;">
+         <children>
+            <Text fx:id="title" layoutX="20.0" layoutY="20.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+         </children>
+      </Pane>
+      <GridPane alignment="CENTER" style="-fx-background-color: #00000000;">
+        <columnConstraints>
+          <ColumnConstraints hgrow="ALWAYS" maxWidth="500.20001220703125" minWidth="30.0" />
+          <ColumnConstraints hgrow="ALWAYS" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
+          <ColumnConstraints hgrow="SOMETIMES" maxWidth="30" minWidth="30.0" prefWidth="30" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <VBox fx:id="inputContainer" style="-fx-background-color: #00000000" alignment="CENTER_LEFT" />
+            <VBox fx:id="content" GridPane.columnIndex="1" />
+            <VBox fx:id="outputContainer" style="-fx-background-color: #00000000" alignment="CENTER_RIGHT" GridPane.columnIndex="2" />
+         </children>
+      </GridPane>
+       <Pane fx:id="errorPane" prefHeight="34.0" prefWidth="200.0" style="-fx-background-color: #aa0000; -fx-background-radius: 0 0 10 10; -fx-border-color: transparent;">
+           <children>
+               <Text fx:id="error" layoutX="20.0" layoutY="20.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+           </children>
+       </Pane>
+   </VBox>
+   <effect>
+      <DropShadow />
+   </effect>
+   <opaqueInsets>
+      <Insets />
+   </opaqueInsets>
+</fx:root>

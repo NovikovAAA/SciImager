@@ -1,142 +1,466 @@
 package com.visualipcv.view;
 
-import com.visualipcv.view.dragdrop.ProcessorDragHandler;
-import com.visualipcv.view.events.DragDropEventListener;
+import com.visualipcv.controller.IGraphViewElement;
+import com.visualipcv.core.Connection;
+import com.visualipcv.core.Node;
+import com.visualipcv.core.NodeSlot;
+import com.visualipcv.core.Processor;
+import com.visualipcv.core.ProcessorLibrary;
+import com.visualipcv.viewmodel.GraphViewModel;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.DoublePropertyBase;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BorderWidths;
+import javafx.scene.layout.CornerRadii;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.transform.NonInvertibleTransformException;
 
-import javax.swing.*;
-import java.awt.*;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
-public class GraphView extends JPanel {
-    private static final int GRAPH_WIDTH = 65537;
-    private static final int GRAPH_HEIGHT = 65537;
+public class GraphView extends AnchorPane implements IGraphViewElement {
+    private GraphViewModel viewModel = new GraphViewModel();
 
-    private Color backgroundColor = new Color(40, 40, 40, 255);
-    private Color lineColor = Color.darkGray;
-    private int cellSize = 50;
-    private int offsetX = -GRAPH_WIDTH / 2;
-    private int offsetY = -GRAPH_HEIGHT / 2;
+    @FXML
+    private Pane container;
+    @FXML
+    private Canvas canvas;
 
-    private JPanel internalPanel;
-    private ArrayList<NodeView> nodes = new ArrayList<NodeView>();
+    private double previousMouseX;
+    private double previousMouseY;
 
-    private DragDropEventListener dropListener;
+    private ObservableList<NodeView> nodes = FXCollections.observableArrayList();
+    private ObservableList<ConnectionView> connections = FXCollections.observableArrayList();
+    private ConnectionPreview connectionPreview;
+
+    private DoubleProperty cellSize = new DoublePropertyBase(40.0) {
+        @Override
+        public Object getBean() {
+            return this;
+        }
+
+        @Override
+        public String getName() {
+            return "cellSize";
+        }
+
+        @Override
+        public void invalidated() {
+            repaintGrid();
+        }
+    };
+
+    private DoubleProperty xOffset = new DoublePropertyBase() {
+        @Override
+        public Object getBean() {
+            return this;
+        }
+
+        @Override
+        public String getName() {
+            return "xOffset";
+        }
+
+        @Override
+        public void invalidated() {
+            requestLayout();
+        }
+    };
+
+    private DoubleProperty yOffset = new DoublePropertyBase() {
+        @Override
+        public Object getBean() {
+            return this;
+        }
+
+        @Override
+        public String getName() {
+            return "yOffset";
+        }
+
+        @Override
+        public void invalidated() {
+            requestLayout();
+        }
+    };
+
+    private DoubleProperty zoom = new DoublePropertyBase(1.0) {
+        @Override
+        public Object getBean() {
+            return this;
+        }
+
+        @Override
+        public String getName() {
+            return "zoom";
+        }
+
+        @Override
+        public void invalidated() {
+            requestLayout();
+        }
+    };
 
     public GraphView() {
-        setLayout(null);
-        internalPanel = new JPanel(null);
-        internalPanel.setLocation(offsetX, offsetY);
-        internalPanel.setSize(GRAPH_WIDTH, GRAPH_HEIGHT);
-        internalPanel.setOpaque(false);
-        super.add(internalPanel);
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GraphView.fxml"));
+        loader.setRoot(this);
+        loader.setController(this);
 
-        DragListener drag = new DragListener() {
+        try {
+            loader.load();
+        } catch(IOException e) {
+            e.printStackTrace();
+        }
+
+        container.layoutXProperty().bind(xOffset);
+        container.layoutYProperty().bind(yOffset);
+        zoom.bind(viewModel.getZoomProperty());
+        container.scaleXProperty().bind(zoom);
+        container.scaleYProperty().bind(zoom);
+
+        addEventFilter(DragEvent.DRAG_OVER, new EventHandler<DragEvent>() {
             @Override
-            public void dragged(int deltaX, int deltaY) {
-                offsetX += deltaX;
-                offsetY += deltaY;
-                repaint();
-                revalidate();
+            public void handle(DragEvent event) {
+                if(connectionPreview != null) {
+                    Point2D containerPoint = container.parentToLocal(new Point2D(event.getX(), event.getY()));
+                    connectionPreview.setTarget(containerPoint.getX(), containerPoint.getY());
+                }
             }
-        };
+        });
 
-        internalPanel.addMouseListener(drag);
-        internalPanel.addMouseMotionListener(drag);
-        setTransferHandler(new ProcessorDragHandler());
+        addEventFilter(DragEvent.DRAG_DONE, new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event) {
+                if(connectionPreview != null) {
+                    stopConnectionDrag();
+                }
+            }
+        });
+
+        nodes.addListener(new ListChangeListener<NodeView>() {
+            @Override
+            public void onChanged(Change<? extends NodeView> c) {
+                while(c.next()) {
+                    if(c.wasAdded()) {
+                        for (NodeView view : c.getAddedSubList()) {
+                            viewModel.getNodes().add(view.getViewModel());
+                            container.getChildren().add(view);
+                        }
+                    }
+                    if(c.wasRemoved()) {
+                        for(NodeView view : c.getRemoved()) {
+                            viewModel.getNodes().remove(view.getViewModel());
+                            container.getChildren().remove(view);
+                        }
+                    }
+                }
+            }
+        });
+
+        connections.addListener(new ListChangeListener<ConnectionView>() {
+            @Override
+            public void onChanged(Change<? extends ConnectionView> c) {
+                while(c.next()) {
+                    if(c.wasAdded()) {
+                        for(ConnectionView view : c.getAddedSubList()) {
+                            viewModel.getConnections().add(view.getViewModel());
+                            container.getChildren().add(view);
+                        }
+                    }
+                    if(c.wasRemoved()) {
+                        for(ConnectionView view : c.getRemoved()) {
+                            viewModel.getConnections().remove(view.getViewModel());
+                            container.getChildren().remove(view);
+                        }
+                    }
+                }
+            }
+        });
+
+        viewModel.addListener(new GraphViewModel.IGraphEventListener() {
+            @Override
+            public void onAdded(Node node) {
+                NodeView view = new NodeView(GraphView.this, node);
+                nodes.add(view);
+            }
+
+            @Override
+            public void onRemoved(Node node) {
+                for(NodeView view : nodes) {
+                    if(view.getViewModel().getNode() == node) {
+                        nodes.remove(view);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onConnected(Connection connection) {
+                connections.add(new ConnectionView(findNodeSlotView(connection.getSource()), findNodeSlotView(connection.getTarget())));
+            }
+
+            @Override
+            public void onDisconnected(Connection connection) {
+                for(ConnectionView view : connections) {
+                    if(view.getViewModel().getSource().getNodeSlot() == connection.getSource() &&
+                        view.getViewModel().getTarget().getNodeSlot() == connection.getTarget()) {
+                        connections.remove(view);
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void onRequestSort() {
+                updateOrder();
+            }
+        });
     }
 
-    public Point toGraphCoords(Point p) {
-        int x = p.x - offsetX;
-        int y = p.y - offsetY;
-        return new Point(x, y);
+    public NodeSlotView findNodeSlotView(NodeSlot slot) {
+        for(NodeView node : nodes) {
+            for(AdvancedNodeSlotView slotView : node.getInputSlots()) {
+                if(slotView.getSlotView() == null)
+                    continue;
+                if(slotView.getSlotView().getViewModel().getNodeSlot() == slot) {
+                    return slotView.getSlotView();
+                }
+            }
+            for(NodeSlotView slotView : node.getOutputSlots()) {
+                if(slotView.getViewModel().getNodeSlot() == slot) {
+                    return slotView;
+                }
+            }
+        }
+        return null;
     }
 
-    public Point toRealCoords(Point p) {
-        int x = p.x + offsetX;
-        int y = p.y + offsetY;
-        return new Point(x, y);
+    public List<NodeView> getNodes() {
+        return nodes;
+    }
+
+    public List<ConnectionView> getConnections() {
+        return connections;
     }
 
     @Override
-    public Component add(Component component) {
-        Component c = internalPanel.add(component);
+    public void layoutChildren() {
+        super.layoutChildren();
+        canvas.setWidth(getWidth());
+        canvas.setHeight(getHeight());
+        repaintGrid();
+    }
 
-        if(c instanceof NodeView) {
-            nodes.add((NodeView)c);
+    public void repaintGrid() {
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.setLineWidth(1.0f);
+        gc.setStroke(new Color(0.6, 0.6, 0.6, 1.0));
+        gc.setFill(new Color(0.8, 0.8, 0.8, 1.0));
+        gc.fillRect(0.0, 0.0, canvas.getWidth(), canvas.getHeight());
+
+        double cell = cellSize.get() * container.getScaleX();
+
+        double startX = xOffset.getValue() % cell;
+        double startY = yOffset.getValue() % cell;
+
+        while(startX < getWidth()) {
+            gc.strokeLine(startX, 0.0, startX, getHeight());
+            startX += cell;
         }
 
-        repaint();
-        revalidate();
-        return c;
+        while(startY < getHeight()) {
+            gc.strokeLine(0.0, startY, getWidth(), startY);
+            startY += cell;
+        }
+
+        gc.stroke();
+    }
+
+    public GraphViewModel getViewModel() {
+        return viewModel;
+    }
+
+    public List<NodeView> getSelectedNodes() {
+        List<NodeView> selectedNodes = new ArrayList<>();
+
+        for(javafx.scene.Node node : container.getChildren()) {
+            if(!(node instanceof NodeView))
+                continue;
+
+            NodeView nodeView = (NodeView)node;
+
+            if(nodeView.isSelected())
+                selectedNodes.add(nodeView);
+        }
+
+        return selectedNodes;
+    }
+
+    public void updateOrder() {
+        FXCollections.sort(container.getChildren(), (javafx.scene.Node n1, javafx.scene.Node n2) -> {
+            if(n1.getClass() == n2.getClass()) {
+                if(n1 instanceof NodeView) {
+                    if(((NodeView) n1).isSelected())
+                        return 1;
+                    else if(((NodeView) n2).isSelected())
+                        return -1;
+                    return 0;
+                }
+            } else if(n1 instanceof ConnectionView) {
+                return 1;
+            } else if(n2 instanceof ConnectionView) {
+                return -1;
+            }
+            return 0;
+        });
+    }
+
+    public void startConnectionDrag(NodeSlotView source) {
+        connectionPreview = new ConnectionPreview(source);
+        container.getChildren().add(connectionPreview);
+    }
+
+    public void stopConnectionDrag() {
+        container.getChildren().remove(connectionPreview);
+        connectionPreview = null;
+    }
+
+    @FXML
+    public void onMousePressed(MouseEvent event) throws NonInvertibleTransformException {
+        previousMouseX = event.getScreenX();
+        previousMouseY = event.getScreenY();
+        viewModel.clearSelection();
+        event.consume();
+    }
+
+    @FXML
+    public void onMouseDragged(MouseEvent event) {
+        double deltaX = event.getScreenX() - previousMouseX;
+        double deltaY = event.getScreenY() - previousMouseY;
+        previousMouseX = event.getScreenX();
+        previousMouseY = event.getScreenY();
+
+        if(event.getTarget() == this || event.getTarget() == container) {
+            xOffset.setValue(xOffset.getValue() + deltaX);
+            yOffset.setValue(yOffset.getValue() + deltaY);
+        }
+
+        event.consume();
+    }
+
+    private Processor getProcessorFromDragEvent(DragEvent event) {
+        Dragboard db = event.getDragboard();
+
+        if(!db.hasString())
+            return null;
+
+        String content = db.getString();
+        String[] params = content.split("/");
+
+        if(params.length != 2)
+            return null;
+
+        String module = params[0];
+        String name = params[1];
+
+        return ProcessorLibrary.findProcessor(module, name);
+    }
+
+    @FXML
+    public void onDragOver(DragEvent event) {
+        if(getProcessorFromDragEvent(event) != null)
+            event.acceptTransferModes(TransferMode.ANY);
+    }
+
+    @FXML
+    public void onDragDropped(DragEvent event) {
+        Processor processor = getProcessorFromDragEvent(event);
+
+        if(processor == null) {
+            event.setDropCompleted(false);
+        }
+
+        try {
+            double x = event.getX();
+            double y = event.getY();
+            Point2D p = container.getLocalToParentTransform().inverseTransform(x, y);
+            viewModel.addNode(processor, p.getX(), p.getY());
+            event.setDropCompleted(true);
+        } catch(Exception e) {
+            e.printStackTrace();
+            event.setDropCompleted(false);
+        }
+    }
+
+    @FXML
+    public void onScroll(ScrollEvent event) {
+        viewModel.zoom(event.getDeltaY() * 0.003);
+        repaintGrid();
+        event.consume();
     }
 
     @Override
-    public void remove(Component component) {
-        if(component instanceof NodeView) {
-            nodes.remove((NodeView)component);
-        }
-
-        internalPanel.remove(component);
-        repaint();
-        revalidate();
+    public GraphView getGraphView() {
+        return this;
     }
 
-    @Override
-    protected void paintComponent(Graphics graphics) {
-        super.paintComponent(graphics);
-        Graphics2D graphics2D = (Graphics2D)graphics;
-        graphics2D.setColor(backgroundColor);
-        graphics2D.fillRect(0, 0, getWidth(), getHeight());
-
-        Point min = toGraphCoords(new Point(0, 0));
-        Point max = toGraphCoords(new Point(getWidth(), getHeight()));
-
-        min.x /= cellSize;
-        min.y /= cellSize;
-        max.x /= cellSize;
-        max.y /= cellSize;
-
-        graphics2D.setColor(lineColor);
-
-        for(int i = min.x; i <= max.x; i++) {
-            Point p = toRealCoords(new Point(i * cellSize, 0));
-            graphics2D.drawLine(p.x, 0, p.x, getHeight());
-        }
-
-        for(int i = min.y; i <= max.y; i++) {
-            Point p = toRealCoords(new Point(0, i * cellSize));
-            graphics2D.drawLine(0, p.y, getWidth(), p.y);
-        }
+    public double getOffsetX() {
+        return xOffset.get();
     }
 
-    public int getGraphWidth() {
-        return GRAPH_WIDTH;
+    public void setOffsetX(double xOffset) {
+        this.xOffset.set(xOffset);
     }
 
-    public int getGraphHeight() {
-        return GRAPH_HEIGHT;
+    public double getOffsetY() {
+        return yOffset.get();
     }
 
-    public int getOffsetX() {
-        return offsetX;
+    public void setOffsetY(double yOffset) {
+        this.yOffset.set(yOffset);
     }
 
-    public int getOffsetY() {
-        return offsetY;
+    public double getCellSize() {
+        return cellSize.get();
     }
 
-    public JPanel getInternalPanel() {
-        return internalPanel;
+    public void setCellSize(double cellSize) {
+        this.cellSize.set(cellSize);
     }
 
-    public void setDropListener(DragDropEventListener listener) {
-        dropListener = listener;
+    public double getZoom() {
+        return zoom.get();
     }
 
-    public void onDrop(Object payload, Point location) {
-        if(dropListener == null) {
-            return;
-        }
-        dropListener.onDrop(payload, location);
+    public DoubleProperty getXOffsetProperty() {
+        return xOffset;
+    }
+
+    public DoubleProperty getYOffsetProperty() {
+        return yOffset;
+    }
+
+    public DoubleProperty getCellSizeProperty() {
+        return cellSize;
+    }
+
+    public DoubleProperty getZoomProperty() {
+        return zoom;
     }
 }

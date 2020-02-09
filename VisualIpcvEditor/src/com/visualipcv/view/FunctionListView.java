@@ -1,57 +1,65 @@
 package com.visualipcv.view;
 
-import com.visualipcv.Processor;
-import com.visualipcv.ProcessorLibrary;
-import com.visualipcv.view.dragdrop.ProcessorDragHandler;
+import com.visualipcv.core.Processor;
+import com.visualipcv.core.ProcessorLibrary;
+import com.visualipcv.viewmodel.FunctionListViewModel;
+import com.visualipcv.viewmodel.FunctionRecord;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeView;
+import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.scene.input.*;
+import javafx.scene.layout.AnchorPane;
 
-import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
-public class FunctionListView extends JScrollPane {
-    private ProcessorLibrary library;
-    private JTree list;
+public class FunctionListView extends AnchorPane {
+    @FXML
+    private TreeView<FunctionRecord> treeView;
 
-    public FunctionListView(ProcessorLibrary library) {
-        this.library = library;
-        HashMap<String, ArrayList<Processor>> processors = new HashMap<>();
+    private FunctionListViewModel viewModel = new FunctionListViewModel();
 
-        for(int i = 0; i < library.getProcessors().length; i++) {
-            Processor proc = library.getProcessors()[i];
-            if(!processors.containsKey(proc.getCategory())) {
-                processors.put(proc.getCategory(), new ArrayList<>());
-            }
-            ArrayList<Processor> procs = processors.get(proc.getCategory());
-            procs.add(proc);
+    public FunctionListView() {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("FunctionListView.fxml"));
+        loader.setRoot(this);
+        loader.setController(this);
+
+        try {
+            loader.load();
+        } catch(IOException e) {
+            e.printStackTrace();
         }
 
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode("Root");
-        Set<String> categories = processors.keySet();
-        Object[] categoriesArray = categories.toArray();
+        treeView.setShowRoot(false);
+        treeView.setCellFactory((view) -> {
+            TreeCell<FunctionRecord> cell = new TextFieldTreeCell<>();
 
-        Arrays.sort(categoriesArray, (Object v0, Object v1) -> {
-            String s0 = (String)v0;
-            String s1 = (String)v1;
-            return s0.compareTo(s1);
+            cell.setOnDragDetected(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    FunctionRecord record = cell.getItem();
+
+                    if(record.getProcessor() == null)
+                        return;
+
+                    Dragboard db = cell.startDragAndDrop(TransferMode.ANY);
+                    ClipboardContent content = new ClipboardContent();
+                    content.putString(record.getProcessor().getModule() + "/" + record.getProcessor().getName());
+                    db.setContent(content);
+                    db.setDragView(cell.snapshot(null, null));
+                    event.consume();
+                }
+            });
+
+            return cell;
         });
 
-        for(Object category : categoriesArray) {
-            DefaultMutableTreeNode categoryNode = new DefaultMutableTreeNode(category);
-            root.add(categoryNode);
-
-            for(Processor proc : processors.get((String)category)) {
-                DefaultMutableTreeNode procNode = new DefaultMutableTreeNode(proc);
-                categoryNode.add(procNode);
-            }
-        }
-
-        list = new JTree(root);
-        list.setRootVisible(false);
-        list.setDragEnabled(true);
-        list.setTransferHandler(new ProcessorDragHandler());
-        setViewportView(list);
+        treeView.setRoot(new RecursiveTreeItem<>(viewModel.getRoot(), FunctionRecord::getSubFunctions));
     }
 }
