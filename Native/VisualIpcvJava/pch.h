@@ -8,12 +8,15 @@
 #define PCH_H
 
 // add headers that you want to pre-compile here
-#include "framework.h"
 #include <string>
+
+#ifdef __APPLE__
+#else
 #include <Windows.h>
+#endif
 
 #include "jni.h"
-#include "VisualIpCV/VisualIPCV.h"
+#include "VisualIPCV/VisualIPCV.h"
 
 #include "opencv2/opencv.hpp"
 
