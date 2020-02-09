@@ -37,6 +37,8 @@ public class GraphViewModel extends ViewModel {
     private ObservableList<NodeViewModel> nodes = FXCollections.observableArrayList();
     private ObservableList<ConnectionViewModel> connections = FXCollections.observableArrayList();
     private DoubleProperty zoom = new SimpleDoubleProperty(1.0);
+    private DoubleProperty xOffset = new SimpleDoubleProperty(0.0);
+    private DoubleProperty yOffset = new SimpleDoubleProperty(0.0);
 
     public GraphViewModel() {
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1.0), new EventHandler<ActionEvent>() {
@@ -75,6 +77,14 @@ public class GraphViewModel extends ViewModel {
         return zoom;
     }
 
+    public DoubleProperty getXOffsetProperty() {
+        return xOffset;
+    }
+
+    public DoubleProperty getYOffsetProperty() {
+        return yOffset;
+    }
+
     public List<NodeViewModel> getSelectedNodes() {
         List<NodeViewModel> selected = new ArrayList<>();
         for(NodeViewModel node : nodes) {
@@ -85,10 +95,30 @@ public class GraphViewModel extends ViewModel {
         return selected;
     }
 
-    public void zoom(double delta) {
+    public void zoom(double mouseX, double mouseY, double delta) {
         double value = zoom.get() + delta;
         value = Math.min(20.0, Math.max(value, 0.1));
+        double deltaScale = value - zoom.get();
+        double deltaX = -mouseX * deltaScale;
+        double deltaY = -mouseY * deltaScale;
+
         zoom.set(value);
+        xOffset.set(xOffset.get() + deltaX);
+        yOffset.set(yOffset.get() + deltaY);
+    }
+
+    public void setZoom(double value) {
+        zoom.set(value);
+    }
+
+    public void setOffset(double x, double y) {
+        xOffset.set(x);
+        yOffset.set(y);
+    }
+
+    public void move(double deltaX, double deltaY) {
+        xOffset.setValue(xOffset.getValue() + deltaX);
+        yOffset.setValue(yOffset.getValue() + deltaY);
     }
 
     public void addNode(Processor processor, double x, double y) {

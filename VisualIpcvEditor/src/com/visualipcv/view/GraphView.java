@@ -6,6 +6,7 @@ import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorLibrary;
+import com.visualipcv.editor.Editor;
 import com.visualipcv.viewmodel.GraphViewModel;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.DoublePropertyBase;
@@ -136,9 +137,18 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
             e.printStackTrace();
         }
 
+        Editor.getPrimaryStage().addEventFilter(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                zoomToFit();
+            }
+        });
+
         container.layoutXProperty().bind(xOffset);
         container.layoutYProperty().bind(yOffset);
         zoom.bind(viewModel.getZoomProperty());
+        xOffset.bind(viewModel.getXOffsetProperty());
+        yOffset.bind(viewModel.getYOffsetProperty());
         container.scaleXProperty().bind(zoom);
         container.scaleYProperty().bind(zoom);
 
@@ -158,6 +168,14 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
                 if(connectionPreview != null) {
                     stopConnectionDrag();
                 }
+            }
+        });
+
+        addEventFilter(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if(event.getCode() == KeyCode.Z)
+                    zoomToFit();
             }
         });
 
@@ -381,8 +399,7 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
         previousMouseY = event.getScreenY();
 
         if(event.getButton() == dragButton && (event.getTarget() == this || event.getTarget() == container)) {
-            xOffset.setValue(xOffset.getValue() + deltaX);
-            yOffset.setValue(yOffset.getValue() + deltaY);
+            viewModel.move(deltaX, deltaY);
         }
 
         if(event.getButton() == selectionButton) {
@@ -469,9 +486,44 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
 
     @FXML
     public void onScroll(ScrollEvent event) {
-        viewModel.zoom(event.getDeltaY() * 0.003);
+        Point2D point = container.parentToLocal(event.getX(), event.getY());
+        viewModel.zoom(point.getX(), point.getY(), event.getDeltaY() * 0.003);
         repaintGrid();
         event.consume();
+    }
+
+    public void zoomToFit() {
+        if(nodes.isEmpty()) {
+            viewModel.setZoom(1.0);
+            viewModel.setOffset(0.0, 0.0);
+            return;
+        }
+
+        double minX = Double.MAX_VALUE;
+        double minY = Double.MAX_VALUE;
+        double maxX = -Double.MAX_VALUE;
+        double maxY = -Double.MAX_VALUE;
+
+        for (NodeView node : nodes) {
+            minX = Math.min(minX, node.getLayoutX());
+            minY = Math.min(minY, node.getLayoutY());
+            maxX = Math.max(maxX, node.getLayoutX() + node.getWidth());
+            maxY = Math.max(maxY, node.getLayoutY() + node.getHeight());
+        }
+
+        double hw = getWidth() * 0.5;
+        double hh = getHeight() * 0.5;
+
+        double cx = (maxX + minX) * 0.5;
+        double cy = (maxY + minY) * 0.5;
+        double rx = getWidth() * 0.5;
+        double ry = getHeight() * 0.5;
+
+        double zoomX = getWidth() / (maxX - minX);
+        double zoomY = getHeight() / (maxY - minY);
+        viewModel.setZoom(Math.min(zoomX, zoomY));
+
+        viewModel.setOffset(rx - cx * zoom.get(), ry - cy * zoom.get());
     }
 
     @Override
