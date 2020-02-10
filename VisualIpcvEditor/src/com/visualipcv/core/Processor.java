@@ -63,5 +63,9 @@ public abstract class Processor {
         return name;
     }
 
-    public abstract DataBundle execute(DataBundle bundle) throws CommonException;
+    public abstract DataBundle execute(DataBundle inputs, DataBundle nodeState) throws CommonException;
+    public void preExecute(DataBundle nodeState) throws CommonException {}
+    public void postExecute(DataBundle nodeState) throws CommonException {}
+    public void onCreated(DataBundle nodeState) throws CommonException {}
+    public void onDestroyed(DataBundle nodeState) throws CommonException {}
 }

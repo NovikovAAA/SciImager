@@ -140,7 +140,8 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
         Editor.getPrimaryStage().addEventFilter(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                zoomToFit();
+                if(event.getCode() == KeyCode.Z)
+                    zoomToFit();
             }
         });
 
@@ -168,14 +169,6 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
                 if(connectionPreview != null) {
                     stopConnectionDrag();
                 }
-            }
-        });
-
-        addEventFilter(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent event) {
-                if(event.getCode() == KeyCode.Z)
-                    zoomToFit();
             }
         });
 

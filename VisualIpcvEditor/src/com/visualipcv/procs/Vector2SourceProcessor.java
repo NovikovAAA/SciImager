@@ -24,7 +24,7 @@ public class Vector2SourceProcessor extends Processor {
     }
 
     @Override
-    public DataBundle execute(DataBundle inputs) {
+    public DataBundle execute(DataBundle inputs, DataBundle state) {
         Double[] value = inputs.read("Vector2");
         DataBundle res = new DataBundle();
         res.write("Result", value);

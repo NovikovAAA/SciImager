@@ -18,7 +18,7 @@ public class ConsoleOutputProcessor extends Processor {
     }
 
     @Override
-    public DataBundle execute(DataBundle inputs) {
+    public DataBundle execute(DataBundle inputs, DataBundle state) {
         DataBundle bundle = new DataBundle();
         Console.output(inputs.read("Text"));
         return new DataBundle();

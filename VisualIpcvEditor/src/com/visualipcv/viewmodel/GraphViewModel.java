@@ -41,7 +41,7 @@ public class GraphViewModel extends ViewModel {
     private DoubleProperty yOffset = new SimpleDoubleProperty(0.0);
 
     public GraphViewModel() {
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1.0), new EventHandler<ActionEvent>() {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.2), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 for(NodeViewModel viewModel : nodes) {

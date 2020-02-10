@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Node {
-    private Graph graph;
-    private Processor processor;
-    private List<InputNodeSlot> inputSlots;
-    private List<OutputNodeSlot> outputSlots;
+    private final Graph graph;
+    private final Processor processor;
+    private final List<InputNodeSlot> inputSlots;
+    private final List<OutputNodeSlot> outputSlots;
+    private final DataBundle state = new DataBundle();
     private double x;
     private double y;
 
@@ -17,12 +18,12 @@ public class Node {
         inputSlots = new ArrayList<>();
         outputSlots = new ArrayList<>();
 
-        for(int i = 0; i < processor.getInputProperties().size(); i++) {
-            inputSlots.add(new InputNodeSlot(this, processor.getInputProperties().get(i)));
+        for(int i = 0; i < this.processor.getInputProperties().size(); i++) {
+            inputSlots.add(new InputNodeSlot(this, this.processor.getInputProperties().get(i)));
         }
 
-        for(int i = 0; i < processor.getOutputProperties().size(); i++) {
-            outputSlots.add(new OutputNodeSlot(this, processor.getOutputProperties().get(i)));
+        for(int i = 0; i < this.processor.getOutputProperties().size(); i++) {
+            outputSlots.add(new OutputNodeSlot(this, this.processor.getOutputProperties().get(i)));
         }
 
         this.x = x;
@@ -82,13 +83,31 @@ public class Node {
         DataBundle res = null;
 
         try {
-            res = processor.execute(inputs);
+            processor.preExecute(state);
+            res = processor.execute(inputs, state);
+            processor.postExecute(state);
         } catch (Exception e) {
             throw new GraphExecutionException(this, e.getMessage());
         }
 
         for (OutputNodeSlot outputSlot : outputSlots) {
             graph.writeCache(this, outputSlot.getProperty().getName(), res.read(outputSlot.getProperty().getName()));
+        }
+    }
+
+    public void onCreated() throws GraphExecutionException {
+        try {
+            processor.onCreated(state);
+        } catch (CommonException e) {
+            throw new GraphExecutionException(null, e.getMessage());
+        }
+    }
+
+    public void onDestroyed() throws GraphExecutionException {
+        try {
+            processor.onDestroyed(state);
+        } catch (CommonException e) {
+            throw new GraphExecutionException(null, e.getMessage());
         }
     }
 }

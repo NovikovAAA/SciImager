@@ -28,7 +28,7 @@ public class BlurProcessor extends Processor {
     }
 
     @Override
-    public DataBundle execute(DataBundle inputs) {
+    public DataBundle execute(DataBundle inputs, DataBundle state) {
         Mat image = inputs.read("Image");
 
         if(image == null) {

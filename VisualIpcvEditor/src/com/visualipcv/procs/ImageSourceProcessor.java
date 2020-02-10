@@ -28,7 +28,7 @@ public class ImageSourceProcessor extends Processor {
     }
 
     @Override
-    public DataBundle execute(DataBundle inputs) throws CommonException {
+    public DataBundle execute(DataBundle inputs, DataBundle state) throws CommonException {
         String path = inputs.read("Path");
         DataBundle res = new DataBundle();
         Mat image = Imgcodecs.imread(path);

@@ -24,7 +24,7 @@ public class Vector2BreakProcessor extends Processor {
     }
 
     @Override
-    public DataBundle execute(DataBundle inputs) {
+    public DataBundle execute(DataBundle inputs, DataBundle state) {
         Double[] in = inputs.read("Vector2");
         DataBundle res = new DataBundle();
         res.write("X", in[0]);

@@ -21,7 +21,7 @@ public class StringSourceProcessor extends Processor {
     }
 
     @Override
-    public DataBundle execute(DataBundle inputs) {
+    public DataBundle execute(DataBundle inputs, DataBundle state) {
         DataBundle res = new DataBundle();
         res.write("String", inputs.read("String"));
         return res;

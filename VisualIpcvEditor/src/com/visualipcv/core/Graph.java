@@ -1,5 +1,7 @@
 package com.visualipcv.core;
 
+import com.visualipcv.Console;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,6 +20,12 @@ public class Graph {
 
     public void addNode(Node node) {
         nodes.add(node);
+
+        try {
+            node.onCreated();
+        } catch (GraphExecutionException e) {
+            Console.output(e.getMessage());
+        }
     }
 
     public void removeNode(Node node) {
@@ -36,6 +44,12 @@ public class Graph {
 
         for(InputNodeSlot slot : node.getInputSlots()) {
             slot.disconnect();
+        }
+
+        try {
+            node.onDestroyed();
+        } catch (GraphExecutionException e) {
+            Console.output(e.getMessage());
         }
     }
 

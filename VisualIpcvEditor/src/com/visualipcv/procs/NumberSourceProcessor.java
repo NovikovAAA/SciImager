@@ -21,7 +21,7 @@ public class NumberSourceProcessor extends Processor {
     }
 
     @Override
-    public DataBundle execute(DataBundle inputs) {
+    public DataBundle execute(DataBundle inputs, DataBundle state) {
         DataBundle res = new DataBundle();
         res.write("Number", inputs.read("Number"));
         return res;

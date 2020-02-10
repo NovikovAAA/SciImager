@@ -12,7 +12,7 @@ public class NativeProcessor extends Processor {
         super(uid.getName(), uid.getModule(), getCategory(uid), getInputPropertyList(uid), getOutputPropertyList(uid));
     }
 
-    public DataBundle execute(DataBundle inputs) {
+    public DataBundle execute(DataBundle inputs, DataBundle state) {
         return execute(new ProcessorUID(getName(), getModule()), inputs);
     }
 }

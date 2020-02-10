@@ -23,7 +23,7 @@ public class Vector4SourceProcessor extends Processor {
     }
 
     @Override
-    public DataBundle execute(DataBundle inputs) {
+    public DataBundle execute(DataBundle inputs, DataBundle state) {
         Double[] values = (Double[])inputs.read("Vector3");
         DataBundle res = new DataBundle();
         res.write("Result", values);
