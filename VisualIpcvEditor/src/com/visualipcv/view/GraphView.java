@@ -10,6 +10,8 @@ import com.visualipcv.editor.Editor;
 import com.visualipcv.viewmodel.GraphViewModel;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.DoublePropertyBase;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -36,15 +38,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GraphView extends AnchorPane implements IGraphViewElement {
+public class GraphView extends FreePane implements IGraphViewElement {
     private GraphViewModel viewModel = new GraphViewModel();
 
     private MouseButton selectionButton = MouseButton.PRIMARY;
     private MouseButton dragButton = MouseButton.SECONDARY;
 
-    @FXML
-    private Pane container;
-    @FXML
     private Canvas canvas;
 
     private double previousMouseX;
@@ -75,67 +74,22 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
         }
     };
 
-    private DoubleProperty xOffset = new DoublePropertyBase() {
-        @Override
-        public Object getBean() {
-            return this;
-        }
-
-        @Override
-        public String getName() {
-            return "xOffset";
-        }
-
-        @Override
-        public void invalidated() {
-            requestLayout();
-        }
-    };
-
-    private DoubleProperty yOffset = new DoublePropertyBase() {
-        @Override
-        public Object getBean() {
-            return this;
-        }
-
-        @Override
-        public String getName() {
-            return "yOffset";
-        }
-
-        @Override
-        public void invalidated() {
-            requestLayout();
-        }
-    };
-
-    private DoubleProperty zoom = new DoublePropertyBase(1.0) {
-        @Override
-        public Object getBean() {
-            return this;
-        }
-
-        @Override
-        public String getName() {
-            return "zoom";
-        }
-
-        @Override
-        public void invalidated() {
-            requestLayout();
-        }
-    };
-
     public GraphView() {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("GraphView.fxml"));
-        loader.setRoot(this);
-        loader.setController(this);
+        canvas = new Canvas();
+        canvas.setManaged(false);
+        canvas.setMouseTransparent(true);
+        getChildren().add(canvas);
+        getInternalPane().toFront();
 
-        try {
-            loader.load();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+        setDragButton(MouseButton.SECONDARY);
+
+        getZoomProperty().bindBidirectional(viewModel.getZoomProperty());
+        getXOffsetProperty().bindBidirectional(viewModel.getXOffsetProperty());
+        getYOffsetProperty().bindBidirectional(viewModel.getYOffsetProperty());
+
+        setOnMouseReleased(this::onMouseReleased);
+        setOnDragOver(this::onDragOver);
+        setOnDragDropped(this::onDragDropped);
 
         Editor.getPrimaryStage().addEventFilter(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
             @Override
@@ -145,19 +99,11 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
             }
         });
 
-        container.layoutXProperty().bind(xOffset);
-        container.layoutYProperty().bind(yOffset);
-        zoom.bind(viewModel.getZoomProperty());
-        xOffset.bind(viewModel.getXOffsetProperty());
-        yOffset.bind(viewModel.getYOffsetProperty());
-        container.scaleXProperty().bind(zoom);
-        container.scaleYProperty().bind(zoom);
-
         addEventFilter(DragEvent.DRAG_OVER, new EventHandler<DragEvent>() {
             @Override
             public void handle(DragEvent event) {
                 if(connectionPreview != null) {
-                    Point2D containerPoint = container.parentToLocal(new Point2D(event.getX(), event.getY()));
+                    Point2D containerPoint = getInternalPane().parentToLocal(new Point2D(event.getX(), event.getY()));
                     connectionPreview.setTarget(containerPoint.getX(), containerPoint.getY());
                 }
             }
@@ -179,13 +125,13 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
                     if(c.wasAdded()) {
                         for (NodeView view : c.getAddedSubList()) {
                             viewModel.getNodes().add(view.getViewModel());
-                            container.getChildren().add(view);
+                            getInternalPane().getChildren().add(view);
                         }
                     }
                     if(c.wasRemoved()) {
                         for(NodeView view : c.getRemoved()) {
                             viewModel.getNodes().remove(view.getViewModel());
-                            container.getChildren().remove(view);
+                            getInternalPane().getChildren().remove(view);
                         }
                     }
                 }
@@ -199,13 +145,13 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
                     if(c.wasAdded()) {
                         for(ConnectionView view : c.getAddedSubList()) {
                             viewModel.getConnections().add(view.getViewModel());
-                            container.getChildren().add(view);
+                            getInternalPane().getChildren().add(view);
                         }
                     }
                     if(c.wasRemoved()) {
                         for(ConnectionView view : c.getRemoved()) {
                             viewModel.getConnections().remove(view.getViewModel());
-                            container.getChildren().remove(view);
+                            getInternalPane().getChildren().remove(view);
                         }
                     }
                 }
@@ -293,10 +239,10 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
         gc.setFill(new Color(0.8, 0.8, 0.8, 1.0));
         gc.fillRect(0.0, 0.0, canvas.getWidth(), canvas.getHeight());
 
-        double cell = cellSize.get() * container.getScaleX();
+        double cell = cellSize.get() * getInternalPane().getScaleX();
 
-        double startX = xOffset.getValue() % cell;
-        double startY = yOffset.getValue() % cell;
+        double startX = getOffsetX() % cell;
+        double startY = getOffsetY() % cell;
 
         while(startX < getWidth()) {
             gc.strokeLine(startX, 0.0, startX, getHeight());
@@ -318,7 +264,7 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
     public List<NodeView> getSelectedNodes() {
         List<NodeView> selectedNodes = new ArrayList<>();
 
-        for(javafx.scene.Node node : container.getChildren()) {
+        for(javafx.scene.Node node : getInternalPane().getChildren()) {
             if(!(node instanceof NodeView))
                 continue;
 
@@ -332,7 +278,7 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
     }
 
     public void updateOrder() {
-        FXCollections.sort(container.getChildren(), (javafx.scene.Node n1, javafx.scene.Node n2) -> {
+        FXCollections.sort(getInternalPane().getChildren(), (javafx.scene.Node n1, javafx.scene.Node n2) -> {
             if(n1.getClass() == n2.getClass()) {
                 if(n1 instanceof NodeView) {
                     if(((NodeView) n1).isSelected())
@@ -352,20 +298,20 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
 
     public void startConnectionDrag(NodeSlotView source) {
         connectionPreview = new ConnectionPreview(source);
-        container.getChildren().add(connectionPreview);
+        getInternalPane().getChildren().add(connectionPreview);
     }
 
     public void stopConnectionDrag() {
-        container.getChildren().remove(connectionPreview);
+        getInternalPane().getChildren().remove(connectionPreview);
         connectionPreview = null;
     }
 
-    @FXML
-    public void onMousePressed(MouseEvent event) throws NonInvertibleTransformException {
+    @Override
+    public void onMousePressed(MouseEvent event) {
         previousMouseX = event.getScreenX();
         previousMouseY = event.getScreenY();
 
-        Point2D initial = container.parentToLocal(event.getX(), event.getY());
+        Point2D initial = getInternalPane().parentToLocal(event.getX(), event.getY());
         initialMouseX = initial.getX();
         initialMouseY = initial.getY();
 
@@ -375,28 +321,24 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
             selectionPreview.setY(initialMouseY);
             selectionPreview.setFill(new Color(1.0, 1.0, 1.0, 0.5));
             selectionPreview.setStroke(new Color(0, 0, 0, 1));
-            container.getChildren().add(selectionPreview);
+            getInternalPane().getChildren().add(selectionPreview);
         }
 
         if(event.getButton() == selectionButton)
             viewModel.clearSelection();
 
-        event.consume();
+        super.onMousePressed(event);
     }
 
-    @FXML
+    @Override
     public void onMouseDragged(MouseEvent event) {
         double deltaX = event.getScreenX() - previousMouseX;
         double deltaY = event.getScreenY() - previousMouseY;
         previousMouseX = event.getScreenX();
         previousMouseY = event.getScreenY();
 
-        if(event.getButton() == dragButton && (event.getTarget() == this || event.getTarget() == container)) {
-            viewModel.move(deltaX, deltaY);
-        }
-
         if(event.getButton() == selectionButton) {
-            Point2D newPos = container.parentToLocal(event.getX(), event.getY());
+            Point2D newPos = getInternalPane().parentToLocal(event.getX(), event.getY());
 
             double minX = Math.min(initialMouseX, newPos.getX());
             double maxX = Math.max(initialMouseX, newPos.getX());
@@ -409,16 +351,15 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
             selectionPreview.setY(minY);
         }
 
-        event.consume();
+        super.onMouseDragged(event);
     }
 
-    @FXML
     public void onMouseReleased(MouseEvent event) {
         if(event.getButton() == selectionButton && selectionPreview != null) {
-            container.getChildren().remove(selectionPreview);
+            getInternalPane().getChildren().remove(selectionPreview);
             selectionPreview = null;
 
-            Point2D newPos = container.parentToLocal(event.getX(), event.getY());
+            Point2D newPos = getInternalPane().parentToLocal(event.getX(), event.getY());
             double minX = Math.min(initialMouseX, newPos.getX());
             double maxX = Math.max(initialMouseX, newPos.getX());
             double minY = Math.min(initialMouseY, newPos.getY());
@@ -451,13 +392,11 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
         return ProcessorLibrary.findProcessor(module, name);
     }
 
-    @FXML
     public void onDragOver(DragEvent event) {
         if(getProcessorFromDragEvent(event) != null)
             event.acceptTransferModes(TransferMode.ANY);
     }
 
-    @FXML
     public void onDragDropped(DragEvent event) {
         Processor processor = getProcessorFromDragEvent(event);
 
@@ -468,21 +407,13 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
         try {
             double x = event.getX();
             double y = event.getY();
-            Point2D p = container.getLocalToParentTransform().inverseTransform(x, y);
+            Point2D p = getInternalPane().getLocalToParentTransform().inverseTransform(x, y);
             viewModel.addNode(processor, p.getX(), p.getY());
             event.setDropCompleted(true);
         } catch(Exception e) {
             e.printStackTrace();
             event.setDropCompleted(false);
         }
-    }
-
-    @FXML
-    public void onScroll(ScrollEvent event) {
-        Point2D point = container.parentToLocal(event.getX(), event.getY());
-        viewModel.zoom(point.getX(), point.getY(), event.getDeltaY() * 0.003);
-        repaintGrid();
-        event.consume();
     }
 
     public void zoomToFit() {
@@ -514,30 +445,14 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
 
         double zoomX = getWidth() / (maxX - minX);
         double zoomY = getHeight() / (maxY - minY);
-        viewModel.setZoom(Math.min(zoomX, zoomY));
 
-        viewModel.setOffset(rx - cx * zoom.get(), ry - cy * zoom.get());
+        viewModel.setZoom(Math.min(zoomX, zoomY));
+        viewModel.setOffset(rx - cx * getZoom(), ry - cy * getZoom());
     }
 
     @Override
     public GraphView getGraphView() {
         return this;
-    }
-
-    public double getOffsetX() {
-        return xOffset.get();
-    }
-
-    public void setOffsetX(double xOffset) {
-        this.xOffset.set(xOffset);
-    }
-
-    public double getOffsetY() {
-        return yOffset.get();
-    }
-
-    public void setOffsetY(double yOffset) {
-        this.yOffset.set(yOffset);
     }
 
     public double getCellSize() {
@@ -546,25 +461,5 @@ public class GraphView extends AnchorPane implements IGraphViewElement {
 
     public void setCellSize(double cellSize) {
         this.cellSize.set(cellSize);
-    }
-
-    public double getZoom() {
-        return zoom.get();
-    }
-
-    public DoubleProperty getXOffsetProperty() {
-        return xOffset;
-    }
-
-    public DoubleProperty getYOffsetProperty() {
-        return yOffset;
-    }
-
-    public DoubleProperty getCellSizeProperty() {
-        return cellSize;
-    }
-
-    public DoubleProperty getZoomProperty() {
-        return zoom;
     }
 }

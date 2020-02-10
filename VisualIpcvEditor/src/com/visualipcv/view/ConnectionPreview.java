@@ -10,7 +10,7 @@ public class ConnectionPreview extends ConnectionViewBase {
         this.source = source;
 
         getPaintProperty().bind(source.getViewModel().getStrokeProperty());
-        Point2D point = ConnectionView.localToContainerCoords(source, source.getWidth() * 0.5, source.getHeight() * 0.5);
+        Point2D point = localToContainerCoords(source, source.getWidth() * 0.5, source.getHeight() * 0.5);
         setSource(point.getX(), point.getY());
     }
 }

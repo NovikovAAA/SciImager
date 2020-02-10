@@ -62,18 +62,6 @@ public class ConnectionView extends ConnectionViewBase {
         });
     }
 
-    public static Point2D localToContainerCoords(javafx.scene.Node element, double x, double y) {
-        javafx.scene.Node parent = element;
-        Point2D point = new Point2D(x, y);
-
-        while(parent != null && (parent.getId() == null || !parent.getId().equals("container"))) {
-            point = parent.getLocalToParentTransform().transform(point);
-            parent = parent.getParent();
-        }
-
-        return point;
-    }
-
     private void updatePoints() {
         Point2D src = localToContainerCoords(source, source.getWidth() * 0.5, source.getHeight() * 0.5);
         Point2D dst = localToContainerCoords(target, target.getWidth() * 0.5, target.getHeight() * 0.5);

@@ -108,6 +108,18 @@ public class ConnectionViewBase extends CubicCurve {
         return paintProperty.get();
     }
 
+    protected Point2D localToContainerCoords(javafx.scene.Node element, double x, double y) {
+        javafx.scene.Node parent = element;
+        Point2D point = new Point2D(x, y);
+
+        while(parent != null && !(parent.getParent() instanceof GraphView)) {
+            point = parent.getLocalToParentTransform().transform(point);
+            parent = parent.getParent();
+        }
+
+        return point;
+    }
+
     private void updatePoints() {
         setStartX(sourceXProperty.get());
         setStartY(sourceYProperty.get());

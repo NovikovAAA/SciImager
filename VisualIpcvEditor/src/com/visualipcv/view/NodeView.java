@@ -1,6 +1,7 @@
 package com.visualipcv.view;
 
 import com.visualipcv.controller.IGraphViewElement;
+import com.visualipcv.core.NativeProcessor;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
 import com.visualipcv.viewmodel.NodeViewModel;
@@ -28,6 +29,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
+import java.lang.annotation.Native;
 import java.util.List;
 
 public class NodeView extends AnchorPane implements IGraphViewElement {
@@ -47,6 +49,8 @@ public class NodeView extends AnchorPane implements IGraphViewElement {
     private Text error;
     @FXML
     private Pane errorPane;
+    @FXML
+    private Pane nodeClass;
 
     private BooleanProperty selected = new BooleanPropertyBase() {
         @Override
@@ -84,6 +88,13 @@ public class NodeView extends AnchorPane implements IGraphViewElement {
             loader.load();
         } catch(IOException e) {
             e.printStackTrace();
+        }
+
+        if(!(node.getProcessor() instanceof NativeProcessor)) {
+            Text text = new Text("Java");
+            text.setLayoutY(title.getLayoutY());
+            text.setLayoutX(nodeClass.getWidth() - 10.0);
+            nodeClass.getChildren().add(text);
         }
 
         layoutXProperty().bindBidirectional(viewModel.getLayoutXProperty());
