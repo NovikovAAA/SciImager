@@ -1,6 +1,9 @@
 package com.visualipcv.core;
 
 import com.visualipcv.Console;
+import com.visualipcv.core.io.ConnectionEntity;
+import com.visualipcv.core.io.GraphEntity;
+import com.visualipcv.core.io.NodeEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,21 +11,32 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class Graph {
     private ArrayList<Node> nodes = new ArrayList<>();
-    private Map<Node, Map<String, Object>> cache = new HashMap<>();
     private Set<Connection> connections = new HashSet<>();
+    private Map<Node, Map<String, Object>> cache = new HashMap<>();
 
     public Graph() {
 
+    }
+
+    public Graph(GraphEntity graphEntity) {
+        for(NodeEntity node : graphEntity.getNodes()) {
+            addNode(new Node(this, node));
+        }
+
+        for(ConnectionEntity connection : graphEntity.getConnections()) {
+            addConnectionRecord(new Connection(this, connection));
+        }
     }
 
     public void addNode(Node node) {
         nodes.add(node);
 
         try {
-            node.onCreated();
+            node.onCreate();
         } catch (GraphExecutionException e) {
             Console.output(e.getMessage());
         }
@@ -47,14 +61,14 @@ public class Graph {
         }
 
         try {
-            node.onDestroyed();
+            node.onDestroy();
         } catch (GraphExecutionException e) {
             Console.output(e.getMessage());
         }
     }
 
-    public void addConnectionRecord(NodeSlot slot1, NodeSlot slot2) {
-        connections.add(new Connection(slot1, slot2));
+    public void addConnectionRecord(Connection connection) {
+        connections.add(connection);
     }
 
     public void removeConnectionRecords(NodeSlot slot) {
@@ -115,5 +129,14 @@ public class Graph {
         for (Node node : nodes) {
             node.execute();
         }
+    }
+
+    public Node findNode(UUID id) {
+        for(Node node : nodes) {
+            if(node.getId().equals(id)) {
+                return node;
+            }
+        }
+        return null;
     }
 }

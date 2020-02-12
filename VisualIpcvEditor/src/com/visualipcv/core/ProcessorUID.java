@@ -1,8 +1,9 @@
 package com.visualipcv.core;
 
+import java.io.Serializable;
 import java.util.Objects;
 
-public class ProcessorUID {
+public class ProcessorUID implements Serializable {
     private String name;
     private String module;
 

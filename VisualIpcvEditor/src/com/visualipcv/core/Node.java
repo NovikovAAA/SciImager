@@ -1,18 +1,39 @@
 package com.visualipcv.core;
 
+import com.visualipcv.core.io.NodeEntity;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Node {
-    private final Graph graph;
-    private final Processor processor;
-    private final List<InputNodeSlot> inputSlots;
-    private final List<OutputNodeSlot> outputSlots;
-    private final DataBundle state = new DataBundle();
+    private final UUID id;
+    private Graph graph;
+    private Processor processor;
+    private List<InputNodeSlot> inputSlots;
+    private List<OutputNodeSlot> outputSlots;
+    private DataBundle state = new DataBundle();
     private double x;
     private double y;
 
     public Node(Graph graph, Processor processor, double x, double y) {
+        id = java.util.UUID.randomUUID();
+        initNode(graph, processor, x, y);
+    }
+
+    public Node(Graph graph, NodeEntity nodeEntity) {
+        id = nodeEntity.getId();
+        Processor processor = ProcessorLibrary.findProcessor(nodeEntity.getProcessorUID().getModule(), nodeEntity.getProcessorUID().getName());
+        initNode(graph, processor, nodeEntity.getX(), nodeEntity.getY());
+
+        for(InputNodeSlot slot : inputSlots) {
+            if(nodeEntity.getInputValues().containsKey(slot.getProperty().getName())) {
+                slot.setValue(nodeEntity.getInputValues().get(slot.getProperty().getName()));
+            }
+        }
+    }
+
+    private void initNode(Graph graph, Processor processor, double x, double y) {
         this.graph = graph;
         this.processor = processor;
         inputSlots = new ArrayList<>();
@@ -30,6 +51,10 @@ public class Node {
         this.y = y;
     }
 
+    public UUID getId() {
+        return id;
+    }
+
     public Graph getGraph() {
         return graph;
     }
@@ -44,6 +69,31 @@ public class Node {
 
     public List<OutputNodeSlot> getOutputSlots() {
         return outputSlots;
+    }
+
+    public InputNodeSlot getInputNodeSlot(String name) {
+        for(InputNodeSlot slot : inputSlots) {
+            if(slot.getProperty().getName().equals(name))
+                return slot;
+        }
+        return null;
+    }
+
+    public OutputNodeSlot getOutputNodeSlot(String name) {
+        for(OutputNodeSlot slot : outputSlots) {
+            if(slot.getProperty().getName().equals(name))
+                return slot;
+        }
+        return null;
+    }
+
+    public NodeSlot getNodeSlot(String name) {
+        InputNodeSlot inputNodeSlot = getInputNodeSlot(name);
+
+        if(inputNodeSlot != null)
+            return inputNodeSlot;
+
+        return getOutputNodeSlot(name);
     }
 
     public void setLocation(double x, double y) {
@@ -95,7 +145,7 @@ public class Node {
         }
     }
 
-    public void onCreated() throws GraphExecutionException {
+    public void onCreate() throws GraphExecutionException {
         try {
             processor.onCreated(state);
         } catch (CommonException e) {
@@ -103,7 +153,7 @@ public class Node {
         }
     }
 
-    public void onDestroyed() throws GraphExecutionException {
+    public void onDestroy() throws GraphExecutionException {
         try {
             processor.onDestroyed(state);
         } catch (CommonException e) {

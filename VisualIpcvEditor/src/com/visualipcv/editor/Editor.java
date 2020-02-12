@@ -1,5 +1,6 @@
 package com.visualipcv.editor;
 
+import com.visualipcv.core.io.GraphStore;
 import com.visualipcv.view.ConsoleView;
 import com.visualipcv.view.FunctionListView;
 import com.visualipcv.view.GraphView;
@@ -14,12 +15,15 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.dockfx.DockNode;
 import org.dockfx.DockPane;
 import org.dockfx.DockPos;
 import org.reflections.Reflections;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -115,6 +119,48 @@ public class Editor {
             @Override
             public void handle(ActionEvent event) {
                 getDocsPane().getTabs().add(new Tab("Graph", new GraphView()));
+            }
+        });
+
+        addMenuCommand("File/Open", new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                FileChooser chooser = new FileChooser();
+                chooser.setTitle("Open");
+                chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("VisualIPCV graph", ".vip"));
+                File file = chooser.showOpenDialog(Editor.getPrimaryStage());
+
+                try {
+                    if(file != null) {
+                        GraphView view = new GraphView();
+                        view.load(file.getAbsolutePath());
+                        getDocsPane().getTabs().add(new Tab("Graph", view));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        addMenuCommand("File/Save as", new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                FileChooser chooser = new FileChooser();
+                chooser.setTitle("Save");
+                chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("VisualIPCV graph", ".vip"));
+                File file = chooser.showSaveDialog(Editor.getPrimaryStage());
+
+                try {
+                    if(file != null) {
+                        GraphView view = (GraphView)getDocsPane().getSelectionModel().getSelectedItem().getContent();
+
+                        if(view != null) {
+                            view.save(file.getAbsolutePath());
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 

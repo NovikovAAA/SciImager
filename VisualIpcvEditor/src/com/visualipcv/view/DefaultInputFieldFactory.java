@@ -1,7 +1,15 @@
 package com.visualipcv.view;
 
 import com.visualipcv.core.DataType;
+import com.visualipcv.core.InputNodeSlot;
+import com.visualipcv.core.NodeSlot;
 import com.visualipcv.utils.UIHighlight;
+import com.visualipcv.viewmodel.ViewModel;
+import com.visualipcv.viewmodel.fields.NumberViewModel;
+import com.visualipcv.viewmodel.fields.StringViewModel;
+import com.visualipcv.viewmodel.fields.Vector2ViewModel;
+import com.visualipcv.viewmodel.fields.Vector3ViewModel;
+import com.visualipcv.viewmodel.fields.Vector4ViewModel;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -38,84 +46,44 @@ public class DefaultInputFieldFactory extends InputFieldFactory {
     }
 
     @Override
-    public Node create(InputFieldView fieldView, DataType type) {
-        if(type == DataType.NUMBER) {
+    public Node create(InputFieldView fieldView, InputNodeSlot slot) {
+        if(slot.getProperty().getType() == DataType.NUMBER) {
+            NumberViewModel viewModel = new NumberViewModel(slot);
             TextField field = new TextField();
             setSize(field, STD_WIDTH, STD_HEIGHT);
             setFont(field);
             setPadding(field);
-
-            field.setText(fieldView.getValueProperty().get().toString());
-            field.textProperty().addListener(new ChangeListener<String>() {
-                @Override
-                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    try {
-                        double value = Double.parseDouble(newValue);
-                        fieldView.getValueProperty().set(value);
-                        UIHighlight.removeHighlight(field);
-                    } catch(Exception e) {
-                        UIHighlight.highlight(field, Color.RED);
-                    }
-                }
-            });
+            field.textProperty().bindBidirectional(viewModel.getValueProperty());
+            field.borderProperty().bind(viewModel.getBorderProperty());
+            fieldView.initViewModel(viewModel);
             return field;
-        } else if(type == DataType.STRING) {
+        } else if(slot.getProperty().getType() == DataType.STRING) {
+            StringViewModel viewModel = new StringViewModel(slot);
             TextField field = new TextField();
             setSize(field, STD_WIDTH, STD_HEIGHT);
             setFont(field);
             setPadding(field);
-
-            field.textProperty().addListener(new ChangeListener<String>() {
-                @Override
-                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    fieldView.getValueProperty().set(field.getText());
-                }
-            });
+            field.textProperty().bindBidirectional(viewModel.getValueProperty());
+            fieldView.initViewModel(viewModel);
             return field;
-        } else if(type == DataType.VECTOR2) {
+        } else if(slot.getProperty().getType() == DataType.VECTOR2) {
+            Vector2ViewModel viewModel = new Vector2ViewModel(slot);
+            fieldView.initViewModel(viewModel);
+
             TextField field1 = new TextField();
             setSize(field1, (STD_WIDTH - 10) / 2, STD_HEIGHT);
             setFont(field1);
             setPadding(field1);
+            field1.textProperty().bindBidirectional(viewModel.getXValueProperty());
+            field1.borderProperty().bind(viewModel.getXBorderProperty());
 
             TextField field2 = new TextField();
             setSize(field2, (STD_WIDTH - 10) / 2, STD_HEIGHT);
             setFont(field2);
             setPadding(field2);
             field2.setLayoutX((STD_WIDTH - 10) / 2 + STD_MARGIN);
-
-            field1.setText(((Double[])fieldView.getValueProperty().get())[0].toString());
-            field2.setText(((Double[])fieldView.getValueProperty().get())[1].toString());
-
-            field1.textProperty().addListener(new ChangeListener<String>() {
-                @Override
-                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    try {
-                        double value = Double.parseDouble(newValue);
-                        Double[] old = (Double[])fieldView.getValueProperty().get();
-                        old[0] = value;
-                        fieldView.getValueProperty().set(old);
-                        UIHighlight.removeHighlight(field1);
-                    } catch(Exception e) {
-                        UIHighlight.highlight(field1, Color.RED);
-                    }
-                }
-            });
-
-            field2.textProperty().addListener(new ChangeListener<String>() {
-                @Override
-                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    try {
-                        double value = Double.parseDouble(newValue);
-                        Double[] old = (Double[])fieldView.getValueProperty().get();
-                        old[1] = value;
-                        fieldView.getValueProperty().set(old);
-                        UIHighlight.removeHighlight(field2);
-                    } catch(Exception e) {
-                        UIHighlight.highlight(field2, Color.RED);
-                    }
-                }
-            });
+            field2.textProperty().bindBidirectional(viewModel.getYValueProperty());
+            field2.borderProperty().bind(viewModel.getYBorderProperty());
 
             Pane pane = new Pane();
             setSize(pane, STD_WIDTH, STD_HEIGHT);
@@ -123,72 +91,32 @@ public class DefaultInputFieldFactory extends InputFieldFactory {
             pane.getChildren().add(field2);
             pane.setManaged(true);
             return pane;
-        } else if(type == DataType.VECTOR3) {
+        } else if(slot.getProperty().getType() == DataType.VECTOR3) {
+            Vector3ViewModel viewModel = new Vector3ViewModel(slot);
+            fieldView.initViewModel(viewModel);
+
             TextField field1 = new TextField();
             setSize(field1, (STD_WIDTH - 20) / 3, STD_HEIGHT);
             setFont(field1);
             setPadding(field1);
+            field1.textProperty().bindBidirectional(viewModel.getXValueProperty());
+            field1.borderProperty().bind(viewModel.getXBorderProperty());
 
             TextField field2 = new TextField();
             setSize(field2, (STD_WIDTH - 20) / 3, STD_HEIGHT);
             setFont(field2);
             setPadding(field2);
             field2.setLayoutX((STD_WIDTH - 20) / 3 + STD_MARGIN);
+            field2.textProperty().bindBidirectional(viewModel.getYValueProperty());
+            field2.borderProperty().bind(viewModel.getYBorderProperty());
 
             TextField field3 = new TextField();
             setSize(field3, (STD_WIDTH - 20) / 3, STD_HEIGHT);
             setFont(field3);
             setPadding(field3);
             field3.setLayoutX((STD_WIDTH - 20) / 3 * 2 + STD_MARGIN * 2);
-
-            field1.setText(((Double[])fieldView.getValueProperty().get())[0].toString());
-            field2.setText(((Double[])fieldView.getValueProperty().get())[1].toString());
-            field3.setText(((Double[])fieldView.getValueProperty().get())[2].toString());
-
-            field1.textProperty().addListener(new ChangeListener<String>() {
-                @Override
-                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    try {
-                        double value = Double.parseDouble(newValue);
-                        Double[] old = (Double[])fieldView.getValueProperty().get();
-                        old[0] = value;
-                        fieldView.getValueProperty().set(old);
-                        UIHighlight.removeHighlight(field1);
-                    } catch(Exception e) {
-                        UIHighlight.highlight(field1, Color.RED);
-                    }
-                }
-            });
-
-            field2.textProperty().addListener(new ChangeListener<String>() {
-                @Override
-                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    try {
-                        double value = Double.parseDouble(newValue);
-                        Double[] old = (Double[])fieldView.getValueProperty().get();
-                        old[1] = value;
-                        fieldView.getValueProperty().set(old);
-                        UIHighlight.removeHighlight(field2);
-                    } catch(Exception e) {
-                        UIHighlight.highlight(field2, Color.RED);
-                    }
-                }
-            });
-
-            field3.textProperty().addListener(new ChangeListener<String>() {
-                @Override
-                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    try {
-                        double value = Double.parseDouble(newValue);
-                        Double[] old = (Double[])fieldView.getValueProperty().get();
-                        old[2] = value;
-                        fieldView.getValueProperty().set(old);
-                        UIHighlight.removeHighlight(field3);
-                    } catch(Exception e) {
-                        UIHighlight.highlight(field3, Color.RED);
-                    }
-                }
-            });
+            field3.textProperty().bindBidirectional(viewModel.getZValueProperty());
+            field3.borderProperty().bind(viewModel.getZBorderProperty());
 
             Pane pane = new Pane();
             setSize(pane, STD_WIDTH, STD_HEIGHT);
@@ -197,94 +125,40 @@ public class DefaultInputFieldFactory extends InputFieldFactory {
             pane.getChildren().add(field3);
             pane.setManaged(true);
             return pane;
-        } else if(type == DataType.VECTOR4) {
+        } else if(slot.getProperty().getType() == DataType.VECTOR4) {
+            Vector4ViewModel viewModel = new Vector4ViewModel(slot);
+            fieldView.initViewModel(viewModel);
+
             TextField field1 = new TextField();
             setSize(field1, (STD_WIDTH - 30) / 4, STD_HEIGHT);
             setFont(field1);
             setPadding(field1);
+            field1.textProperty().bindBidirectional(viewModel.getXValueProperty());
+            field1.borderProperty().bind(viewModel.getXBorderProperty());
 
             TextField field2 = new TextField();
             setSize(field2, (STD_WIDTH - 30) / 4, STD_HEIGHT);
             setFont(field2);
             setPadding(field2);
             field2.setLayoutX((STD_WIDTH - 30) / 4 + STD_MARGIN);
+            field2.textProperty().bindBidirectional(viewModel.getYValueProperty());
+            field2.borderProperty().bind(viewModel.getYBorderProperty());
 
             TextField field3 = new TextField();
             setSize(field3, (STD_WIDTH - 30) / 4, STD_HEIGHT);
             setFont(field3);
             setPadding(field3);
             field3.setLayoutX((STD_WIDTH - 30) / 4 * 2 + STD_MARGIN * 2);
+            field3.textProperty().bindBidirectional(viewModel.getZValueProperty());
+            field3.borderProperty().bind(viewModel.getZBorderProperty());
 
             TextField field4 = new TextField();
             setSize(field4, (STD_WIDTH - 30) / 4, STD_HEIGHT);
             setFont(field4);
             setPadding(field4);
             field4.setLayoutX((STD_WIDTH - 30) / 4 * 3 + STD_MARGIN * 3);
-
-            field1.setText(((Double[])fieldView.getValueProperty().get())[0].toString());
-            field2.setText(((Double[])fieldView.getValueProperty().get())[1].toString());
-            field3.setText(((Double[])fieldView.getValueProperty().get())[2].toString());
-            field4.setText(((Double[])fieldView.getValueProperty().get())[3].toString());
-
-            field1.textProperty().addListener(new ChangeListener<String>() {
-                @Override
-                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    try {
-                        double value = Double.parseDouble(newValue);
-                        Double[] old = (Double[])fieldView.getValueProperty().get();
-                        old[0] = value;
-                        fieldView.getValueProperty().set(old);
-                        UIHighlight.removeHighlight(field1);
-                    } catch(Exception e) {
-                        UIHighlight.highlight(field1, Color.RED);
-                    }
-                }
-            });
-
-            field2.textProperty().addListener(new ChangeListener<String>() {
-                @Override
-                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    try {
-                        double value = Double.parseDouble(newValue);
-                        Double[] old = (Double[])fieldView.getValueProperty().get();
-                        old[1] = value;
-                        fieldView.getValueProperty().set(old);
-                        UIHighlight.removeHighlight(field2);
-                    } catch(Exception e) {
-                        UIHighlight.highlight(field2, Color.RED);
-                    }
-                }
-            });
-
-            field3.textProperty().addListener(new ChangeListener<String>() {
-                @Override
-                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    try {
-                        double value = Double.parseDouble(newValue);
-                        Double[] old = (Double[])fieldView.getValueProperty().get();
-                        old[2] = value;
-                        fieldView.getValueProperty().set(old);
-                        UIHighlight.removeHighlight(field3);
-                    } catch(Exception e) {
-                        UIHighlight.highlight(field3, Color.RED);
-                    }
-                }
-            });
-
-            field4.textProperty().addListener(new ChangeListener<String>() {
-                @Override
-                public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                    try {
-                        double value = Double.parseDouble(newValue);
-                        Double[] old = (Double[])fieldView.getValueProperty().get();
-                        old[3] = value;
-                        fieldView.getValueProperty().set(old);
-                        UIHighlight.removeHighlight(field4);
-                    } catch(Exception e) {
-                        UIHighlight.highlight(field4, Color.RED);
-                    }
-                }
-            });
+            field4.textProperty().bindBidirectional(viewModel.getWValueProperty());
+            field4.borderProperty().bind(viewModel.getWBorderProperty());
 
             Pane pane = new Pane();
             setSize(pane, STD_WIDTH, STD_HEIGHT);

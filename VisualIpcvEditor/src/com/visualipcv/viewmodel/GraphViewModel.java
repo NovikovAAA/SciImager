@@ -5,6 +5,7 @@ import com.visualipcv.core.Graph;
 import com.visualipcv.core.GraphExecutionException;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.Processor;
+import com.visualipcv.core.io.GraphStore;
 import com.visualipcv.view.ConnectionView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -16,6 +17,8 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.util.Duration;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -32,7 +35,7 @@ public class GraphViewModel extends ViewModel {
         void onRequestSort();
     }
 
-    private Graph graph = new Graph();
+    private Graph graph;
 
     private ObservableList<NodeViewModel> nodes = FXCollections.observableArrayList();
     private ObservableList<ConnectionViewModel> connections = FXCollections.observableArrayList();
@@ -41,6 +44,16 @@ public class GraphViewModel extends ViewModel {
     private DoubleProperty yOffset = new SimpleDoubleProperty(0.0);
 
     public GraphViewModel() {
+        this.graph = new Graph();
+        init();
+    }
+
+    public GraphViewModel(Graph graph) {
+        this.graph = graph;
+        init();
+    }
+
+    private void init() {
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.2), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -171,14 +184,20 @@ public class GraphViewModel extends ViewModel {
 
     @Override
     public void update() {
-        for(NodeViewModel node : nodes) {
-            for(NodeSlotViewModel slot : node.getInputNodeSlots()) {
-                slot.update();
-            }
-            for(NodeSlotViewModel slot : node.getOutputNodeSlots()) {
-                slot.update();
+        for(Node node : graph.getNodes()) {
+            if(nodes.stream().noneMatch((NodeViewModel vm) -> vm.getNode() == node)) {
+                onNodeAdded(node);
             }
         }
+
+        for(NodeViewModel viewModel : nodes) {
+            if(graph.getNodes().stream().noneMatch((Node n) -> n == viewModel.getNode())) {
+                onNodeRemoved(viewModel.getNode());
+            }
+        }
+
+        for(NodeViewModel viewModel : nodes)
+            viewModel.update();
 
         {
             Set<Integer> connectionViewModelHash = new HashSet<>();
@@ -213,6 +232,19 @@ public class GraphViewModel extends ViewModel {
                 onDisconnected(new Connection(viewModel.getSource().getNodeSlot(), viewModel.getTarget().getNodeSlot()));
             }
         }
+
+        for(ConnectionViewModel viewModel : connections) {
+            viewModel.update();
+        }
+    }
+
+    public void save(String path) throws Exception {
+        new GraphStore().save(graph, new FileOutputStream(path));
+    }
+
+    public void load(String path) throws Exception {
+        graph = new GraphStore().load(new FileInputStream(path));
+        update();
     }
 
     private void onNodeAdded(Node node) {

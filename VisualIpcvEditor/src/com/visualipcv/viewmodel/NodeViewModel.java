@@ -63,7 +63,6 @@ public class NodeViewModel extends ViewModel {
     public NodeViewModel(GraphViewModel graph, Node node) {
         this.node = node;
         this.graph = graph;
-        title.setValue(node.getProcessor().getName());
         update();
     }
 
@@ -121,5 +120,14 @@ public class NodeViewModel extends ViewModel {
     public void update() {
         layoutX.set(node.getX());
         layoutY.set(node.getY());
+        title.set(node.getProcessor().getName());
+
+        for(NodeSlotViewModel viewModel : getInputNodeSlots()) {
+            viewModel.update();
+        }
+
+        for(NodeSlotViewModel viewModel : getOutputNodeSlots()) {
+            viewModel.update();
+        }
     }
 }

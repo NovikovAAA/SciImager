@@ -2,10 +2,12 @@ package com.visualipcv.view;
 
 import com.visualipcv.controller.IGraphViewElement;
 import com.visualipcv.core.Connection;
+import com.visualipcv.core.Graph;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorLibrary;
+import com.visualipcv.core.io.GraphStore;
 import com.visualipcv.editor.Editor;
 import com.visualipcv.viewmodel.GraphViewModel;
 import javafx.beans.property.DoubleProperty;
@@ -39,7 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GraphView extends FreePane implements IGraphViewElement {
-    private GraphViewModel viewModel = new GraphViewModel();
+    private GraphViewModel viewModel;
 
     private MouseButton selectionButton = MouseButton.PRIMARY;
     private MouseButton dragButton = MouseButton.SECONDARY;
@@ -74,7 +76,17 @@ public class GraphView extends FreePane implements IGraphViewElement {
         }
     };
 
+    public GraphView(Graph graph) {
+        viewModel = new GraphViewModel(graph);
+        init();
+    }
+
     public GraphView() {
+        viewModel = new GraphViewModel();
+        init();
+    }
+
+    private void init() {
         canvas = new Canvas();
         canvas.setManaged(false);
         canvas.setMouseTransparent(true);
@@ -184,7 +196,7 @@ public class GraphView extends FreePane implements IGraphViewElement {
             public void onDisconnected(Connection connection) {
                 for(ConnectionView view : connections) {
                     if(view.getViewModel().getSource().getNodeSlot() == connection.getSource() &&
-                        view.getViewModel().getTarget().getNodeSlot() == connection.getTarget()) {
+                            view.getViewModel().getTarget().getNodeSlot() == connection.getTarget()) {
                         connections.remove(view);
                         break;
                     }
@@ -448,6 +460,22 @@ public class GraphView extends FreePane implements IGraphViewElement {
 
         viewModel.setZoom(Math.min(zoomX, zoomY));
         viewModel.setOffset(rx - cx * getZoom(), ry - cy * getZoom());
+    }
+
+    public void save(String path) {
+        try {
+            viewModel.save(path);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void load(String path) {
+        try {
+            viewModel.load(path);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
