@@ -1,6 +1,7 @@
 package com.visualipcv.core;
 
 import com.visualipcv.core.io.NodeEntity;
+import org.opencv.core.CvException;
 
 import java.util.ArrayList;
 import java.util.List;

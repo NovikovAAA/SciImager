@@ -478,6 +478,11 @@ public class GraphView extends FreePane implements IGraphViewElement {
         }
     }
 
+    private void updateConnectionViews() {
+        for(ConnectionView view : connections)
+            view.updatePoints();
+    }
+
     @Override
     public GraphView getGraphView() {
         return this;

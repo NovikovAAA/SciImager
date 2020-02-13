@@ -90,6 +90,15 @@ public class NodeSlotView extends AnchorPane implements IGraphViewElement {
         return !isOutputProperty.get();
     }
 
+    @Override
+    public void layoutChildren() {
+        super.layoutChildren();
+
+        for(ConnectionView connection : getConnections()) {
+            connection.updatePoints();
+        }
+    }
+
     @FXML
     public void onMousePressed(MouseEvent event) {
         event.consume();

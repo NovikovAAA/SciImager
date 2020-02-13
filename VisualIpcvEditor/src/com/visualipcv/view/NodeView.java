@@ -26,6 +26,7 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Text;
 
 import java.io.IOException;

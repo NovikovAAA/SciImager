@@ -123,6 +123,10 @@ public class Vector4ViewModel extends ViewModel {
 
     @Override
     public void update() {
-
+        Double[] value = (Double[])inputNodeSlot.getValue();
+        xValue.set(value[0].toString());
+        yValue.set(value[1].toString());
+        zValue.set(value[2].toString());
+        wValue.set(value[3].toString());
     }
 }
