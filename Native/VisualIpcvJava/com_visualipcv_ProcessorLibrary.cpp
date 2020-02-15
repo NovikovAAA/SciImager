@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "com_visualipcv_ProcessorLibrary.h"
+#include <VisualIPCV/ProcessorManager.hpp>
 
 extern "C"
 {

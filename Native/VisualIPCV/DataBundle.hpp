@@ -15,6 +15,20 @@
 
 struct DataBundle {
     std::map<std::string, DataValue> dataMap;
+    template <class T>
+    T read(std::string name) const {
+        DataValue dataValue = dataMap.find(name)->second;
+        
+        T value;
+        dataValue.read(&value);
+        return value;
+    }
+    
+    template <class T>
+    void write(std::string name, T const &value) {
+        DataValue &dataValue = dataMap[name];
+        dataValue.write(&value);
+    }
 };
 
 #endif /* DataBundle_hpp */

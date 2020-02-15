@@ -3,18 +3,23 @@
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
-#include <VisualIPCV/Processor.hpp>
-#include <VisualIPCV/DataValue.hpp>
+#include <VisualIPCV/ProcessorManager.hpp>
 
 using namespace cv;
 using namespace std;
 
 int main(int argc, const char * argv[]) {
-    DataValue value;
+    Processor *sumProcessor = ProcessorManager::find("Core", "Sum");
     
-    int a = 5;
-    value.write(&a);
+    DataBundle input;
+    input.write("a", 5.0);
+    input.write("b", 8.0);
     
+    DataBundle nodeState;
+    
+    DataBundle result = sumProcessor->execute(input, nodeState);
+    
+    cout << result.read<double>("result") << endl;
     
     return 0;
 }
