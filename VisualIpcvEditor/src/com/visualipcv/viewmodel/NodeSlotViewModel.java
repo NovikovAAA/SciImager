@@ -15,6 +15,7 @@ import javafx.scene.paint.Paint;
 public class NodeSlotViewModel extends ViewModel {
     private NodeSlot nodeSlot;
     private NodeViewModel node;
+    private ViewModel inputFieldViewModel;
 
     private BooleanProperty isConnected = new SimpleBooleanProperty();
     private ObjectProperty<Paint> background = new SimpleObjectProperty<>();
@@ -26,6 +27,11 @@ public class NodeSlotViewModel extends ViewModel {
         this.node = node;
         isOutputProperty.set(slot instanceof OutputNodeSlot);
         update();
+    }
+
+    public NodeSlotViewModel(NodeViewModel node, ViewModel inputFieldViewModel, NodeSlot slot) {
+        this(node, slot);
+        this.inputFieldViewModel = inputFieldViewModel;
     }
 
     public NodeViewModel getNode() {
@@ -77,5 +83,8 @@ public class NodeSlotViewModel extends ViewModel {
                 nodeSlot.getProperty().getType().getColor().getGreen() / 500.0,
                 nodeSlot.getProperty().getType().getColor().getBlue() / 500.0,
                 1.0));
+
+        if(inputFieldViewModel != null)
+            inputFieldViewModel.update();
     }
 }

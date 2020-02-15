@@ -33,48 +33,20 @@ public class ConnectionView extends ConnectionViewBase {
         updatePoints();
         getPaintProperty().bind(source.getViewModel().getStrokeProperty());
 
-        source.getNode().layoutXProperty().addListener(new ChangeListener<Number>() {
+        ChangeListener<Number> updatePointsListener = new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 updatePoints();
             }
-        });
+        };
 
-        source.getNode().layoutYProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                updatePoints();
-            }
-        });
-
-        target.getNode().layoutXProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                updatePoints();
-            }
-        });
-
-        target.getNode().layoutYProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                updatePoints();
-            }
-        });
+        source.getNode().layoutXProperty().addListener(updatePointsListener);
+        source.getNode().layoutYProperty().addListener(updatePointsListener);
+        target.getNode().layoutXProperty().addListener(updatePointsListener);
+        target.getNode().layoutYProperty().addListener(updatePointsListener);
     }
 
-    public static Point2D localToContainerCoords(javafx.scene.Node element, double x, double y) {
-        javafx.scene.Node parent = element;
-        Point2D point = new Point2D(x, y);
-
-        while(parent != null && (parent.getId() == null || !parent.getId().equals("container"))) {
-            point = parent.getLocalToParentTransform().transform(point);
-            parent = parent.getParent();
-        }
-
-        return point;
-    }
-
-    private void updatePoints() {
+    public void updatePoints() {
         Point2D src = localToContainerCoords(source, source.getWidth() * 0.5, source.getHeight() * 0.5);
         Point2D dst = localToContainerCoords(target, target.getWidth() * 0.5, target.getHeight() * 0.5);
 

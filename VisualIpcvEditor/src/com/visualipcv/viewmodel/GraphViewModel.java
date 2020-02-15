@@ -5,17 +5,24 @@ import com.visualipcv.core.Graph;
 import com.visualipcv.core.GraphExecutionException;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.Processor;
+import com.visualipcv.core.io.GraphStore;
+import com.visualipcv.editor.Editor;
 import com.visualipcv.view.ConnectionView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -32,24 +39,35 @@ public class GraphViewModel extends ViewModel {
         void onRequestSort();
     }
 
-    private Graph graph = new Graph();
+    private Graph graph;
 
+    private StringProperty name = new SimpleStringProperty();
     private ObservableList<NodeViewModel> nodes = FXCollections.observableArrayList();
     private ObservableList<ConnectionViewModel> connections = FXCollections.observableArrayList();
     private DoubleProperty zoom = new SimpleDoubleProperty(1.0);
+    private DoubleProperty xOffset = new SimpleDoubleProperty(0.0);
+    private DoubleProperty yOffset = new SimpleDoubleProperty(0.0);
 
     public GraphViewModel() {
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(1.0), new EventHandler<ActionEvent>() {
+        this.graph = new Graph();
+        name.set("Undefined-" + Editor.getDocsPane().getTabs().size());
+        init();
+    }
+
+    private void init() {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.2), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                for(NodeViewModel viewModel : nodes) {
+                    viewModel.getErrorProperty().set("");
+                }
+
                 try {
                     graph.execute();
                 } catch (GraphExecutionException e) {
                     for(NodeViewModel viewModel : nodes) {
                         if(viewModel.getNode() == e.getNode()) {
                             viewModel.getErrorProperty().set(e.getMessage());
-                        } else {
-                            viewModel.getErrorProperty().set("");
                         }
                     }
                 }
@@ -73,6 +91,18 @@ public class GraphViewModel extends ViewModel {
         return zoom;
     }
 
+    public DoubleProperty getXOffsetProperty() {
+        return xOffset;
+    }
+
+    public DoubleProperty getYOffsetProperty() {
+        return yOffset;
+    }
+
+    public StringProperty getNameProperty() {
+        return name;
+    }
+
     public List<NodeViewModel> getSelectedNodes() {
         List<NodeViewModel> selected = new ArrayList<>();
         for(NodeViewModel node : nodes) {
@@ -83,10 +113,30 @@ public class GraphViewModel extends ViewModel {
         return selected;
     }
 
-    public void zoom(double delta) {
+    public void zoom(double mouseX, double mouseY, double delta) {
         double value = zoom.get() + delta;
         value = Math.min(20.0, Math.max(value, 0.1));
+        double deltaScale = value - zoom.get();
+        double deltaX = -mouseX * deltaScale;
+        double deltaY = -mouseY * deltaScale;
+
         zoom.set(value);
+        xOffset.set(xOffset.get() + deltaX);
+        yOffset.set(yOffset.get() + deltaY);
+    }
+
+    public void setZoom(double value) {
+        zoom.set(value);
+    }
+
+    public void setOffset(double x, double y) {
+        xOffset.set(x);
+        yOffset.set(y);
+    }
+
+    public void move(double deltaX, double deltaY) {
+        xOffset.setValue(xOffset.getValue() + deltaX);
+        yOffset.setValue(yOffset.getValue() + deltaY);
     }
 
     public void addNode(Processor processor, double x, double y) {
@@ -118,8 +168,9 @@ public class GraphViewModel extends ViewModel {
 
     public void moveSelected(double deltaX, double deltaY) {
         for(NodeViewModel node : getSelectedNodes()) {
-            node.getLayoutXProperty().set(node.getLayoutXProperty().get() + deltaX / zoom.get());
-            node.getLayoutYProperty().set(node.getLayoutYProperty().get() + deltaY / zoom.get());
+            Point2D p = node.getPositionProperty().get();
+            p = p.add(new Point2D(deltaX / zoom.get(), deltaY / zoom.get()));
+            node.getPositionProperty().set(p);
         }
     }
 
@@ -139,14 +190,20 @@ public class GraphViewModel extends ViewModel {
 
     @Override
     public void update() {
-        for(NodeViewModel node : nodes) {
-            for(NodeSlotViewModel slot : node.getInputNodeSlots()) {
-                slot.update();
-            }
-            for(NodeSlotViewModel slot : node.getOutputNodeSlots()) {
-                slot.update();
+        for(Node node : graph.getNodes()) {
+            if(nodes.stream().noneMatch((NodeViewModel vm) -> vm.getNode() == node)) {
+                onNodeAdded(node);
             }
         }
+
+        for(NodeViewModel viewModel : nodes) {
+            if(graph.getNodes().stream().noneMatch((Node n) -> n == viewModel.getNode())) {
+                onNodeRemoved(viewModel.getNode());
+            }
+        }
+
+        for(NodeViewModel viewModel : nodes)
+            viewModel.update();
 
         {
             Set<Integer> connectionViewModelHash = new HashSet<>();
@@ -181,6 +238,28 @@ public class GraphViewModel extends ViewModel {
                 onDisconnected(new Connection(viewModel.getSource().getNodeSlot(), viewModel.getTarget().getNodeSlot()));
             }
         }
+
+        for(ConnectionViewModel viewModel : connections) {
+            viewModel.update();
+        }
+    }
+
+    private String getNameFromPath(String path) {
+        int from = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\')) + 1;
+        from = from < 0 ? 0 : from;
+        int to = path.lastIndexOf('.') < 0 ? path.length() : path.lastIndexOf('.');
+        return path.substring(from, to);
+    }
+
+    public void save(String path) throws Exception {
+        new GraphStore().save(graph, new FileOutputStream(path));
+        name.set(getNameFromPath(path));
+    }
+
+    public void load(String path) throws Exception {
+        graph = new GraphStore().load(new FileInputStream(path));
+        name.set(getNameFromPath(path));
+        update();
     }
 
     private void onNodeAdded(Node node) {

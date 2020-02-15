@@ -10,7 +10,7 @@ public class SciProcessor extends Processor {
         this.script = script;
     }
 
-    public DataBundle execute(DataBundle inputs) {
+    public DataBundle execute(DataBundle inputs, DataBundle state) {
         return script.run(inputs);
     }
 }

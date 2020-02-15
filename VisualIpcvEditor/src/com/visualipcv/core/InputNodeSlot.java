@@ -2,7 +2,6 @@ package com.visualipcv.core;
 
 public class InputNodeSlot extends NodeSlot {
     private Object value;
-    private OutputNodeSlot input;
 
     public InputNodeSlot(Node node, ProcessorProperty property) {
         super(node, property);
@@ -18,27 +17,27 @@ public class InputNodeSlot extends NodeSlot {
             throw new IllegalArgumentException("Slot types mismatch");
         }
 
-        if(input != null) {
+        if(getConnectedSlot() != null) {
             disconnect();
         }
 
-        this.input = (OutputNodeSlot)slot;
-        getNode().getGraph().addConnectionRecord(slot, this);
+        getNode().getGraph().addConnectionRecord(new Connection(slot, this));
     }
 
     public void disconnect() {
-        if(input != null) {
-            this.input = null;
-        }
         getNode().getGraph().removeConnectionRecords(this);
     }
 
     public boolean isConnected() {
-        return input != null;
+        return getConnectedSlot() != null;
     }
 
     public OutputNodeSlot getConnectedSlot() {
-        return input;
+        for(Connection connection : getNode().getGraph().getConnections()) {
+            if(connection.getTarget() == this)
+                return (OutputNodeSlot)connection.getSource();
+        }
+        return null;
     }
 
     public void setValue(Object value) {

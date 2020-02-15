@@ -1,55 +1,34 @@
 package com.visualipcv.viewmodel;
 
-import com.visualipcv.core.InputNodeSlot;
 import com.visualipcv.core.Node;
-import com.visualipcv.core.NodeSlot;
-import com.visualipcv.core.Processor;
-import com.visualipcv.view.NodeSlotView;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.DoublePropertyBase;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ObjectPropertyBase;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Point2D;
 
 public class NodeViewModel extends ViewModel {
     private Node node;
     private GraphViewModel graph;
 
-    private DoubleProperty layoutX = new DoublePropertyBase() {
+    private ObjectProperty<Point2D> position = new ObjectPropertyBase<Point2D>() {
         @Override
         public Object getBean() {
-            return this;
+            return NodeViewModel.this;
         }
 
         @Override
         public String getName() {
-            return "layoutX";
+            return "position";
         }
 
         @Override
         public void invalidated() {
-            node.setLocation(layoutX.getValue(), node.getY());
-        }
-    };
-
-    private DoubleProperty layoutY = new DoublePropertyBase() {
-        @Override
-        public Object getBean() {
-            return this;
-        }
-
-        @Override
-        public String getName() {
-            return "layoutY";
-        }
-
-        @Override
-        public void invalidated() {
-            node.setLocation(node.getX(), layoutY.getValue());
+            node.setLocation(position.get().getX(), position.get().getY());
         }
     };
 
@@ -63,7 +42,6 @@ public class NodeViewModel extends ViewModel {
     public NodeViewModel(GraphViewModel graph, Node node) {
         this.node = node;
         this.graph = graph;
-        title.setValue(node.getProcessor().getName());
         update();
     }
 
@@ -75,12 +53,8 @@ public class NodeViewModel extends ViewModel {
         return node;
     }
 
-    public DoubleProperty getLayoutXProperty() {
-        return layoutX;
-    }
-
-    public DoubleProperty getLayoutYProperty() {
-        return layoutY;
+    public ObjectProperty<Point2D> getPositionProperty() {
+        return position;
     }
 
     public StringProperty getTitleProperty() {
@@ -119,7 +93,15 @@ public class NodeViewModel extends ViewModel {
 
     @Override
     public void update() {
-        layoutX.set(node.getX());
-        layoutY.set(node.getY());
+        position.set(new Point2D(node.getX(), node.getY()));
+        title.set(node.getProcessor().getName());
+
+        for(NodeSlotViewModel viewModel : getInputNodeSlots()) {
+            viewModel.update();
+        }
+
+        for(NodeSlotViewModel viewModel : getOutputNodeSlots()) {
+            viewModel.update();
+        }
     }
 }

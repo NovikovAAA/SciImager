@@ -35,6 +35,15 @@ public class NodeSlotView extends AnchorPane implements IGraphViewElement {
 
     public NodeSlotView(NodeView node, NodeSlot slot) {
         viewModel = new NodeSlotViewModel(node.getViewModel(), slot);
+        init(node);
+    }
+
+    public NodeSlotView(NodeView node, InputFieldView view, NodeSlot slot) {
+        viewModel = new NodeSlotViewModel(node.getViewModel(), view.getViewModel(), slot);
+        init(node);
+    }
+
+    private void init(NodeView node) {
         this.node = node;
 
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("NodeSlotView.fxml"));
@@ -79,6 +88,15 @@ public class NodeSlotView extends AnchorPane implements IGraphViewElement {
 
     public boolean isInput() {
         return !isOutputProperty.get();
+    }
+
+    @Override
+    public void layoutChildren() {
+        super.layoutChildren();
+
+        for(ConnectionView connection : getConnections()) {
+            connection.updatePoints();
+        }
     }
 
     @FXML

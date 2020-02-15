@@ -1,6 +1,7 @@
 package com.visualipcv.view;
 
 import com.visualipcv.controller.IGraphViewElement;
+import com.visualipcv.core.NativeProcessor;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
 import com.visualipcv.viewmodel.NodeViewModel;
@@ -13,6 +14,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -25,9 +27,11 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.StrokeType;
 import javafx.scene.text.Text;
 
 import java.io.IOException;
+import java.lang.annotation.Native;
 import java.util.List;
 
 public class NodeView extends AnchorPane implements IGraphViewElement {
@@ -47,6 +51,8 @@ public class NodeView extends AnchorPane implements IGraphViewElement {
     private Text error;
     @FXML
     private Pane errorPane;
+    @FXML
+    private Pane nodeClass;
 
     private BooleanProperty selected = new BooleanPropertyBase() {
         @Override
@@ -86,11 +92,17 @@ public class NodeView extends AnchorPane implements IGraphViewElement {
             e.printStackTrace();
         }
 
-        layoutXProperty().bindBidirectional(viewModel.getLayoutXProperty());
-        layoutYProperty().bindBidirectional(viewModel.getLayoutYProperty());
+        if(!(node.getProcessor() instanceof NativeProcessor)) {
+            Text text = new Text("Java");
+            text.setLayoutY(title.getLayoutY());
+            text.setLayoutX(nodeClass.getWidth() - 10.0);
+            nodeClass.getChildren().add(text);
+        }
+
         title.textProperty().bind(viewModel.getTitleProperty());
         error.textProperty().bind(viewModel.getErrorProperty());
         errorPane.visibleProperty().bind(viewModel.getErrorProperty().isNotEmpty());
+        errorPane.managedProperty().bind(viewModel.getErrorProperty().isNotEmpty());
         selected.bind(viewModel.getIsSelected());
 
         for(NodeSlot slot : getViewModel().getNode().getInputSlots()) {
@@ -110,6 +122,17 @@ public class NodeView extends AnchorPane implements IGraphViewElement {
             viewModel.getOutputNodeSlots().add(slotView.getViewModel());
             outputContainer.getChildren().add(slotView);
         }
+
+        viewModel.getPositionProperty().addListener(new ChangeListener<Point2D>() {
+            @Override
+            public void changed(ObservableValue<? extends Point2D> observable, Point2D oldValue, Point2D newValue) {
+                setLayoutX(newValue.getX());
+                setLayoutY(newValue.getY());
+            }
+        });
+
+        setLayoutX(viewModel.getPositionProperty().get().getX());
+        setLayoutY(viewModel.getPositionProperty().get().getY());
 
         inputSlots.addListener(new ListChangeListener<AdvancedNodeSlotView>() {
             @Override

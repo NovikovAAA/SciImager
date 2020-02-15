@@ -1,6 +1,10 @@
 package com.visualipcv;
 
 import com.visualipcv.core.ProcessorLibrary;
+import com.visualipcv.editor.Editor;
+import com.visualipcv.scripts.SciConverter;
+import com.visualipcv.scripts.SciConverters;
+import com.visualipcv.scripts.SciRunner;
 import com.visualipcv.utils.LinkUtils;
 import com.visualipcv.view.ConsoleView;
 import com.visualipcv.view.FunctionListView;
@@ -15,6 +19,9 @@ import javafx.scene.control.TreeView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.dockfx.DockNode;
+import org.dockfx.DockPane;
+import org.dockfx.DockPos;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -27,6 +34,7 @@ public class Main extends Application {
 
     static {
         LinkUtils.linkNativeLibraries();
+        ProcessorLibrary.load();
     }
 
     private static ProcessorLibrary processorLibrary = new ProcessorLibrary();
@@ -56,26 +64,6 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("VisualIPCV");
-
-        VBox root = new VBox();
-        root.getChildren().addAll();
-
-        SplitPane hPane = new SplitPane();
-        hPane.setOrientation(Orientation.HORIZONTAL);
-
-        SplitPane vPane = new SplitPane();
-        vPane.setOrientation(Orientation.VERTICAL);
-
-        hPane.getItems().add(new FunctionListView());
-        hPane.getItems().add(vPane);
-        vPane.getItems().add(new GraphView());
-        vPane.getItems().add(new ConsoleView());
-
-        root.getChildren().add(hPane);
-
-        primaryStage.setScene(new Scene(root, 1280, 720));
-        primaryStage.sizeToScene();
-        primaryStage.show();
+        Editor.initPrimaryStage(primaryStage);
     }
 }

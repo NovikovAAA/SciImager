@@ -2,6 +2,7 @@ package com.visualipcv.view;
 
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorLibrary;
+import com.visualipcv.editor.EditorWindow;
 import com.visualipcv.viewmodel.FunctionListViewModel;
 import com.visualipcv.viewmodel.FunctionRecord;
 import javafx.event.EventHandler;
@@ -12,6 +13,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
+import org.dockfx.DockPos;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
 
+@EditorWindow(path = "View/Function list", name = "Function list", dockPos = DockPos.LEFT)
 public class FunctionListView extends AnchorPane {
     @FXML
     private TreeView<FunctionRecord> treeView;

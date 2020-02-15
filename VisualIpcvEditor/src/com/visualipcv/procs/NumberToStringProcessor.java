@@ -20,7 +20,7 @@ public class NumberToStringProcessor extends Processor {
     }
 
     @Override
-    public DataBundle execute(DataBundle inputs) {
+    public DataBundle execute(DataBundle inputs, DataBundle state) {
         DataBundle res = new DataBundle();
         res.write("String", inputs.read("Number").toString());
         return res;

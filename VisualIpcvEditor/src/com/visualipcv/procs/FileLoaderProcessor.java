@@ -21,7 +21,7 @@ public class FileLoaderProcessor extends Processor {
     }
 
     @Override
-    public DataBundle execute(DataBundle inputs) {
+    public DataBundle execute(DataBundle inputs, DataBundle state) {
         return new DataBundle();
     }
 }

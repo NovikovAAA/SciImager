@@ -22,7 +22,7 @@ public class SumProcessor extends Processor {
     }
 
     @Override
-    public DataBundle execute(DataBundle inputs) {
+    public DataBundle execute(DataBundle inputs, DataBundle state) {
         DataBundle res = new DataBundle();
         res.write("Result", inputs.<Double>read("A") + inputs.<Double>read("B"));
         return res;

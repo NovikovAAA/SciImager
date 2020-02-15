@@ -7,7 +7,7 @@ import org.scilab.modules.types.*;
 public class SciRunner {
     private static Scilab scilab;
 
-    static {
+    public static void load() {
         try {
             scilab = new Scilab(true);
         } catch(JavasciException.InitializationException e) {

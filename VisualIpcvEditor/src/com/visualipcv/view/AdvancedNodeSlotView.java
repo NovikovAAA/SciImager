@@ -15,13 +15,16 @@ public class AdvancedNodeSlotView extends HBox {
     public AdvancedNodeSlotView(NodeView view, NodeSlot slot, boolean isOutput) {
         setAlignment(isOutput ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
 
-        if(slot.getProperty().showConnector()) {
-            slotView = new NodeSlotView(view, slot);
-        }
-
         if(slot.getProperty().showControl()) {
             fieldView = new InputFieldView(slot);
             setMargin(fieldView, new Insets(10.0));
+        }
+
+        if(slot.getProperty().showConnector()) {
+            if(fieldView != null)
+                slotView = new NodeSlotView(view, fieldView, slot);
+            else
+                slotView = new NodeSlotView(view, slot);
         }
 
         Text title = new Text();

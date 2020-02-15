@@ -24,4 +24,8 @@ public class DataBundle implements Iterable<Object> {
     public Iterator<Object> iterator() {
         return values.values().iterator();
     }
+
+    public void clear() {
+        values.clear();
+    }
 }
