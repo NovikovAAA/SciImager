@@ -14,6 +14,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
@@ -98,8 +99,6 @@ public class NodeView extends AnchorPane implements IGraphViewElement {
             nodeClass.getChildren().add(text);
         }
 
-        layoutXProperty().bindBidirectional(viewModel.getLayoutXProperty());
-        layoutYProperty().bindBidirectional(viewModel.getLayoutYProperty());
         title.textProperty().bind(viewModel.getTitleProperty());
         error.textProperty().bind(viewModel.getErrorProperty());
         errorPane.visibleProperty().bind(viewModel.getErrorProperty().isNotEmpty());
@@ -123,6 +122,17 @@ public class NodeView extends AnchorPane implements IGraphViewElement {
             viewModel.getOutputNodeSlots().add(slotView.getViewModel());
             outputContainer.getChildren().add(slotView);
         }
+
+        viewModel.getPositionProperty().addListener(new ChangeListener<Point2D>() {
+            @Override
+            public void changed(ObservableValue<? extends Point2D> observable, Point2D oldValue, Point2D newValue) {
+                setLayoutX(newValue.getX());
+                setLayoutY(newValue.getY());
+            }
+        });
+
+        setLayoutX(viewModel.getPositionProperty().get().getX());
+        setLayoutY(viewModel.getPositionProperty().get().getY());
 
         inputSlots.addListener(new ListChangeListener<AdvancedNodeSlotView>() {
             @Override

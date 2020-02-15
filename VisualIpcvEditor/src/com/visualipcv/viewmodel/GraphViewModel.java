@@ -6,15 +6,19 @@ import com.visualipcv.core.GraphExecutionException;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.io.GraphStore;
+import com.visualipcv.editor.Editor;
 import com.visualipcv.view.ConnectionView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.util.Duration;
 
 import java.io.FileInputStream;
@@ -37,6 +41,7 @@ public class GraphViewModel extends ViewModel {
 
     private Graph graph;
 
+    private StringProperty name = new SimpleStringProperty();
     private ObservableList<NodeViewModel> nodes = FXCollections.observableArrayList();
     private ObservableList<ConnectionViewModel> connections = FXCollections.observableArrayList();
     private DoubleProperty zoom = new SimpleDoubleProperty(1.0);
@@ -45,11 +50,7 @@ public class GraphViewModel extends ViewModel {
 
     public GraphViewModel() {
         this.graph = new Graph();
-        init();
-    }
-
-    public GraphViewModel(Graph graph) {
-        this.graph = graph;
+        name.set("Undefined-" + Editor.getDocsPane().getTabs().size());
         init();
     }
 
@@ -96,6 +97,10 @@ public class GraphViewModel extends ViewModel {
 
     public DoubleProperty getYOffsetProperty() {
         return yOffset;
+    }
+
+    public StringProperty getNameProperty() {
+        return name;
     }
 
     public List<NodeViewModel> getSelectedNodes() {
@@ -163,8 +168,9 @@ public class GraphViewModel extends ViewModel {
 
     public void moveSelected(double deltaX, double deltaY) {
         for(NodeViewModel node : getSelectedNodes()) {
-            node.getLayoutXProperty().set(node.getLayoutXProperty().get() + deltaX / zoom.get());
-            node.getLayoutYProperty().set(node.getLayoutYProperty().get() + deltaY / zoom.get());
+            Point2D p = node.getPositionProperty().get();
+            p = p.add(new Point2D(deltaX / zoom.get(), deltaY / zoom.get()));
+            node.getPositionProperty().set(p);
         }
     }
 
@@ -238,12 +244,21 @@ public class GraphViewModel extends ViewModel {
         }
     }
 
+    private String getNameFromPath(String path) {
+        int from = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\')) + 1;
+        from = from < 0 ? 0 : from;
+        int to = path.lastIndexOf('.') < 0 ? path.length() : path.lastIndexOf('.');
+        return path.substring(from, to);
+    }
+
     public void save(String path) throws Exception {
         new GraphStore().save(graph, new FileOutputStream(path));
+        name.set(getNameFromPath(path));
     }
 
     public void load(String path) throws Exception {
         graph = new GraphStore().load(new FileInputStream(path));
+        name.set(getNameFromPath(path));
         update();
     }
 

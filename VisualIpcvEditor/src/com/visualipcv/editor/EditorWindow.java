@@ -1,5 +1,6 @@
 package com.visualipcv.editor;
 
+import javafx.scene.input.KeyCombination;
 import org.dockfx.DockPos;
 
 import java.lang.annotation.ElementType;

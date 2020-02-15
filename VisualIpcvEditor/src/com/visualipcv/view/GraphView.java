@@ -76,11 +76,6 @@ public class GraphView extends FreePane implements IGraphViewElement {
         }
     };
 
-    public GraphView(Graph graph) {
-        viewModel = new GraphViewModel(graph);
-        init();
-    }
-
     public GraphView() {
         viewModel = new GraphViewModel();
         init();
@@ -106,7 +101,11 @@ public class GraphView extends FreePane implements IGraphViewElement {
         Editor.getPrimaryStage().addEventFilter(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if(event.getCode() == KeyCode.Z)
+                if(event.getCode() == KeyCode.Z && event.isControlDown() && Editor.getDocsPane().getSelectionModel().getSelectedItem().getContent() == GraphView.this)
+                    ;
+                else if(event.getCode() == KeyCode.Y && event.isControlDown() && Editor.getDocsPane().getSelectionModel().getSelectedItem().getContent() == GraphView.this)
+                    ;
+                else if(event.getCode() == KeyCode.Z)
                     zoomToFit();
             }
         });
