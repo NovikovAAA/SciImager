@@ -3,7 +3,6 @@ package com.visualipcv.view;
 import com.visualipcv.core.DataType;
 import com.visualipcv.core.InputNodeSlot;
 import com.visualipcv.core.NodeSlot;
-import com.visualipcv.utils.UIHighlight;
 import com.visualipcv.viewmodel.ViewModel;
 import com.visualipcv.viewmodel.fields.NumberViewModel;
 import com.visualipcv.viewmodel.fields.StringViewModel;
