@@ -1,4 +1,4 @@
-package org.dockfx;
+package com.visualipcv.view.docking;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +21,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
@@ -143,10 +144,11 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
         StackPane.setAlignment(dockLeftRoot, Pos.CENTER_LEFT);
         dockLeftRoot.getStyleClass().add("dock-left-root");
 
-        dockPosButtons = FXCollections.observableArrayList(dockTop, dockRight, dockBottom, dockLeft,
+        dockPosButtons = FXCollections.observableArrayList(dockCenter, dockTop, dockRight, dockBottom, dockLeft,
                 dockTopRoot, dockRightRoot, dockBottomRoot, dockLeftRoot);
 
         dockPosIndicator = new GridPane();
+        dockPosIndicator.add(dockCenter, 1, 1);
         dockPosIndicator.add(dockTop, 1, 0);
         dockPosIndicator.add(dockRight, 2, 1);
         dockPosIndicator.add(dockBottom, 1, 2);
@@ -166,6 +168,25 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
 
     public final Timeline getDockAreaStrokeTimeline() {
         return dockAreaStrokeTimeline;
+    }
+
+    public boolean isLastDockNode(DockNode node) {
+        Stack<Node> nodes = new Stack<>();
+        int dockNodeCount = 0;
+        nodes.push(root);
+
+        while(!nodes.isEmpty()) {
+            Node nextNode = nodes.pop();
+
+            if(nextNode instanceof SplitPane) {
+                for(Node child : ((SplitPane)nextNode).getItems())
+                    nodes.push(child);
+            } else if(nextNode instanceof DockNode) {
+                dockNodeCount++;
+            }
+        }
+
+        return dockNodeCount == 1;
     }
 
     public final static String getDefaultUserAgentStyleheet() {
@@ -197,6 +218,21 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
         DockNodeEventHandler dockNodeEventHandler = new DockNodeEventHandler(node);
         dockNodeEventFilters.put(node, dockNodeEventHandler);
         node.addEventFilter(DockEvent.DOCK_OVER, dockNodeEventHandler);
+
+        if(dockPos == DockPos.CENTER && sibling != null) {
+            if(!(sibling instanceof DockNode))
+                return;
+
+            DockNode targetDockNode = (DockNode)sibling;
+            DockNode dockNode = (DockNode)node;
+
+            for(Tab tab : dockNode.getTabs()) {
+                targetDockNode.getTabs().add(tab);
+            }
+
+            dockNode.getTabs().clear();
+            dockNode.close();
+        }
 
         SplitPane split = (SplitPane) root;
         if (split == null) {
@@ -300,7 +336,6 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
                 }
             }
         }
-
     }
 
     public void dock(Node node, DockPos dockPos) {

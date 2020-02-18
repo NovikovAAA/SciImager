@@ -1,4 +1,4 @@
-package org.dockfx;
+package com.visualipcv.view.docking;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -7,29 +7,53 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.css.PseudoClass;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class DockNode extends VBox implements EventHandler<MouseEvent> {
+import java.util.HashMap;
+import java.util.List;
+import java.util.Stack;
+
+public class DockNode extends TabPane implements EventHandler<MouseEvent> {
+
+    private abstract class EventTask {
+        protected int executions = 0;
+
+        public abstract void run(Node node, Node dragNode);
+
+        public int getExecutions() {
+            return executions;
+        }
+
+        public void reset() {
+            executions = 0;
+        }
+    }
+
     private StageStyle stageStyle = StageStyle.TRANSPARENT;
 
     private Stage stage;
 
-    private Node contents;
-    private DockTitleBar dockTitleBar;
+    private Point2D dragStart;
+    private boolean dragging = false;
+    private HashMap<Window, Node> dragNodes = new HashMap<Window, Node>();
+
     private BorderPane borderPane;
     private DockPane dockPane;
     private static final PseudoClass FLOATING_PSEUDO_CLASS = PseudoClass.getPseudoClass("floating");
@@ -70,14 +94,15 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     public DockNode(Node contents, String title, Node graphic) {
         this.titleProperty.setValue(title);
         this.graphicProperty.setValue(graphic);
-        this.contents = contents;
 
-        dockTitleBar = new DockTitleBar(this);
-
-        getChildren().addAll(dockTitleBar, contents);
-        VBox.setVgrow(contents, Priority.ALWAYS);
-
+        getTabs().add(new Tab(title, contents));
         this.getStyleClass().add("dock-node");
+
+        DockNodeMoveEventHandler moveEventHandler = new DockNodeMoveEventHandler();
+        setOnMousePressed(moveEventHandler);
+        setOnDragDetected(moveEventHandler);
+        setOnMouseDragged(moveEventHandler);
+        setOnMouseReleased(moveEventHandler);
     }
 
     public DockNode(Node contents, String title) {
@@ -93,22 +118,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     }
 
     public void setContents(Node contents) {
-        this.getChildren().set(this.getChildren().indexOf(this.contents), contents);
-        this.contents = contents;
-    }
-
-    public void setDockTitleBar(DockTitleBar dockTitleBar) {
-        if (dockTitleBar != null) {
-            if (this.dockTitleBar != null) {
-                this.getChildren().set(this.getChildren().indexOf(this.dockTitleBar), dockTitleBar);
-            } else {
-                this.getChildren().add(0, dockTitleBar);
-            }
-        } else {
-            this.getChildren().remove(this.dockTitleBar);
-        }
-
-        this.dockTitleBar = dockTitleBar;
+        throw new NotImplementedException();
     }
 
     public final void setMaximized(boolean maximized) {
@@ -117,11 +127,11 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
     public void setFloating(boolean floating, Point2D translation) {
         if (floating && !this.isFloating()) {
+            if(dockPane != null && dockPane.isLastDockNode(this))
+                return;
+
             Point2D floatScene = this.localToScene(0, 0);
             Point2D floatScreen = this.localToScreen(0, 0);
-
-            dockTitleBar.setVisible(this.isCustomTitleBar());
-            dockTitleBar.setManaged(this.isCustomTitleBar());
 
             this.floatingProperty.set(floating);
             this.applyCss();
@@ -205,20 +215,12 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
         return dockPane;
     }
 
-    public final DockTitleBar getDockTitleBar() {
-        return this.dockTitleBar;
-    }
-
     public final Stage getStage() {
         return stage;
     }
 
     public final BorderPane getBorderPane() {
         return borderPane;
-    }
-
-    public final Node getContents() {
-        return contents;
     }
 
     public final ObjectProperty<Node> graphicProperty() {
@@ -257,29 +259,6 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
     public final void setTitle(String title) {
         this.titleProperty.setValue(title);
-    }
-
-    public final BooleanProperty customTitleBarProperty() {
-        return customTitleBarProperty;
-    }
-
-    private BooleanProperty customTitleBarProperty = new SimpleBooleanProperty(true) {
-        @Override
-        public String getName() {
-            return "customTitleBar";
-        }
-    };
-
-    public final boolean isCustomTitleBar() {
-        return customTitleBarProperty.get();
-    }
-
-    public final void setUseCustomTitleBar(boolean useCustomTitleBar) {
-        if (this.isFloating()) {
-            dockTitleBar.setVisible(useCustomTitleBar);
-            dockTitleBar.setManaged(useCustomTitleBar);
-        }
-        this.customTitleBarProperty.set(useCustomTitleBar);
     }
 
     public final BooleanProperty floatingProperty() {
@@ -372,13 +351,6 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     private BooleanProperty dockedProperty = new SimpleBooleanProperty(false) {
         @Override
         protected void invalidated() {
-            if (get()) {
-                if (dockTitleBar != null) {
-                    dockTitleBar.setVisible(true);
-                    dockTitleBar.setManaged(true);
-                }
-            }
-
             DockNode.this.pseudoClassStateChanged(DOCKED_PSEUDO_CLASS, get());
         }
 
@@ -444,8 +416,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
         return sizeWest || sizeEast || sizeNorth || sizeSouth;
     }
 
-    @Override
-    public void handle(MouseEvent event) {
+    private void handleResize(MouseEvent event) {
         Cursor cursor = Cursor.DEFAULT;
 
         if (!this.isFloating() || !this.isStageResizable()) {
@@ -522,6 +493,157 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
             if (sizeNorth || sizeSouth || sizeWest || sizeEast) {
                 event.consume();
+            }
+        }
+    }
+
+    @Override
+    public void handle(MouseEvent event) {
+        handleResize(event);
+    }
+
+    private class DockNodeMoveEventHandler implements EventHandler<MouseEvent> {
+        @Override
+        public void handle(MouseEvent event) {
+            if(event.getEventType() == MouseEvent.MOUSE_PRESSED) {
+                dragStart = new Point2D(event.getX(), event.getY());
+            } else if(event.getEventType() == MouseEvent.DRAG_DETECTED) {
+                if(!isFloating()) {
+                    setFloating(true);
+
+                    if(dockPane != null) {
+                        dockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
+                        dockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
+                    }
+                } else if(isMaximized()) {
+                    double ratioX = event.getX() / getWidth();
+                    double ratioY = event.getY() / getHeight();
+
+                    setMaximized(false);
+
+                    dragStart = new Point2D(ratioX * getWidth(), ratioY * getHeight());
+                }
+
+                if(isFloating())
+                    dragging = true;
+
+                event.consume();
+            } else if(event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
+                if(!dragging)
+                    return;
+
+                Stage stage = getStage();
+                Insets insetsDelta = getBorderPane() != null ? getBorderPane().getInsets() : new Insets(0.0);
+                stage.setX(event.getScreenX() - dragStart.getX() - insetsDelta.getLeft());
+                stage.setY(event.getScreenY() - dragStart.getY() - insetsDelta.getTop());
+
+                DockEvent dockEnterEvent =
+                        new DockEvent(this, DockEvent.NULL_SOURCE_TARGET, DockEvent.DOCK_ENTER, event.getX(),
+                                event.getY(), event.getScreenX(), event.getScreenY(), null);
+                DockEvent dockOverEvent =
+                        new DockEvent(this, DockEvent.NULL_SOURCE_TARGET, DockEvent.DOCK_OVER, event.getX(),
+                                event.getY(), event.getScreenX(), event.getScreenY(), null);
+                DockEvent dockExitEvent =
+                        new DockEvent(this, DockEvent.NULL_SOURCE_TARGET, DockEvent.DOCK_EXIT, event.getX(),
+                                event.getY(), event.getScreenX(), event.getScreenY(), null);
+
+                EventTask eventTask = new EventTask() {
+                    @Override
+                    public void run(Node node, Node dragNode) {
+                        executions++;
+
+                        if (dragNode != node) {
+                            Event.fireEvent(node, dockEnterEvent.copyFor(DockNode.this, node));
+
+                            if (dragNode != null) {
+                                Event.fireEvent(dragNode, dockExitEvent.copyFor(DockNode.this, dragNode));
+                            }
+
+                            dragNodes.put(node.getScene().getWindow(), node);
+                        }
+                        Event.fireEvent(node, dockOverEvent.copyFor(DockNode.this, node));
+                    }
+                };
+
+                DockNode.this.pickEventTarget(new Point2D(event.getScreenX(), event.getScreenY()), eventTask, dockExitEvent);
+            } else if(event.getEventType() == MouseEvent.MOUSE_RELEASED) {
+                dragging = false;
+
+                DockEvent dockReleasedEvent =
+                        new DockEvent(this, DockEvent.NULL_SOURCE_TARGET, DockEvent.DOCK_RELEASED, event.getX(),
+                                event.getY(), event.getScreenX(), event.getScreenY(), null, DockNode.this);
+
+                EventTask eventTask = new EventTask() {
+                    @Override
+                    public void run(Node node, Node dragNode) {
+                        executions++;
+                        if (dragNode != node) {
+                            Event.fireEvent(node, dockReleasedEvent.copyFor(DockNode.this, node));
+                        }
+                        Event.fireEvent(node, dockReleasedEvent.copyFor(DockNode.this, node));
+                    }
+                };
+
+                DockNode.this.pickEventTarget(new Point2D(event.getScreenX(), event.getScreenY()), eventTask, null);
+                dragNodes.clear();
+
+                DockPane dockPane = getDockPane();
+
+                if (dockPane != null) {
+                    dockPane.removeEventFilter(MouseEvent.MOUSE_DRAGGED, this);
+                    dockPane.removeEventFilter(MouseEvent.MOUSE_RELEASED, this);
+                }
+            }
+        }
+    }
+
+    private void pickEventTarget(Point2D location, EventTask eventTask, Event explicit) {
+        List<DockPane> dockPanes = DockPane.dockPanes;
+
+        for (DockPane dockPane : dockPanes) {
+            Window window = dockPane.getScene().getWindow();
+            if (!(window instanceof Stage)) continue;
+            Stage targetStage = (Stage) window;
+
+            if (targetStage == getStage())
+                continue;
+
+            eventTask.reset();
+
+            Node dragNode = dragNodes.get(targetStage);
+
+            Parent root = targetStage.getScene().getRoot();
+            Stack<Parent> stack = new Stack<Parent>();
+            if (root.contains(root.screenToLocal(location.getX(), location.getY()))
+                    && !root.isMouseTransparent()) {
+                stack.push(root);
+            }
+
+            while (!stack.isEmpty()) {
+                Parent parent = stack.pop();
+
+                boolean notFired = true;
+                for (Node node : parent.getChildrenUnmodifiable()) {
+                    if (node.contains(node.screenToLocal(location.getX(), location.getY()))
+                            && !node.isMouseTransparent()) {
+                        if (node instanceof Parent) {
+                            stack.push((Parent) node);
+                        } else {
+                            eventTask.run(node, dragNode);
+                        }
+                        notFired = false;
+                        break;
+                    }
+                }
+
+                if (notFired) {
+                    eventTask.run(parent, dragNode);
+                }
+            }
+
+            if (explicit != null && dragNode != null && eventTask.getExecutions() < 1) {
+                Event.fireEvent(dragNode, explicit.copyFor(this, dragNode));
+                dragNodes.put(targetStage, null);
             }
         }
     }

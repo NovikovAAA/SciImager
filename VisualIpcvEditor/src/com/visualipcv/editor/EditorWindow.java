@@ -1,7 +1,6 @@
 package com.visualipcv.editor;
 
-import javafx.scene.input.KeyCombination;
-import org.dockfx.DockPos;
+import com.visualipcv.view.docking.DockPos;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

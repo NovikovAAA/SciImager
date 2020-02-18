@@ -1,4 +1,4 @@
-package org.dockfx;
+package com.visualipcv.view.docking;
 
 public enum DockPos {
   CENTER,

@@ -1,6 +1,5 @@
 package com.visualipcv.view;
 
-import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.editor.EditorWindow;
 import com.visualipcv.events.RefreshEventListener;
@@ -16,13 +15,9 @@ import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
-import org.dockfx.DockPos;
+import com.visualipcv.view.docking.DockPos;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Set;
 
 @EditorWindow(path = "View/Function list", name = "Function list", dockPos = DockPos.LEFT)
 public class FunctionListView extends AnchorPane {

@@ -6,17 +6,9 @@ import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorProperty;
 import com.visualipcv.editor.Editor;
 import com.visualipcv.view.ImageWindow;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import org.dockfx.DockNode;
-import org.dockfx.DockPos;
-import org.dockfx.DockTitleBar;
+import com.visualipcv.view.docking.DockNode;
+import com.visualipcv.view.docking.DockPos;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -38,7 +30,6 @@ public class ImageOutputProcessor extends Processor {
     private DockNode createWindow(DataBundle state) {
         ImageWindow window = new ImageWindow();
         DockNode demoStage = new DockNode(window, "Output");
-        demoStage.setDockTitleBar(new DockTitleBar(demoStage));
         demoStage.setPrefWidth(500.0);
         demoStage.setPrefHeight(500.0);
         demoStage.setLayoutX(10.0);

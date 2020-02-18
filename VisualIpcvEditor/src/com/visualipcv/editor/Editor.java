@@ -1,7 +1,5 @@
 package com.visualipcv.editor;
 
-import com.visualipcv.core.Graph;
-import com.visualipcv.core.io.GraphStore;
 import com.visualipcv.view.ConsoleView;
 import com.visualipcv.view.FunctionListView;
 import com.visualipcv.view.GraphTabPane;
@@ -15,23 +13,17 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.dockfx.DockNode;
-import org.dockfx.DockPane;
-import org.dockfx.DockPos;
+import com.visualipcv.view.docking.DockNode;
+import com.visualipcv.view.docking.DockPane;
+import com.visualipcv.view.docking.DockPos;
 import org.reflections.Reflections;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 public class Editor {
@@ -209,7 +201,6 @@ public class Editor {
         DockNode graphPanel = new DockNode(docsPane, "Graph");
         DockNode consolePanel = new DockNode(new ConsoleView(), "Console");
 
-        graphPanel.setDockTitleBar(null);
         graphPanel.dock(dockPane, DockPos.CENTER);
         consolePanel.dock(dockPane, DockPos.BOTTOM);
         functionListPanel.dock(dockPane, DockPos.LEFT);
