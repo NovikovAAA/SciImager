@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import org.dockfx.DockPos;
 
@@ -40,6 +41,16 @@ public class ConsoleView extends AnchorPane {
             @Override
             public void handle(javafx.event.ActionEvent event) {
                 output.clear();
+            }
+        });
+
+        inputField.setOnKeyReleased(new EventHandler<javafx.scene.input.KeyEvent>() {
+            @Override
+            public void handle(javafx.scene.input.KeyEvent event) {
+                if(event.getCode() == KeyCode.ENTER) {
+                    Console.write(inputField.getText(), true);
+                    inputField.clear();
+                }
             }
         });
 
