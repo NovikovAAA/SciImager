@@ -225,13 +225,7 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
 
             DockNode targetDockNode = (DockNode)sibling;
             DockNode dockNode = (DockNode)node;
-
-            for(Tab tab : dockNode.getTabs()) {
-                targetDockNode.getTabs().add(tab);
-            }
-
-            dockNode.getTabs().clear();
-            dockNode.close();
+            targetDockNode.merge(dockNode);
         }
 
         SplitPane split = (SplitPane) root;

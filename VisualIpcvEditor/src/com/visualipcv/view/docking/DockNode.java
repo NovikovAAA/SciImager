@@ -19,7 +19,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -30,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
-public class DockNode extends TabPane implements EventHandler<MouseEvent> {
+public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
     private abstract class EventTask {
         protected int executions = 0;
@@ -53,8 +56,9 @@ public class DockNode extends TabPane implements EventHandler<MouseEvent> {
     private Point2D dragStart;
     private boolean dragging = false;
     private HashMap<Window, Node> dragNodes = new HashMap<Window, Node>();
+    private DockNodeMoveEventHandler moveEventHandler = new DockNodeMoveEventHandler();
 
-    private BorderPane borderPane;
+    private TabPane tabPane;
     private DockPane dockPane;
     private static final PseudoClass FLOATING_PSEUDO_CLASS = PseudoClass.getPseudoClass("floating");
     private static final PseudoClass DOCKED_PSEUDO_CLASS = PseudoClass.getPseudoClass("docked");
@@ -65,8 +69,8 @@ public class DockNode extends TabPane implements EventHandler<MouseEvent> {
         @Override
         protected void invalidated() {
             DockNode.this.pseudoClassStateChanged(MAXIMIZED_PSEUDO_CLASS, get());
-            if (borderPane != null) {
-                borderPane.pseudoClassStateChanged(MAXIMIZED_PSEUDO_CLASS, get());
+            if (getBorderPane() != null) {
+                getBorderPane().pseudoClassStateChanged(MAXIMIZED_PSEUDO_CLASS, get());
             }
 
             stage.setMaximized(get());
@@ -95,14 +99,17 @@ public class DockNode extends TabPane implements EventHandler<MouseEvent> {
         this.titleProperty.setValue(title);
         this.graphicProperty.setValue(graphic);
 
-        getTabs().add(new Tab(title, contents));
+        tabPane = new TabPane();
+        getChildren().add(tabPane);
+        VBox.setVgrow(tabPane, Priority.ALWAYS);
+
+        addTab(contents, title);
         this.getStyleClass().add("dock-node");
 
-        DockNodeMoveEventHandler moveEventHandler = new DockNodeMoveEventHandler();
-        setOnMousePressed(moveEventHandler);
-        setOnDragDetected(moveEventHandler);
-        setOnMouseDragged(moveEventHandler);
-        setOnMouseReleased(moveEventHandler);
+        tabPane.setOnMousePressed(moveEventHandler);
+        tabPane.setOnDragDetected(moveEventHandler);
+        tabPane.setOnMouseDragged(moveEventHandler);
+        tabPane.setOnMouseReleased(moveEventHandler);
     }
 
     public DockNode(Node contents, String title) {
@@ -125,77 +132,88 @@ public class DockNode extends TabPane implements EventHandler<MouseEvent> {
         maximizedProperty.set(maximized);
     }
 
+    private Stage createStage(Point2D translation) {
+        Point2D floatScene = this.localToScene(0, 0);
+        Point2D floatScreen = this.localToScreen(0, 0);
+
+        stage = new Stage();
+        stage.titleProperty().bind(titleProperty);
+
+        if (dockPane != null && dockPane.getScene() != null
+                && dockPane.getScene().getWindow() != null) {
+            stage.initOwner(dockPane.getScene().getWindow());
+        }
+
+        stage.initStyle(stageStyle);
+
+        Point2D stagePosition;
+
+        if (this.isDecorated()) {
+            Window owner = stage.getOwner();
+            stagePosition = floatScene.add(new Point2D(owner.getX(), owner.getY()));
+        } else {
+            stagePosition = floatScreen;
+        }
+        if (translation != null) {
+            stagePosition = stagePosition.add(translation);
+        }
+
+        BorderPane borderPane = new BorderPane();
+        borderPane.getStyleClass().add("dock-node-border");
+        DockPane dockPane = new DockPane();
+        borderPane.setCenter(dockPane);
+        Scene scene = new Scene(borderPane);
+
+        borderPane.applyCss();
+        Insets insetsDelta = borderPane.getInsets();
+
+        double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
+        double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
+
+        stage.setX(stagePosition.getX() - insetsDelta.getLeft());
+        stage.setY(stagePosition.getY() - insetsDelta.getTop());
+
+        stage.setMinWidth(borderPane.minWidth(this.getHeight()) + insetsWidth);
+        stage.setMinHeight(borderPane.minHeight(this.getWidth()) + insetsHeight);
+
+        dockPane.setPrefSize(this.getWidth() + insetsWidth, this.getHeight() + insetsHeight);
+        borderPane.setPrefSize(this.getWidth() + insetsWidth, this.getHeight() + insetsHeight);
+
+        stage.setScene(scene);
+
+        if (stageStyle == StageStyle.TRANSPARENT) {
+            scene.setFill(null);
+        }
+
+        stage.setResizable(this.isStageResizable());
+        stage.sizeToScene();
+        stage.show();
+
+        return stage;
+    }
+
     public void setFloating(boolean floating, Point2D translation) {
         if (floating && !this.isFloating()) {
             if(dockPane != null && dockPane.isLastDockNode(this))
                 return;
 
-            Point2D floatScene = this.localToScene(0, 0);
-            Point2D floatScreen = this.localToScreen(0, 0);
-
+            Stage stage = createStage(translation);
             this.floatingProperty.set(floating);
+
             this.applyCss();
 
             if (this.isDocked()) {
                 this.undock();
             }
 
-            stage = new Stage();
-            stage.titleProperty().bind(titleProperty);
-            if (dockPane != null && dockPane.getScene() != null
-                    && dockPane.getScene().getWindow() != null) {
-                stage.initOwner(dockPane.getScene().getWindow());
-            }
+            DockPane pane = ((DockPane)((BorderPane)stage.getScene().getRoot()).getCenter());
+            dock(pane, DockPos.CENTER);
 
-            stage.initStyle(stageStyle);
-
-            Point2D stagePosition;
-            if (this.isDecorated()) {
-                Window owner = stage.getOwner();
-                stagePosition = floatScene.add(new Point2D(owner.getX(), owner.getY()));
-            } else {
-                stagePosition = floatScreen;
-            }
-            if (translation != null) {
-                stagePosition = stagePosition.add(translation);
-            }
-
-            borderPane = new BorderPane();
-            borderPane.getStyleClass().add("dock-node-border");
-            borderPane.setCenter(this);
-
-            Scene scene = new Scene(borderPane);
-
-            borderPane.applyCss();
-            Insets insetsDelta = borderPane.getInsets();
-
-            double insetsWidth = insetsDelta.getLeft() + insetsDelta.getRight();
-            double insetsHeight = insetsDelta.getTop() + insetsDelta.getBottom();
-
-            stage.setX(stagePosition.getX() - insetsDelta.getLeft());
-            stage.setY(stagePosition.getY() - insetsDelta.getTop());
-
-            stage.setMinWidth(borderPane.minWidth(this.getHeight()) + insetsWidth);
-            stage.setMinHeight(borderPane.minHeight(this.getWidth()) + insetsHeight);
-
-            borderPane.setPrefSize(this.getWidth() + insetsWidth, this.getHeight() + insetsHeight);
-
-            stage.setScene(scene);
-
-            if (stageStyle == StageStyle.TRANSPARENT) {
-                scene.setFill(null);
-            }
-
-            stage.setResizable(this.isStageResizable());
             if (this.isStageResizable()) {
                 stage.addEventFilter(MouseEvent.MOUSE_PRESSED, this);
                 stage.addEventFilter(MouseEvent.MOUSE_MOVED, this);
                 stage.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
             }
-
-            stage.sizeToScene();
-
-            stage.show();
         } else if (!floating && this.isFloating()) {
             this.floatingProperty.set(floating);
 
@@ -219,8 +237,10 @@ public class DockNode extends TabPane implements EventHandler<MouseEvent> {
         return stage;
     }
 
-    public final BorderPane getBorderPane() {
-        return borderPane;
+    private final BorderPane getBorderPane() {
+        if(stage == null)
+            return null;
+        return (BorderPane)stage.getScene().getRoot();
     }
 
     public final ObjectProperty<Node> graphicProperty() {
@@ -269,8 +289,8 @@ public class DockNode extends TabPane implements EventHandler<MouseEvent> {
         @Override
         protected void invalidated() {
             DockNode.this.pseudoClassStateChanged(FLOATING_PSEUDO_CLASS, get());
-            if (borderPane != null) {
-                borderPane.pseudoClassStateChanged(FLOATING_PSEUDO_CLASS, get());
+            if (getBorderPane() != null) {
+                getBorderPane().pseudoClassStateChanged(FLOATING_PSEUDO_CLASS, get());
             }
         }
 
@@ -381,6 +401,46 @@ public class DockNode extends TabPane implements EventHandler<MouseEvent> {
         dockPane.dock(this, dockPos, sibling);
     }
 
+    public void addTab(Node content, String title) {
+        Tab tab = new Tab(title, content);
+
+        tab.setOnClosed(new EventHandler<Event>() {
+            @Override
+            public void handle(Event event) {
+                if(tabPane.getTabs().isEmpty())
+                    DockNode.this.close();
+            }
+        });
+
+        tabPane.getTabs().add(tab);
+    }
+
+    public DockNode floatTab(Tab tab) {
+        Stage stage = createStage(null);
+        tabPane.getTabs().remove(tab);
+        DockNode newDockNode = new DockNode(tab.getContent(), tab.getText());
+        newDockNode.floatingProperty.set(true);
+
+        newDockNode.stage = stage;
+        DockPane pane = (DockPane)((BorderPane)stage.getScene().getRoot()).getCenter();
+        newDockNode.dock(pane, DockPos.CENTER);
+
+        if (newDockNode.isStageResizable()) {
+            stage.addEventFilter(MouseEvent.MOUSE_PRESSED, newDockNode);
+            stage.addEventFilter(MouseEvent.MOUSE_MOVED, newDockNode);
+            stage.addEventFilter(MouseEvent.MOUSE_DRAGGED, newDockNode);
+        }
+
+        return newDockNode;
+    }
+
+    public void merge(DockNode dockNode) {
+        for(Tab tab : dockNode.tabPane.getTabs()) {
+            addTab(tab.getContent(), tab.getText());
+        }
+        dockNode.close();
+    }
+
     public void dock(DockPane dockPane, DockPos dockPos) {
         dockImpl(dockPane);
         dockPane.dock(this, dockPos);
@@ -426,12 +486,12 @@ public class DockNode extends TabPane implements EventHandler<MouseEvent> {
         if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
             sizeLast = new Point2D(event.getScreenX(), event.getScreenY());
         } else if (event.getEventType() == MouseEvent.MOUSE_MOVED) {
-            Insets insets = borderPane.getPadding();
+            Insets insets = getBorderPane().getPadding();
 
             sizeWest = event.getX() < insets.getLeft();
-            sizeEast = event.getX() > borderPane.getWidth() - insets.getRight();
+            sizeEast = event.getX() > getBorderPane().getWidth() - insets.getRight();
             sizeNorth = event.getY() < insets.getTop();
-            sizeSouth = event.getY() > borderPane.getHeight() - insets.getBottom();
+            sizeSouth = event.getY() > getBorderPane().getHeight() - insets.getBottom();
 
             if (sizeWest) {
                 if (sizeNorth) {
@@ -508,12 +568,28 @@ public class DockNode extends TabPane implements EventHandler<MouseEvent> {
             if(event.getEventType() == MouseEvent.MOUSE_PRESSED) {
                 dragStart = new Point2D(event.getX(), event.getY());
             } else if(event.getEventType() == MouseEvent.DRAG_DETECTED) {
-                if(!isFloating()) {
-                    setFloating(true);
+                if(event.getY() < tabPane.getTabMaxHeight()) {
+                    return;
+                }
 
-                    if(dockPane != null) {
-                        dockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
-                        dockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
+                if(!isFloating()) {
+                    if(tabPane.getTabs().size() == 1) {
+                        setFloating(true);
+
+                        if(dockPane != null) {
+                            dockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
+                            dockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
+                        }
+                    } else {
+                        DockNode dockNode = floatTab(tabPane.getSelectionModel().getSelectedItem());
+
+                        if(dockPane != null) {
+                            dockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, dockNode.moveEventHandler);
+                            dockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, dockNode.moveEventHandler);
+                        }
+
+                        dockNode.dragStart = dragStart;
+                        dockNode.dragging = true;
                     }
                 } else if(isMaximized()) {
                     double ratioX = event.getX() / getWidth();
