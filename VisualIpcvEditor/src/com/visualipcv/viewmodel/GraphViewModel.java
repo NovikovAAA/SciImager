@@ -8,6 +8,8 @@ import com.visualipcv.core.Processor;
 import com.visualipcv.core.io.GraphStore;
 import com.visualipcv.editor.Editor;
 import com.visualipcv.view.ConnectionView;
+import com.visualipcv.view.GraphTab;
+import com.visualipcv.view.GraphView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.DoubleProperty;
@@ -19,8 +21,10 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -50,7 +54,7 @@ public class GraphViewModel extends ViewModel {
 
     public GraphViewModel() {
         this.graph = new Graph();
-        name.set("Undefined-" + Editor.getDocsPane().getTabs().size());
+        name.set("Undefined-"/* + Editor.getDocsPane().getTabs().size()*/);
         init();
     }
 
@@ -246,7 +250,7 @@ public class GraphViewModel extends ViewModel {
 
     private String getNameFromPath(String path) {
         int from = Math.max(path.lastIndexOf('/'), path.lastIndexOf('\\')) + 1;
-        from = from < 0 ? 0 : from;
+        from = Math.max(from, 0);
         int to = path.lastIndexOf('.') < 0 ? path.length() : path.lastIndexOf('.');
         return path.substring(from, to);
     }
@@ -256,10 +260,32 @@ public class GraphViewModel extends ViewModel {
         name.set(getNameFromPath(path));
     }
 
+    public void saveAs() throws Exception {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save");
+        chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("VisualIPCV graph", ".vip"));
+        File file = chooser.showSaveDialog(Editor.getPrimaryStage());
+
+        if (file != null) {
+            save(file.getAbsolutePath());
+        }
+    }
+
     public void load(String path) throws Exception {
         graph = new GraphStore().load(new FileInputStream(path));
         name.set(getNameFromPath(path));
         update();
+    }
+
+    public void load() throws Exception {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Open");
+        chooser.setSelectedExtensionFilter(new FileChooser.ExtensionFilter("VisualIPCV graph", ".vip"));
+        File file = chooser.showOpenDialog(Editor.getPrimaryStage());
+
+        if(file != null) {
+            load(file.getAbsolutePath());
+        }
     }
 
     private void onNodeAdded(Node node) {

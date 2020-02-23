@@ -1,7 +1,9 @@
 package com.visualipcv.editor;
 
+import com.visualipcv.view.AppScene;
 import com.visualipcv.view.ConsoleView;
 import com.visualipcv.view.FunctionListView;
+import com.visualipcv.view.GraphTab;
 import com.visualipcv.view.GraphTabPane;
 import com.visualipcv.view.GraphView;
 import javafx.event.ActionEvent;
@@ -29,7 +31,7 @@ import java.util.Set;
 public class Editor {
     private static Stage primaryStage;
     private static DockPane primaryPane;
-    private static GraphTabPane docsPane;
+    private static DockNode docs;
     private static MenuBar menuBar;
 
     private static Menu getOrCreateSubmenu(Menu menu, String path) {
@@ -142,18 +144,20 @@ public class Editor {
         addMenuCommand("File/New", new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                getDocsPane().createNew();
+                docs.addTab(new GraphTab(new GraphView(), null));
             }
         }, new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
 
         addMenuCommand("File/Open", new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                getDocsPane().load();
+                GraphView view = new GraphView();
+                docs.addTab(new GraphTab(view, null));
+                view.onLoad();
             }
         }, new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
 
-        addMenuCommand("File/Save", new EventHandler<ActionEvent>() {
+        /*addMenuCommand("File/Save", new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 getDocsPane().save();
@@ -165,7 +169,7 @@ public class Editor {
             public void handle(ActionEvent event) {
                 getDocsPane().saveAs();
             }
-        }, new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_DOWN, KeyCombination.CONTROL_DOWN));
+        }, new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_DOWN, KeyCombination.CONTROL_DOWN));*/
 
         addMenuSeparator("File");
 
@@ -194,18 +198,17 @@ public class Editor {
         VBox.setVgrow(dockPane, Priority.ALWAYS);
         root.getChildren().add(dockPane);
 
-        docsPane = new GraphTabPane();
-        docsPane.createNew();
-
         DockNode functionListPanel = new DockNode(new FunctionListView(), "Functions");
-        DockNode graphPanel = new DockNode(docsPane, "Graph");
+        docs = new DockNode(new GraphView(), "New graph 0");
+        docs.setKeepOpen(true);
+        docs.setAllowDetach(false);
         DockNode consolePanel = new DockNode(new ConsoleView(), "Console");
 
-        graphPanel.dock(dockPane, DockPos.CENTER);
+        docs.dock(dockPane, DockPos.CENTER);
         consolePanel.dock(dockPane, DockPos.BOTTOM);
         functionListPanel.dock(dockPane, DockPos.LEFT);
 
-        primaryStage.setScene(new Scene(root, 1280, 720));
+        primaryStage.setScene(new AppScene(root, 1280, 720));
         primaryStage.sizeToScene();
         primaryStage.show();
 
@@ -220,12 +223,12 @@ public class Editor {
         return primaryPane;
     }
 
-    public static GraphTabPane getDocsPane() {
-        return docsPane;
-    }
-
     public static MenuBar getMenuBar() {
         return menuBar;
+    }
+
+    public static DockNode getDocs() {
+        return docs;
     }
 
     public static void openWindow(Node node, String title) {

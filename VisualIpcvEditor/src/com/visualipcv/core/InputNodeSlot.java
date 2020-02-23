@@ -17,6 +17,10 @@ public class InputNodeSlot extends NodeSlot {
             throw new IllegalArgumentException("Slot types mismatch");
         }
 
+        if(slot.getNode().getGraph() != getNode().getGraph()) {
+            throw new IllegalArgumentException("Nodes from different graphs cannot be connected");
+        }
+
         if(getConnectedSlot() != null) {
             disconnect();
         }

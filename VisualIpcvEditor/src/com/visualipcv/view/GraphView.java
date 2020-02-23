@@ -2,41 +2,25 @@ package com.visualipcv.view;
 
 import com.visualipcv.controller.IGraphViewElement;
 import com.visualipcv.core.Connection;
-import com.visualipcv.core.Graph;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorLibrary;
-import com.visualipcv.core.io.GraphStore;
 import com.visualipcv.editor.Editor;
 import com.visualipcv.viewmodel.GraphViewModel;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.DoublePropertyBase;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BorderWidths;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.transform.NonInvertibleTransformException;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,8 +61,11 @@ public class GraphView extends FreePane implements IGraphViewElement {
     };
 
     public GraphView() {
+        getStyleClass().add("graph");
+
         viewModel = new GraphViewModel();
         init();
+        requestFocus();
     }
 
     private void init() {
@@ -94,6 +81,7 @@ public class GraphView extends FreePane implements IGraphViewElement {
         getXOffsetProperty().bindBidirectional(viewModel.getXOffsetProperty());
         getYOffsetProperty().bindBidirectional(viewModel.getYOffsetProperty());
 
+        setFocusTraversable(true);
         setOnMouseReleased(this::onMouseReleased);
         setOnDragOver(this::onDragOver);
         setOnDragDropped(this::onDragDropped);
@@ -101,12 +89,19 @@ public class GraphView extends FreePane implements IGraphViewElement {
         Editor.getPrimaryStage().addEventFilter(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                if(event.getCode() == KeyCode.Z && event.isControlDown() && Editor.getDocsPane().getSelectionModel().getSelectedItem().getContent() == GraphView.this)
+                /*if(event.getCode() == KeyCode.Z && event.isControlDown() && Editor.getDocsPane().getSelectionModel().getSelectedItem().getContent() == GraphView.this)
                     ;
                 else if(event.getCode() == KeyCode.Y && event.isControlDown() && Editor.getDocsPane().getSelectionModel().getSelectedItem().getContent() == GraphView.this)
-                    ;
-                else if(event.getCode() == KeyCode.Z)
+                    ;*/
+                if(event.getCode() == KeyCode.Z)
                     zoomToFit();
+            }
+        });
+
+        addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                GraphView.this.requestFocus();
             }
         });
 
@@ -461,7 +456,7 @@ public class GraphView extends FreePane implements IGraphViewElement {
         viewModel.setOffset(rx - cx * getZoom(), ry - cy * getZoom());
     }
 
-    public void save(String path) {
+    public void onSave(String path) {
         try {
             viewModel.save(path);
         } catch(Exception e) {
@@ -469,9 +464,25 @@ public class GraphView extends FreePane implements IGraphViewElement {
         }
     }
 
-    public void load(String path) {
+    public void onLoad(String path) {
         try {
             viewModel.load(path);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onSaveAs() {
+        try {
+            viewModel.saveAs();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void onLoad() {
+        try {
+            viewModel.load();
         } catch(Exception e) {
             e.printStackTrace();
         }

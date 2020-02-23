@@ -1,11 +1,13 @@
 package com.visualipcv.view.docking;
 
+import com.visualipcv.view.AppScene;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.ListChangeListener;
 import javafx.css.PseudoClass;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -16,6 +18,7 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;
@@ -31,6 +34,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 public class DockNode extends VBox implements EventHandler<MouseEvent> {
@@ -52,17 +56,18 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     private StageStyle stageStyle = StageStyle.TRANSPARENT;
 
     private Stage stage;
+    private DockNodeMoveEventHandler moveEventHandler;
 
-    private Point2D dragStart;
-    private boolean dragging = false;
     private HashMap<Window, Node> dragNodes = new HashMap<Window, Node>();
-    private DockNodeMoveEventHandler moveEventHandler = new DockNodeMoveEventHandler();
 
     private TabPane tabPane;
     private DockPane dockPane;
     private static final PseudoClass FLOATING_PSEUDO_CLASS = PseudoClass.getPseudoClass("floating");
     private static final PseudoClass DOCKED_PSEUDO_CLASS = PseudoClass.getPseudoClass("docked");
     private static final PseudoClass MAXIMIZED_PSEUDO_CLASS = PseudoClass.getPseudoClass("maximized");
+
+    private BooleanProperty keepOpenProperty = new SimpleBooleanProperty(false);
+    private BooleanProperty allowDetachProperty = new SimpleBooleanProperty(true);
 
     private BooleanProperty maximizedProperty = new SimpleBooleanProperty(false) {
 
@@ -96,20 +101,34 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     };
 
     public DockNode(Node contents, String title, Node graphic) {
-        this.titleProperty.setValue(title);
-        this.graphicProperty.setValue(graphic);
+        this(new Tab(title, contents));
+    }
 
+    public DockNode(Tab tab) {
         tabPane = new TabPane();
         getChildren().add(tabPane);
         VBox.setVgrow(tabPane, Priority.ALWAYS);
 
-        addTab(contents, title);
+        addTab(tab);
         this.getStyleClass().add("dock-node");
 
+        moveEventHandler = new DockNodeMoveEventHandler();
         tabPane.setOnMousePressed(moveEventHandler);
         tabPane.setOnDragDetected(moveEventHandler);
         tabPane.setOnMouseDragged(moveEventHandler);
         tabPane.setOnMouseReleased(moveEventHandler);
+
+        tabPane.getTabs().addListener(new ListChangeListener<Tab>() {
+            @Override
+            public void onChanged(Change<? extends Tab> c) {
+                while(c.next()) {
+                    if(c.wasRemoved()) {
+                        if(tabPane.getTabs().isEmpty() && !getKeepOpen())
+                            DockNode.this.close();
+                    }
+                }
+            }
+        });
     }
 
     public DockNode(Node contents, String title) {
@@ -137,7 +156,6 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
         Point2D floatScreen = this.localToScreen(0, 0);
 
         stage = new Stage();
-        stage.titleProperty().bind(titleProperty);
 
         if (dockPane != null && dockPane.getScene() != null
                 && dockPane.getScene().getWindow() != null) {
@@ -160,9 +178,9 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
         BorderPane borderPane = new BorderPane();
         borderPane.getStyleClass().add("dock-node-border");
-        DockPane dockPane = new DockPane();
-        borderPane.setCenter(dockPane);
-        Scene scene = new Scene(borderPane);
+        //DockPane dockPane = new DockPane();
+        //borderPane.setCenter(dockPane);
+        Scene scene = new AppScene(borderPane);
 
         borderPane.applyCss();
         Insets insetsDelta = borderPane.getInsets();
@@ -176,7 +194,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
         stage.setMinWidth(borderPane.minWidth(this.getHeight()) + insetsWidth);
         stage.setMinHeight(borderPane.minHeight(this.getWidth()) + insetsHeight);
 
-        dockPane.setPrefSize(this.getWidth() + insetsWidth, this.getHeight() + insetsHeight);
+        //dockPane.setPrefSize(this.getWidth() + insetsWidth, this.getHeight() + insetsHeight);
         borderPane.setPrefSize(this.getWidth() + insetsWidth, this.getHeight() + insetsHeight);
 
         stage.setScene(scene);
@@ -193,6 +211,10 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     }
 
     public void setFloating(boolean floating, Point2D translation) {
+        if(!getAllowDetach()) {
+            return;
+        }
+
         if (floating && !this.isFloating()) {
             if(dockPane != null && dockPane.isLastDockNode(this))
                 return;
@@ -206,8 +228,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
                 this.undock();
             }
 
-            DockPane pane = ((DockPane)((BorderPane)stage.getScene().getRoot()).getCenter());
-            dock(pane, DockPos.CENTER);
+            ((BorderPane)stage.getScene().getRoot()).setCenter(this);
 
             if (this.isStageResizable()) {
                 stage.addEventFilter(MouseEvent.MOUSE_PRESSED, this);
@@ -243,42 +264,28 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
         return (BorderPane)stage.getScene().getRoot();
     }
 
-    public final ObjectProperty<Node> graphicProperty() {
-        return graphicProperty;
+    public final BooleanProperty keepOpenProperty() {
+        return keepOpenProperty;
     }
 
-    private ObjectProperty<Node> graphicProperty = new SimpleObjectProperty<Node>() {
-        @Override
-        public String getName() {
-            return "graphic";
-        }
-    };
-
-    public final Node getGraphic() {
-        return graphicProperty.get();
+    public boolean getKeepOpen() {
+        return keepOpenProperty.get();
     }
 
-    public final void setGraphic(Node graphic) {
-        this.graphicProperty.setValue(graphic);
+    public void setKeepOpen(boolean keepOpen) {
+        keepOpenProperty.set(keepOpen);
     }
 
-    public final StringProperty titleProperty() {
-        return titleProperty;
+    public final BooleanProperty allowDetachProperty() {
+        return allowDetachProperty;
     }
 
-    private StringProperty titleProperty = new SimpleStringProperty("Dock") {
-        @Override
-        public String getName() {
-            return "title";
-        }
-    };
-
-    public final String getTitle() {
-        return titleProperty.get();
+    public boolean getAllowDetach() {
+        return allowDetachProperty.get();
     }
 
-    public final void setTitle(String title) {
-        this.titleProperty.setValue(title);
+    public void setAllowDetach(boolean allow) {
+        allowDetachProperty.set(allow);
     }
 
     public final BooleanProperty floatingProperty() {
@@ -401,29 +408,23 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
         dockPane.dock(this, dockPos, sibling);
     }
 
+    public void addTab(Tab tab) {
+        tabPane.getTabs().add(tab);
+    }
+
     public void addTab(Node content, String title) {
         Tab tab = new Tab(title, content);
-
-        tab.setOnClosed(new EventHandler<Event>() {
-            @Override
-            public void handle(Event event) {
-                if(tabPane.getTabs().isEmpty())
-                    DockNode.this.close();
-            }
-        });
-
-        tabPane.getTabs().add(tab);
+        addTab(tab);
     }
 
     public DockNode floatTab(Tab tab) {
         Stage stage = createStage(null);
         tabPane.getTabs().remove(tab);
-        DockNode newDockNode = new DockNode(tab.getContent(), tab.getText());
+        DockNode newDockNode = new DockNode(tab);
         newDockNode.floatingProperty.set(true);
 
         newDockNode.stage = stage;
-        DockPane pane = (DockPane)((BorderPane)stage.getScene().getRoot()).getCenter();
-        newDockNode.dock(pane, DockPos.CENTER);
+        ((BorderPane)stage.getScene().getRoot()).setCenter(newDockNode);
 
         if (newDockNode.isStageResizable()) {
             stage.addEventFilter(MouseEvent.MOUSE_PRESSED, newDockNode);
@@ -563,33 +564,32 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     }
 
     private class DockNodeMoveEventHandler implements EventHandler<MouseEvent> {
+        private Point2D dragStart;
+        private boolean dragging = false;
+        private DockNode newDockNode = null;
+
         @Override
         public void handle(MouseEvent event) {
             if(event.getEventType() == MouseEvent.MOUSE_PRESSED) {
                 dragStart = new Point2D(event.getX(), event.getY());
             } else if(event.getEventType() == MouseEvent.DRAG_DETECTED) {
-                if(event.getY() < tabPane.getTabMaxHeight()) {
+                boolean clickOnHeader = event.getTarget() == tabPane.lookup(".tab-header-background");
+                boolean clickOnHeaderArea = tabPane.lookup(".tab-header-area").getBoundsInParent().contains(event.getX(), event.getY());
+
+                if(!clickOnHeaderArea)
                     return;
-                }
 
                 if(!isFloating()) {
-                    if(tabPane.getTabs().size() == 1) {
+                    if(clickOnHeader || tabPane.getTabs().size() == 1) {
                         setFloating(true);
 
                         if(dockPane != null) {
                             dockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
                             dockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
                         }
-                    } else {
-                        DockNode dockNode = floatTab(tabPane.getSelectionModel().getSelectedItem());
-
-                        if(dockPane != null) {
-                            dockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, dockNode.moveEventHandler);
-                            dockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, dockNode.moveEventHandler);
-                        }
-
-                        dockNode.dragStart = dragStart;
-                        dockNode.dragging = true;
+                    } else if(tabPane.getSelectionModel().getSelectedItem() != null) {
+                        newDockNode = floatTab(tabPane.getSelectionModel().getSelectedItem());
+                        dragging = true;
                     }
                 } else if(isMaximized()) {
                     double ratioX = event.getX() / getWidth();
@@ -608,8 +608,10 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
                 if(!dragging)
                     return;
 
-                Stage stage = getStage();
-                Insets insetsDelta = getBorderPane() != null ? getBorderPane().getInsets() : new Insets(0.0);
+                DockNode target = newDockNode == null ? DockNode.this : newDockNode;
+
+                Stage stage = target.getStage();
+                Insets insetsDelta = target.getBorderPane() != null ? target.getBorderPane().getInsets() : new Insets(0.0);
                 stage.setX(event.getScreenX() - dragStart.getX() - insetsDelta.getLeft());
                 stage.setY(event.getScreenY() - dragStart.getY() - insetsDelta.getTop());
 
@@ -629,38 +631,41 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
                         executions++;
 
                         if (dragNode != node) {
-                            Event.fireEvent(node, dockEnterEvent.copyFor(DockNode.this, node));
+                            Event.fireEvent(node, dockEnterEvent.copyFor(target, node));
 
                             if (dragNode != null) {
-                                Event.fireEvent(dragNode, dockExitEvent.copyFor(DockNode.this, dragNode));
+                                Event.fireEvent(dragNode, dockExitEvent.copyFor(target, dragNode));
                             }
 
                             dragNodes.put(node.getScene().getWindow(), node);
                         }
-                        Event.fireEvent(node, dockOverEvent.copyFor(DockNode.this, node));
+                        Event.fireEvent(node, dockOverEvent.copyFor(target, node));
                     }
                 };
 
-                DockNode.this.pickEventTarget(new Point2D(event.getScreenX(), event.getScreenY()), eventTask, dockExitEvent);
+                target.pickEventTarget(new Point2D(event.getScreenX(), event.getScreenY()), eventTask, dockExitEvent);
             } else if(event.getEventType() == MouseEvent.MOUSE_RELEASED) {
                 dragging = false;
 
+                DockNode target = newDockNode == null ? DockNode.this : newDockNode;
+                newDockNode = null;
+
                 DockEvent dockReleasedEvent =
                         new DockEvent(this, DockEvent.NULL_SOURCE_TARGET, DockEvent.DOCK_RELEASED, event.getX(),
-                                event.getY(), event.getScreenX(), event.getScreenY(), null, DockNode.this);
+                                event.getY(), event.getScreenX(), event.getScreenY(), null, target);
 
                 EventTask eventTask = new EventTask() {
                     @Override
                     public void run(Node node, Node dragNode) {
                         executions++;
                         if (dragNode != node) {
-                            Event.fireEvent(node, dockReleasedEvent.copyFor(DockNode.this, node));
+                            Event.fireEvent(node, dockReleasedEvent.copyFor(target, node));
                         }
-                        Event.fireEvent(node, dockReleasedEvent.copyFor(DockNode.this, node));
+                        Event.fireEvent(node, dockReleasedEvent.copyFor(target, node));
                     }
                 };
 
-                DockNode.this.pickEventTarget(new Point2D(event.getScreenX(), event.getScreenY()), eventTask, null);
+                target.pickEventTarget(new Point2D(event.getScreenX(), event.getScreenY()), eventTask, null);
                 dragNodes.clear();
 
                 DockPane dockPane = getDockPane();
