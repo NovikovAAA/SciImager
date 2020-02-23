@@ -46,6 +46,7 @@ public class GraphViewModel extends ViewModel {
     private Graph graph;
 
     private StringProperty name = new SimpleStringProperty();
+    private StringProperty fileName = new SimpleStringProperty();
     private ObservableList<NodeViewModel> nodes = FXCollections.observableArrayList();
     private ObservableList<ConnectionViewModel> connections = FXCollections.observableArrayList();
     private DoubleProperty zoom = new SimpleDoubleProperty(1.0);
@@ -54,7 +55,12 @@ public class GraphViewModel extends ViewModel {
 
     public GraphViewModel() {
         this.graph = new Graph();
-        name.set("Undefined-"/* + Editor.getDocsPane().getTabs().size()*/);
+
+        if(Editor.getDocs() != null)
+            name.set("New graph " + Editor.getDocs().getTabPane().getTabs().size());
+        else
+            name.set("New graph 0");
+
         init();
     }
 
@@ -105,6 +111,10 @@ public class GraphViewModel extends ViewModel {
 
     public StringProperty getNameProperty() {
         return name;
+    }
+
+    public StringProperty getFileNameProperty() {
+        return fileName;
     }
 
     public List<NodeViewModel> getSelectedNodes() {
@@ -255,9 +265,12 @@ public class GraphViewModel extends ViewModel {
         return path.substring(from, to);
     }
 
-    public void save(String path) throws Exception {
-        new GraphStore().save(graph, new FileOutputStream(path));
-        name.set(getNameFromPath(path));
+    public void save() throws Exception {
+        if(fileName.get() == null)
+            saveAs();
+
+        new GraphStore().save(graph, new FileOutputStream(fileName.get()));
+        name.set(getNameFromPath(fileName.get()));
     }
 
     public void saveAs() throws Exception {
@@ -267,13 +280,15 @@ public class GraphViewModel extends ViewModel {
         File file = chooser.showSaveDialog(Editor.getPrimaryStage());
 
         if (file != null) {
-            save(file.getAbsolutePath());
+            fileName.set(file.getAbsolutePath());
+            save();
         }
     }
 
-    public void load(String path) throws Exception {
+    private void load(String path) throws Exception {
         graph = new GraphStore().load(new FileInputStream(path));
         name.set(getNameFromPath(path));
+        fileName.set(path);
         update();
     }
 

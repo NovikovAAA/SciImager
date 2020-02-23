@@ -9,22 +9,76 @@ import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.editor.Editor;
 import com.visualipcv.viewmodel.GraphViewModel;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.DoublePropertyBase;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.css.CssMetaData;
+import javafx.css.SimpleStyleableDoubleProperty;
+import javafx.css.SimpleStyleableObjectProperty;
+import javafx.css.StyleConverter;
+import javafx.css.Styleable;
+import javafx.css.StyleableDoubleProperty;
+import javafx.css.StyleableObjectProperty;
+import javafx.css.StyleableProperty;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.*;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class GraphView extends FreePane implements IGraphViewElement {
+    private static final CssMetaData<GraphView, Number> CELL_SIZE = new CssMetaData<GraphView, Number>("-fx-grid-cell-size", StyleConverter.getSizeConverter()) {
+        @Override
+        public boolean isSettable(GraphView styleable) {
+            return !styleable.cellSizeProperty.isBound();
+        }
+
+        @Override
+        public StyleableProperty<Number> getStyleableProperty(GraphView styleable) {
+            return styleable.cellSizeProperty;
+        }
+    };
+
+    private static final CssMetaData<GraphView, Color> BACKGROUND_COLOR = new CssMetaData<GraphView, Color>("-fx-grid-background-color", StyleConverter.getColorConverter()) {
+        @Override
+        public boolean isSettable(GraphView styleable) {
+            return !styleable.backgroundColorProperty.isBound();
+        }
+
+        @Override
+        public StyleableProperty<Color> getStyleableProperty(GraphView styleable) {
+            return styleable.backgroundColorProperty;
+        }
+    };
+
+    private static final CssMetaData<GraphView, Color> LINE_COLOR = new CssMetaData<GraphView, Color>("-fx-grid-line-color", StyleConverter.getColorConverter()) {
+        @Override
+        public boolean isSettable(GraphView styleable) {
+            return !styleable.lineColorProperty.isBound();
+        }
+
+        @Override
+        public StyleableProperty<Color> getStyleableProperty(GraphView styleable) {
+            return styleable.lineColorProperty;
+        }
+    };
+
+    private static List<CssMetaData<? extends Styleable, ?>> CSS_META_DATA;
+
+    static {
+        final List<CssMetaData<? extends Styleable, ?>> metaData = new ArrayList<>(FreePane.getClassCssMetaData());
+        Collections.addAll(metaData, CELL_SIZE, BACKGROUND_COLOR, LINE_COLOR);
+        CSS_META_DATA = Collections.unmodifiableList(metaData);
+    }
+
     private GraphViewModel viewModel;
 
     private MouseButton selectionButton = MouseButton.PRIMARY;
@@ -43,25 +97,12 @@ public class GraphView extends FreePane implements IGraphViewElement {
     private ConnectionPreview connectionPreview;
     private Rectangle selectionPreview;
 
-    private DoubleProperty cellSize = new DoublePropertyBase(40.0) {
-        @Override
-        public Object getBean() {
-            return this;
-        }
-
-        @Override
-        public String getName() {
-            return "cellSize";
-        }
-
-        @Override
-        public void invalidated() {
-            repaintGrid();
-        }
-    };
+    private StyleableDoubleProperty cellSizeProperty = new SimpleStyleableDoubleProperty(CELL_SIZE, 40.0);
+    private StyleableObjectProperty<Color> backgroundColorProperty = new SimpleStyleableObjectProperty<>(BACKGROUND_COLOR, new Color(0.8, 0.8, 0.8, 1.0));
+    private StyleableObjectProperty<Color> lineColorProperty = new SimpleStyleableObjectProperty<>(LINE_COLOR, new Color(0.6, 0.6, 0.6, 1.0));
 
     public GraphView() {
-        getStyleClass().add("graph");
+        getStyleClass().setAll("graph");
 
         viewModel = new GraphViewModel();
         init();
@@ -241,11 +282,11 @@ public class GraphView extends FreePane implements IGraphViewElement {
     public void repaintGrid() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.setLineWidth(1.0f);
-        gc.setStroke(new Color(0.6, 0.6, 0.6, 1.0));
-        gc.setFill(new Color(0.8, 0.8, 0.8, 1.0));
+        gc.setStroke(lineColorProperty.get());
+        gc.setFill(backgroundColorProperty.get());
         gc.fillRect(0.0, 0.0, canvas.getWidth(), canvas.getHeight());
 
-        double cell = cellSize.get() * getInternalPane().getScaleX();
+        double cell = cellSizeProperty.get() * getInternalPane().getScaleX();
 
         double startX = getOffsetX() % cell;
         double startY = getOffsetY() % cell;
@@ -456,17 +497,9 @@ public class GraphView extends FreePane implements IGraphViewElement {
         viewModel.setOffset(rx - cx * getZoom(), ry - cy * getZoom());
     }
 
-    public void onSave(String path) {
+    public void onSave() {
         try {
-            viewModel.save(path);
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void onLoad(String path) {
-        try {
-            viewModel.load(path);
+            viewModel.save();
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -498,11 +531,48 @@ public class GraphView extends FreePane implements IGraphViewElement {
         return this;
     }
 
+    public static List<CssMetaData<? extends Styleable, ?>> getClassCssMetaData() {
+        return CSS_META_DATA;
+    }
+
+    @Override
+    public List<CssMetaData<? extends Styleable, ?>> getCssMetaData() {
+        return getClassCssMetaData();
+    }
+
+    public DoubleProperty cellSizeProperty() {
+        return cellSizeProperty;
+    }
+
     public double getCellSize() {
-        return cellSize.get();
+        return cellSizeProperty.get();
     }
 
     public void setCellSize(double cellSize) {
-        this.cellSize.set(cellSize);
+        this.cellSizeProperty.set(cellSize);
+    }
+
+    public ObjectProperty<Color> backgroundColorProperty() {
+        return backgroundColorProperty;
+    }
+
+    public Color getBackgroundColor() {
+        return backgroundColorProperty.get();
+    }
+
+    public void setBackgroundColor(Color color) {
+        backgroundColorProperty.set(color);
+    }
+
+    public ObjectProperty<Color> lineColorProperty() {
+        return lineColorProperty;
+    }
+
+    public Color getLineColor() {
+        return lineColorProperty.get();
+    }
+
+    public void setLineColor(Color color) {
+        lineColorProperty.set(color);
     }
 }

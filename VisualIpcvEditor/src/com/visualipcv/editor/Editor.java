@@ -4,12 +4,10 @@ import com.visualipcv.view.AppScene;
 import com.visualipcv.view.ConsoleView;
 import com.visualipcv.view.FunctionListView;
 import com.visualipcv.view.GraphTab;
-import com.visualipcv.view.GraphTabPane;
 import com.visualipcv.view.GraphView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -157,19 +155,37 @@ public class Editor {
             }
         }, new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
 
-        /*addMenuCommand("File/Save", new EventHandler<ActionEvent>() {
+        addMenuCommand("File/Save", new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                getDocsPane().save();
+                Tab selectedTab = getDocs().getTabPane().getSelectionModel().getSelectedItem();
+
+                if(selectedTab == null)
+                    return;
+
+                if(!(selectedTab.getContent() instanceof GraphView))
+                    return;
+
+                GraphView view = (GraphView)selectedTab.getContent();
+                view.onSave();
             }
         }, new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
 
         addMenuCommand("File/Save as", new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                getDocsPane().saveAs();
+                Tab selectedTab = getDocs().getTabPane().getSelectionModel().getSelectedItem();
+
+                if(selectedTab == null)
+                    return;
+
+                if(!(selectedTab.getContent() instanceof GraphView))
+                    return;
+
+                GraphView view = (GraphView)selectedTab.getContent();
+                view.onSaveAs();
             }
-        }, new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_DOWN, KeyCombination.CONTROL_DOWN));*/
+        }, new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_DOWN, KeyCombination.CONTROL_DOWN));
 
         addMenuSeparator("File");
 
@@ -200,8 +216,7 @@ public class Editor {
 
         DockNode functionListPanel = new DockNode(new FunctionListView(), "Functions");
         docs = new DockNode(new GraphView(), "New graph 0");
-        docs.setKeepOpen(true);
-        docs.setAllowDetach(false);
+        docs.setStatic(true);
         DockNode consolePanel = new DockNode(new ConsoleView(), "Console");
 
         docs.dock(dockPane, DockPos.CENTER);

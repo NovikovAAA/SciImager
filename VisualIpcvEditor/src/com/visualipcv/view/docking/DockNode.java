@@ -66,8 +66,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     private static final PseudoClass DOCKED_PSEUDO_CLASS = PseudoClass.getPseudoClass("docked");
     private static final PseudoClass MAXIMIZED_PSEUDO_CLASS = PseudoClass.getPseudoClass("maximized");
 
-    private BooleanProperty keepOpenProperty = new SimpleBooleanProperty(false);
-    private BooleanProperty allowDetachProperty = new SimpleBooleanProperty(true);
+    private BooleanProperty staticProperty = new SimpleBooleanProperty(false);
 
     private BooleanProperty maximizedProperty = new SimpleBooleanProperty(false) {
 
@@ -123,7 +122,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
             public void onChanged(Change<? extends Tab> c) {
                 while(c.next()) {
                     if(c.wasRemoved()) {
-                        if(tabPane.getTabs().isEmpty() && !getKeepOpen())
+                        if(tabPane.getTabs().isEmpty() && !isStatic())
                             DockNode.this.close();
                     }
                 }
@@ -211,7 +210,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     }
 
     public void setFloating(boolean floating, Point2D translation) {
-        if(!getAllowDetach()) {
+        if(isStatic()) {
             return;
         }
 
@@ -264,28 +263,20 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
         return (BorderPane)stage.getScene().getRoot();
     }
 
-    public final BooleanProperty keepOpenProperty() {
-        return keepOpenProperty;
+    public final TabPane getTabPane() {
+        return tabPane;
     }
 
-    public boolean getKeepOpen() {
-        return keepOpenProperty.get();
+    public final BooleanProperty staticProperty() {
+        return staticProperty;
     }
 
-    public void setKeepOpen(boolean keepOpen) {
-        keepOpenProperty.set(keepOpen);
+    public boolean isStatic() {
+        return staticProperty.get();
     }
 
-    public final BooleanProperty allowDetachProperty() {
-        return allowDetachProperty;
-    }
-
-    public boolean getAllowDetach() {
-        return allowDetachProperty.get();
-    }
-
-    public void setAllowDetach(boolean allow) {
-        allowDetachProperty.set(allow);
+    public void setStatic(boolean isStatic) {
+        staticProperty.set(isStatic);
     }
 
     public final BooleanProperty floatingProperty() {
@@ -570,6 +561,9 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
         @Override
         public void handle(MouseEvent event) {
+            if(isStatic())
+                return;
+
             if(event.getEventType() == MouseEvent.MOUSE_PRESSED) {
                 dragStart = new Point2D(event.getX(), event.getY());
             } else if(event.getEventType() == MouseEvent.DRAG_DETECTED) {

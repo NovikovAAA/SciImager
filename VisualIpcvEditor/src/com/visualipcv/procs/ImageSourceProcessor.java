@@ -6,7 +6,6 @@ import com.visualipcv.core.DataType;
 import com.visualipcv.core.GraphExecutionException;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorProperty;
-import com.visualipcv.core.command.Command;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
