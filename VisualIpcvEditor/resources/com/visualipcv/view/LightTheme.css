@@ -84,3 +84,9 @@
 .button:focused {
     -fx-border-color: darkgray;
 }
+
+.plate {
+    -fx-background-color: -fx-primary-color;
+    -fx-border-color: darkgray;
+    -fx-border-width: 0.5;
+}

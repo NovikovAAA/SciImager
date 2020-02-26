@@ -3,7 +3,7 @@ package com.visualipcv.viewmodel;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.editor.Editor;
-import com.visualipcv.view.ScriptEditorView;
+import com.visualipcv.view.scriptconstruction.SciScriptEditor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +36,6 @@ public class FunctionListViewModel {
     }
 
     public void addFunction() {
-        Editor.openWindow(new ScriptEditorView(), "Script");
+        Editor.openWindow(new SciScriptEditor(), "Script");
     }
 }

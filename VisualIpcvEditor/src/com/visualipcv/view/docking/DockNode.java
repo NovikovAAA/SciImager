@@ -1,5 +1,6 @@
 package com.visualipcv.view.docking;
 
+import com.visualipcv.editor.Editor;
 import com.visualipcv.view.AppScene;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -90,6 +91,9 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
                 stage.setWidth(bounds.getWidth());
                 stage.setHeight(bounds.getHeight());
+            } else {
+                stage.setWidth(1280.0);
+                stage.setHeight(720.0);
             }
         }
 
@@ -159,6 +163,8 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
         if (dockPane != null && dockPane.getScene() != null
                 && dockPane.getScene().getWindow() != null) {
             stage.initOwner(dockPane.getScene().getWindow());
+        } else {
+            stage.initOwner(Editor.getPrimaryStage().getScene().getWindow());
         }
 
         stage.initStyle(stageStyle);
@@ -174,6 +180,9 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
         if (translation != null) {
             stagePosition = stagePosition.add(translation);
         }
+
+        if(stagePosition == null)
+            stagePosition = new Point2D(0, 0);
 
         BorderPane borderPane = new BorderPane();
         borderPane.getStyleClass().add("dock-node-border");

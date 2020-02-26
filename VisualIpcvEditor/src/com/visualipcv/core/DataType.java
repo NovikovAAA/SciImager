@@ -85,4 +85,9 @@ public abstract class DataType {
     public int hashCode() {
         return Objects.hash(name, color);
     }
+
+    @Override
+    public String toString() {
+        return name;
+    }
 }

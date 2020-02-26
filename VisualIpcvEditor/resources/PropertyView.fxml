@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<fx:root maxHeight="15.0" prefHeight="15.0" prefWidth="600.0" styleClass="plate" type="AnchorPane" xmlns:fx="http://javafx.com/fxml/1">
+   <GridPane prefHeight="26.0" prefWidth="412.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <TextField fx:id="name" minWidth="100.0" GridPane.columnIndex="0">
+         <GridPane.margin>
+            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+         </GridPane.margin>
+      </TextField>
+      <ComboBox fx:id="dataType" minWidth="100.0" prefHeight="26.0" prefWidth="415.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS">
+         <GridPane.margin>
+            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+         </GridPane.margin>
+      </ComboBox>
+      <Button fx:id="moveDownButton" GridPane.columnIndex="2">
+         <GridPane.margin>
+            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+         </GridPane.margin>
+      </Button>
+      <Button fx:id="moveUpButton" GridPane.columnIndex="3">
+         <GridPane.margin>
+            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+         </GridPane.margin>
+      </Button>
+      <columnConstraints>
+         <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
+         <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
+         <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
+         <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
+      </columnConstraints>
+      <rowConstraints>
+         <RowConstraints />
+      </rowConstraints>
+   </GridPane>
+</fx:root>
