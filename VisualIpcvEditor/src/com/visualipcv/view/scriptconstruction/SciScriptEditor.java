@@ -34,8 +34,8 @@ public class SciScriptEditor extends AnchorPane {
         inputProperties = new PropertyStackView("Input properties");
         outputProperties = new PropertyStackView("Output properties");
 
-        pane2.getChildren().add(inputProperties);
-        pane2.getChildren().add(outputProperties);
+        pane2.getChildren().add(inputProperties.getView());
+        pane2.getChildren().add(outputProperties.getView());
         pane1.getItems().add(codePane);
 
         pane1.setDividerPosition(0, 0.2);

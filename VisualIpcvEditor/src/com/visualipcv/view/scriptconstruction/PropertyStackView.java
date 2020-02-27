@@ -1,35 +1,44 @@
 package com.visualipcv.view.scriptconstruction;
 
-import com.visualipcv.viewmodel.PropertyViewModel;
+import com.visualipcv.view.ViewBase;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.geometry.Insets;
+import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 
-public class PropertyStackView extends VBox {
+import java.util.ArrayList;
+import java.util.List;
+
+public class PropertyStackView extends ViewBase<AnchorPane> {
+    @FXML
+    private Label title;
+    @FXML
+    private VBox propertyList;
+    @FXML
+    private Button addButton;
+
     private StringProperty titleProperty = new SimpleStringProperty("Properties");
-    private PropertyView propertyView1 = new PropertyView();
-    private PropertyView propertyView2 = new PropertyView();
 
     public PropertyStackView(String name) {
-        Label title = new Label();
-        title.textProperty().bind(titleProperty);
-        title.setPadding(new Insets(3.0));
+        super(AnchorPane.class, "PropertyStackView.fxml");
+
+        title.textProperty().bindBidirectional(titleProperty);
         titleProperty.set(name);
 
-        Button addButton = new Button("Add");
-        setMargin(addButton, new Insets(3.0));
+        /*Button addButton = new Button("Add");
+        VBox.setMargin(addButton, new Insets(3.0));
         addButton.setPrefWidth(Double.MAX_VALUE);
 
         propertyView1.setContext(new PropertyViewModel());
         propertyView2.setContext(new PropertyViewModel());
 
-        getChildren().add(title);
-        getChildren().add(propertyView1.getView());
-        getChildren().add(propertyView2.getView());
-        getChildren().add(addButton);
+        getView().getChildren().add(title);
+        getView().getChildren().add(propertyView1.getView());
+        getView().getChildren().add(propertyView2.getView());
+        getView().getChildren().add(addButton);*/
     }
 
     public StringProperty titleProperty() {

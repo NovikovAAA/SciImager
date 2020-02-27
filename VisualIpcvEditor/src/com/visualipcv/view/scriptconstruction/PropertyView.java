@@ -39,7 +39,7 @@ public class PropertyView extends ViewBase<AnchorPane> {
     public PropertyView() {
         super(AnchorPane.class, "PropertyView.fxml");
 
-        VBox.setMargin(getView(), new Insets(3.0, 3.0, 3.0, 3.0));
+        VBox.setMargin(getView(), new Insets(3.0));
 
         dataTypeProperty.bindBidirectional(dataType.valueProperty());
         nameProperty.bindBidirectional(name.textProperty());
