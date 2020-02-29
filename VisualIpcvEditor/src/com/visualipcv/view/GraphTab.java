@@ -1,22 +1,21 @@
 package com.visualipcv.view;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import com.visualipcv.controller.GraphController;
 import javafx.scene.control.Tab;
 
 public class GraphTab extends Tab {
-    private GraphView graphView;
+    private GraphController graphController;
     private String filePath;
 
-    public GraphTab(GraphView view, String filePath) {
-        super("", view);
-        this.graphView = view;
+    public GraphTab(GraphController graphController, String filePath) {
+        super("", graphController.getView());
+        this.graphController = graphController;
         this.filePath = filePath;
-        textProperty().bind(graphView.getViewModel().getNameProperty());
+        setText("");
     }
 
-    public GraphView getGraphView() {
-        return graphView;
+    public GraphController getGraphController() {
+        return graphController;
     }
 
     public String getFilePath() {

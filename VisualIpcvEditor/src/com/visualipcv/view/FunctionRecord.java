@@ -1,4 +1,4 @@
-package com.visualipcv.viewmodel;
+package com.visualipcv.view;
 
 import com.visualipcv.core.Processor;
 import javafx.beans.property.SimpleStringProperty;

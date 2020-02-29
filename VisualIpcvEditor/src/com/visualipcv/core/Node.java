@@ -17,6 +17,8 @@ public class Node {
     private double x;
     private double y;
 
+    private GraphExecutionException lastError;
+
     public Node(Graph graph, Processor processor, double x, double y) {
         id = java.util.UUID.randomUUID();
         initNode(graph, processor, x, y);
@@ -124,7 +126,12 @@ public class Node {
         return slot.getValue();
     }
 
+    public GraphExecutionException getLastError() {
+        return lastError;
+    }
+
     public void execute() throws GraphExecutionException {
+        lastError = null;
         DataBundle inputs = new DataBundle();
 
         for(InputNodeSlot slot : inputSlots) {
@@ -138,7 +145,8 @@ public class Node {
             res = processor.execute(inputs, state);
             processor.postExecute(state);
         } catch (Exception e) {
-            throw new GraphExecutionException(this, e.getMessage());
+            lastError = new GraphExecutionException(this, e.getMessage());
+            throw lastError;
         }
 
         for (OutputNodeSlot outputSlot : outputSlots) {

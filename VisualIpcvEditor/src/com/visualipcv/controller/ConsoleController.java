@@ -1,11 +1,11 @@
-package com.visualipcv.view;
+package com.visualipcv.controller;
 
 import com.visualipcv.Console;
+import com.visualipcv.controller.Controller;
 import com.visualipcv.editor.EditorWindow;
 import com.visualipcv.events.ConsoleEventListener;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -13,12 +13,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import com.visualipcv.view.docking.DockPos;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.io.IOException;
-
 @EditorWindow(path="View/Console", name="Console", dockPos = DockPos.BOTTOM)
-public class ConsoleView extends AnchorPane {
+public class ConsoleController extends Controller<AnchorPane> {
     @FXML
     private TextField inputField;
     @FXML
@@ -26,16 +22,8 @@ public class ConsoleView extends AnchorPane {
     @FXML
     private Button clearButton;
 
-    public ConsoleView() {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ConsoleView.fxml"));
-        loader.setRoot(this);
-        loader.setController(this);
-
-        try {
-            loader.load();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+    public ConsoleController() {
+        super(AnchorPane.class, "ConsoleView.fxml");
 
         clearButton.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
             @Override
@@ -70,15 +58,5 @@ public class ConsoleView extends AnchorPane {
                 output.appendText(response + "\n");
             }
         });
-    }
-
-    @FXML
-    public void onClear(ActionEvent event) {
-        output.clear();
-    }
-
-    @FXML
-    public void onKeyReleased(KeyEvent event) {
-
     }
 }

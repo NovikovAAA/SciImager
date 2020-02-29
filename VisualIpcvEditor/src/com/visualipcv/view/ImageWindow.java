@@ -1,5 +1,6 @@
 package com.visualipcv.view;
 
+import com.visualipcv.controller.Controller;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -10,22 +11,14 @@ import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
 
-public class ImageWindow extends AnchorPane {
+public class ImageWindow extends Controller<AnchorPane> {
     @FXML
     private FreePane pane;
 
     private ImageView image;
 
     public ImageWindow() {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("ImageWindow.fxml"));
-        loader.setRoot(this);
-        loader.setController(this);
-
-        try {
-            loader.load();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+        super(AnchorPane.class, "ImageWindow.fxml");
 
         image = new ImageView();
         image.setLayoutX(0);

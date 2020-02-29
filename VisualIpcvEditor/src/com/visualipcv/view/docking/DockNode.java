@@ -2,12 +2,9 @@ package com.visualipcv.view.docking;
 
 import com.visualipcv.editor.Editor;
 import com.visualipcv.view.AppScene;
+import com.visualipcv.controller.Controller;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.css.PseudoClass;
 import javafx.event.Event;
@@ -19,11 +16,9 @@ import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -35,7 +30,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.Stack;
 
 public class DockNode extends VBox implements EventHandler<MouseEvent> {
@@ -56,6 +51,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
     private StageStyle stageStyle = StageStyle.TRANSPARENT;
 
+    private Map<Tab, Controller<?>> controllers = new HashMap<>();
     private Stage stage;
     private DockNodeMoveEventHandler moveEventHandler;
 
@@ -103,16 +99,11 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
         }
     };
 
-    public DockNode(Node contents, String title, Node graphic) {
-        this(new Tab(title, contents));
-    }
-
-    public DockNode(Tab tab) {
+    public DockNode() {
         tabPane = new TabPane();
         getChildren().add(tabPane);
         VBox.setVgrow(tabPane, Priority.ALWAYS);
 
-        addTab(tab);
         this.getStyleClass().add("dock-node");
 
         moveEventHandler = new DockNodeMoveEventHandler();
@@ -128,18 +119,24 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
                     if(c.wasRemoved()) {
                         if(tabPane.getTabs().isEmpty() && !isStatic())
                             DockNode.this.close();
+
+                        for(Tab tab : c.getRemoved()) {
+                            controllers.remove(tab);
+                        }
                     }
                 }
             }
         });
     }
 
-    public DockNode(Node contents, String title) {
-        this(contents, title, null);
+    public DockNode(Controller<?> controller, String title, Node graphic) {
+        this();
+        addTab(controller, title);
     }
 
-    public DockNode(Node contents) {
-        this(contents, null, null);
+    public DockNode(Controller<?> controller, Tab tab) {
+        this();
+        addTab(controller, tab);
     }
 
     public void setStageStyle(StageStyle stageStyle) {
@@ -408,19 +405,20 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
         dockPane.dock(this, dockPos, sibling);
     }
 
-    public void addTab(Tab tab) {
+    public void addTab(Controller<?> controller, Tab tab) {
         tabPane.getTabs().add(tab);
+        controllers.put(tab, controller);
     }
 
-    public void addTab(Node content, String title) {
-        Tab tab = new Tab(title, content);
-        addTab(tab);
+    public void addTab(Controller<?> controller, String title) {
+        Tab tab = new Tab(title, controller.getView());
+        addTab(controller, tab);
     }
 
     public DockNode floatTab(Tab tab) {
         Stage stage = createStage(null);
         tabPane.getTabs().remove(tab);
-        DockNode newDockNode = new DockNode(tab);
+        DockNode newDockNode = new DockNode(getController(tab), tab);
         newDockNode.floatingProperty.set(true);
 
         newDockNode.stage = stage;
@@ -437,7 +435,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
     public void merge(DockNode dockNode) {
         for(Tab tab : dockNode.tabPane.getTabs()) {
-            addTab(tab.getContent(), tab.getText());
+            addTab(dockNode.getController(tab), tab.getText());
         }
         dockNode.close();
     }
@@ -468,6 +466,10 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
         } else if (isDocked()) {
             undock();
         }
+    }
+
+    public Controller<?> getController(Tab tab) {
+        return controllers.get(tab);
     }
 
     private Point2D sizeLast;

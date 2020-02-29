@@ -1,43 +1,37 @@
-package com.visualipcv.view;
+package com.visualipcv.controller;
 
+import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.editor.EditorWindow;
 import com.visualipcv.events.RefreshEventListener;
-import com.visualipcv.viewmodel.FunctionListViewModel;
-import com.visualipcv.viewmodel.FunctionRecord;
+import com.visualipcv.view.RecursiveTreeItem;
+import com.visualipcv.view.FunctionRecord;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Button;
 import javafx.scene.control.TreeCell;
+import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import com.visualipcv.view.docking.DockPos;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 
 @EditorWindow(path = "View/Function list", name = "Function list", dockPos = DockPos.LEFT)
-public class FunctionListView extends AnchorPane {
+public class FunctionListController extends Controller<AnchorPane> {
     @FXML
     private TreeView<FunctionRecord> treeView;
     @FXML
     private Button addButton;
 
-    private FunctionListViewModel viewModel = new FunctionListViewModel();
-
-    public FunctionListView() {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("FunctionListView.fxml"));
-        loader.setRoot(this);
-        loader.setController(this);
-
-        try {
-            loader.load();
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
+    public FunctionListController() {
+        super(AnchorPane.class, "FunctionListView.fxml");
 
         treeView.setShowRoot(false);
         treeView.setCellFactory((view) -> {
@@ -63,25 +57,37 @@ public class FunctionListView extends AnchorPane {
             return cell;
         });
 
-        init();
+        invalidate();
 
         ProcessorLibrary.getInstance().addListener(new RefreshEventListener() {
             @Override
             public void refresh() {
-                init();
+                invalidate();
             }
         });
 
-        addButton.setOnAction(new EventHandler<ActionEvent>() {
+        /*addButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 viewModel.addFunction();
             }
-        });
+        });*/
     }
 
-    private void init() {
-        viewModel.reload();
-        treeView.setRoot(new RecursiveTreeItem<>(viewModel.getRoot(), FunctionRecord::getSubFunctions));
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        HashMap<String, List<Processor>> categories = new HashMap<>();
+
+        for(Processor processor : ProcessorLibrary.getProcessors()) {
+            if(!categories.containsKey(processor.getCategory())) {
+                categories.put(processor.getCategory(), new ArrayList<>());
+            }
+
+            FunctionRecord func = new FunctionRecord(processor);
+            categories.get(processor.getCategory()).add(processor);
+        }
+
+        treeView.setRoot(new RecursiveTreeItem<FunctionRecord>(new FunctionRecord(categories), FunctionRecord::getSubFunctions));
     }
 }

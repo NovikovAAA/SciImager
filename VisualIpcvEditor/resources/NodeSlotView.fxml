@@ -5,9 +5,10 @@
 <?import javafx.scene.paint.RadialGradient?>
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.shape.Circle?>
+<?import com.visualipcv.view.NodeSlotView?>
 
 <?import javafx.scene.effect.DropShadow?>
-<fx:root maxHeight="30.0" maxWidth="30.0" minHeight="30.0" minWidth="30.0" onDragDetected="#onDragDetected" onDragDropped="#onDragDropped" onDragOver="#onDragOver" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" prefHeight="30.0" prefWidth="30.0" style="-fx-background-color: #ffffff00;" type="AnchorPane" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root maxHeight="30.0" maxWidth="30.0" minHeight="30.0" minWidth="30.0" onDragDetected="#onDragDetected" onDragDropped="#onDragDropped" onDragOver="#onDragOver" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" prefHeight="30.0" prefWidth="30.0" style="-fx-background-color: #ffffff00;" type="NodeSlotView" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Circle fx:id="backgroundCircle" fill="#590000" layoutX="10.0" layoutY="10.0" radius="10.0" strokeType="INSIDE" strokeWidth="3.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <effect>

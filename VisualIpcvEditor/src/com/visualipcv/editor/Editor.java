@@ -1,9 +1,11 @@
 package com.visualipcv.editor;
 
 import com.visualipcv.view.AppScene;
-import com.visualipcv.view.ConsoleView;
-import com.visualipcv.view.FunctionListView;
+import com.visualipcv.controller.ConsoleController;
+import com.visualipcv.controller.Controller;
+import com.visualipcv.controller.FunctionListController;
 import com.visualipcv.view.GraphTab;
+import com.visualipcv.controller.GraphController;
 import com.visualipcv.view.GraphView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -122,7 +124,7 @@ public class Editor {
                 @Override
                 public void handle(ActionEvent event) {
                     try {
-                        DockNode node = new DockNode((Node)clazz.newInstance(), name);
+                        DockNode node = new DockNode((Controller<?>)clazz.newInstance(), name, null);
                         node.dock(getPrimaryPane(), dockPos);
                     } catch(Exception e) {
                         e.printStackTrace();
@@ -132,26 +134,21 @@ public class Editor {
         }
     }
 
-    private static Tab createTabForGraph(GraphView graph) {
-        Tab tab = new Tab("", graph);
-        tab.textProperty().bind(graph.getViewModel().getNameProperty());
-        return tab;
-    }
-
     private static void createSysMenu() {
         addMenuCommand("File/New", new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                docs.addTab(new GraphTab(new GraphView(), null));
+                GraphController graphController = new GraphController();
+                docs.addTab(graphController, new GraphTab(graphController, ""));
             }
         }, new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
 
         addMenuCommand("File/Open", new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                GraphView view = new GraphView();
-                docs.addTab(new GraphTab(view, null));
-                view.onLoad();
+                GraphController graphController = new GraphController();
+                docs.addTab(graphController, new GraphTab(graphController, null));
+                graphController.onLoad();
             }
         }, new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
 
@@ -163,11 +160,11 @@ public class Editor {
                 if(selectedTab == null)
                     return;
 
-                if(!(selectedTab.getContent() instanceof GraphView))
+                if(!(selectedTab instanceof GraphTab))
                     return;
 
-                GraphView view = (GraphView)selectedTab.getContent();
-                view.onSave();
+                GraphController graphController = ((GraphTab)selectedTab).getGraphController();
+                graphController.onSave();
             }
         }, new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
 
@@ -179,11 +176,11 @@ public class Editor {
                 if(selectedTab == null)
                     return;
 
-                if(!(selectedTab.getContent() instanceof GraphView))
+                if(!(selectedTab instanceof GraphTab))
                     return;
 
-                GraphView view = (GraphView)selectedTab.getContent();
-                view.onSaveAs();
+                GraphController graphController = ((GraphTab)selectedTab).getGraphController();
+                graphController.onSaveAs();
             }
         }, new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_DOWN, KeyCombination.CONTROL_DOWN));
 
@@ -214,10 +211,10 @@ public class Editor {
         VBox.setVgrow(dockPane, Priority.ALWAYS);
         root.getChildren().add(dockPane);
 
-        DockNode functionListPanel = new DockNode(new FunctionListView(), "Functions");
-        docs = new DockNode(new GraphView(), "New graph 0");
+        DockNode functionListPanel = new DockNode(new FunctionListController(), "Functions", null);
+        docs = new DockNode(new GraphController(), "New graph 0", null);
         docs.setStatic(true);
-        DockNode consolePanel = new DockNode(new ConsoleView(), "Console");
+        DockNode consolePanel = new DockNode(new ConsoleController(), "Console", null);
 
         docs.dock(dockPane, DockPos.CENTER);
         consolePanel.dock(dockPane, DockPos.BOTTOM);
@@ -246,8 +243,8 @@ public class Editor {
         return docs;
     }
 
-    public static void openWindow(Node node, String title) {
-        DockNode dockNode = new DockNode(node, title);
+    public static void openWindow(Controller<?> controller, String title) {
+        DockNode dockNode = new DockNode(controller, title, null);
         dockNode.setFloating(true);
         dockNode.setMaximized(true);
     }
