@@ -16,6 +16,7 @@ public class GraphTab extends Tab {
             public void onChanged(Object oldValue, Object newValue) {
                 String name = (String)newValue;
                 name = name.substring(Math.max(name.lastIndexOf('\\'), name.lastIndexOf('/')) + 1, name.length());
+                setText(name);
             }
         });
     }

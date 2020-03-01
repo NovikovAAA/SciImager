@@ -10,6 +10,7 @@ import com.visualipcv.view.GraphView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.control.Control;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -124,7 +125,8 @@ public class Editor {
                 @Override
                 public void handle(ActionEvent event) {
                     try {
-                        DockNode node = new DockNode((Controller<?>)clazz.newInstance(), name, null);
+                        Controller<?> controller = (Controller<?>)clazz.newInstance();
+                        DockNode node = new DockNode(controller, new Tab(name, controller.getView()));
                         node.dock(getPrimaryPane(), dockPos);
                     } catch(Exception e) {
                         e.printStackTrace();
@@ -211,10 +213,14 @@ public class Editor {
         VBox.setVgrow(dockPane, Priority.ALWAYS);
         root.getChildren().add(dockPane);
 
-        DockNode functionListPanel = new DockNode(new FunctionListController(), "Functions", null);
-        docs = new DockNode(new GraphController(), "New graph 0", null);
+        FunctionListController functionListController = new FunctionListController();
+        DockNode functionListPanel = new DockNode(functionListController, new Tab("Function list", functionListController.getView()));
+
+        docs = new DockNode();
         docs.setStatic(true);
-        DockNode consolePanel = new DockNode(new ConsoleController(), "Console", null);
+
+        ConsoleController consoleController = new ConsoleController();
+        DockNode consolePanel = new DockNode(consoleController, new Tab("Console", consoleController.getView()));
 
         docs.dock(dockPane, DockPos.CENTER);
         consolePanel.dock(dockPane, DockPos.BOTTOM);
@@ -244,7 +250,7 @@ public class Editor {
     }
 
     public static void openWindow(Controller<?> controller, String title) {
-        DockNode dockNode = new DockNode(controller, title, null);
+        DockNode dockNode = new DockNode(controller, new Tab(title, controller.getView()));
         dockNode.setFloating(true);
         dockNode.setMaximized(true);
     }

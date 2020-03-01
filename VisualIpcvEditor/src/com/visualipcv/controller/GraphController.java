@@ -1,5 +1,7 @@
 package com.visualipcv.controller;
 
+import com.visualipcv.controller.binding.BindingHelper;
+import com.visualipcv.controller.binding.FactoryFunction;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
 import com.visualipcv.core.Connection;
@@ -113,42 +115,11 @@ public class GraphController extends Controller<GraphView> {
         });
 
         nodesProperty.setBinder((Object graph) -> {
-            List<Node> nodes = ((Graph)graph).getNodes();
-            List<NodeController> nodeControllers = new ArrayList<>();
-            HashMap<Node, NodeController> oldNodesHash = new HashMap<>();
-
-            List<NodeController> oldNodes = (List<NodeController>)nodesProperty.getValue();
-
-            if(oldNodes != null) {
-                for(NodeController node : oldNodes) {
-                    oldNodesHash.put((Node)node.getContext(), node);
-                }
-            }
-
-            for(Node node : nodes) {
-                if(oldNodesHash.containsKey(node)) {
-                    nodeControllers.add(oldNodesHash.get(node));
-                } else {
-                    NodeController nodeController = new NodeController(this);
-                    nodeController.setContext(node);
-                    nodeControllers.add(nodeController);
-                }
-            }
-
-            return nodeControllers;
+            return BindingHelper.bindList(nodesProperty, ((Graph) graph).getNodes(), (Node node) -> new NodeController(this));
         });
 
         connectionsProperty.setBinder((Object graph) -> {
-            Set<Connection> connections = ((Graph)graph).getConnections();
-            List<ConnectionController> connectionControllers = new ArrayList<>();
-
-            for(Connection connection : connections) {
-                ConnectionController connectionController = new ConnectionController(this);
-                connectionController.setContext(connection);
-                connectionControllers.add(connectionController);
-            }
-
-            return connectionControllers;
+            return BindingHelper.bindList(connectionsProperty, ((Graph)graph).getConnections(), (Connection connection) -> new ConnectionController(this));
         });
 
         initialize();
@@ -180,10 +151,11 @@ public class GraphController extends Controller<GraphView> {
             }
         });
 
-        getView().addEventFilter(KeyEvent.KEY_TYPED, new EventHandler<KeyEvent>() {
+        Editor.getPrimaryStage().getScene().addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
-                removeSelected();
+                if(event.getCode() == KeyCode.DELETE)
+                    removeSelected();
             }
         });
 
@@ -194,17 +166,25 @@ public class GraphController extends Controller<GraphView> {
         getView().setOnMouseReleased(this::onMouseReleased);
         getView().setOnDragOver(this::onDragOver);
         getView().setOnDragDropped(this::onDragDropped);
+
+        execution();
     }
 
     private void execution() {
         Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.2), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                for(NodeController node : getNodes())
+                    node.errorProperty().setValue("");
+
                 try {
                     ((Graph)getContext()).execute();
                 } catch (GraphExecutionException e) {
 
                 }
+
+                for(NodeController node : getNodes())
+                    node.poll(node.errorProperty());
             }
         }));
 

@@ -1,10 +1,13 @@
 package com.visualipcv.controller;
 
+import com.visualipcv.controller.binding.BindingHelper;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
+import com.visualipcv.core.InputNodeSlot;
 import com.visualipcv.core.NativeProcessor;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
+import com.visualipcv.core.OutputNodeSlot;
 import com.visualipcv.core.SciProcessor;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
@@ -152,27 +155,11 @@ public class NodeController extends Controller<AnchorPane> {
         });
 
         inputSlotsProperty.setBinder((Object node) -> {
-            List<AdvancedNodeSlotController> nodes = new ArrayList<>();
-
-            for(NodeSlot slot : ((Node)node).getInputSlots()) {
-                AdvancedNodeSlotController slotController = new AdvancedNodeSlotController(NodeController.this, slot.getProperty().getType());
-                slotController.setContext(slot);
-                nodes.add(slotController);
-            }
-
-            return nodes;
+            return BindingHelper.bindList(inputSlotsProperty, ((Node)node).getInputSlots(), (InputNodeSlot slot) -> new AdvancedNodeSlotController(NodeController.this, slot.getProperty().getType()));
         });
 
         outputSlotsProperty.setBinder((Object node) -> {
-            List<NodeSlotController> nodes = new ArrayList<>();
-
-            for(NodeSlot slot : ((Node)node).getOutputSlots()) {
-                NodeSlotController slotController = new NodeSlotController(NodeController.this);
-                slotController.setContext(slot);
-                nodes.add(slotController);
-            }
-
-            return nodes;
+            return BindingHelper.bindList(outputSlotsProperty, ((Node)node).getOutputSlots(), (OutputNodeSlot slot) -> new NodeSlotController(this));
         });
 
         nodeClassProperty.setBinder((Object node) -> {
@@ -241,7 +228,6 @@ public class NodeController extends Controller<AnchorPane> {
         previousMouseX = event.getScreenX();
         previousMouseY = event.getScreenY();
         graphController.select(this, event.isControlDown());
-        getView().requestFocus();
         event.consume();
     }
 
@@ -260,6 +246,10 @@ public class NodeController extends Controller<AnchorPane> {
         if(event.getCode() == KeyCode.DELETE) {
             getGraphController().removeSelected();
         }
+    }
+
+    public UIProperty errorProperty() {
+        return errorProperty;
     }
 
     public GraphController getGraphController() {

@@ -6,6 +6,7 @@ import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorProperty;
 import com.visualipcv.editor.Editor;
 import com.visualipcv.view.ImageWindow;
+import javafx.scene.control.Tab;
 import javafx.scene.image.Image;
 import com.visualipcv.view.docking.DockNode;
 import com.visualipcv.view.docking.DockPos;
@@ -29,7 +30,7 @@ public class ImageOutputProcessor extends Processor {
 
     private DockNode createWindow(DataBundle state) {
         ImageWindow window = new ImageWindow();
-        DockNode demoStage = new DockNode(window, "Output", null);
+        DockNode demoStage = new DockNode(window, new Tab("Output", window.getView()));
         demoStage.setPrefWidth(500.0);
         demoStage.setPrefHeight(500.0);
         demoStage.setLayoutX(10.0);

@@ -129,11 +129,6 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
         });
     }
 
-    public DockNode(Controller<?> controller, String title, Node graphic) {
-        this();
-        addTab(controller, title);
-    }
-
     public DockNode(Controller<?> controller, Tab tab) {
         this();
         addTab(controller, tab);
@@ -410,11 +405,6 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
         controllers.put(tab, controller);
     }
 
-    public void addTab(Controller<?> controller, String title) {
-        Tab tab = new Tab(title, controller.getView());
-        addTab(controller, tab);
-    }
-
     public DockNode floatTab(Tab tab) {
         Stage stage = createStage(null);
         tabPane.getTabs().remove(tab);
@@ -435,7 +425,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
     public void merge(DockNode dockNode) {
         for(Tab tab : dockNode.tabPane.getTabs()) {
-            addTab(dockNode.getController(tab), tab.getText());
+            addTab(dockNode.getController(tab), tab);
         }
         dockNode.close();
     }
