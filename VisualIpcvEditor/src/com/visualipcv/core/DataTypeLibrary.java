@@ -8,10 +8,6 @@ public class DataTypeLibrary {
     private static List<DataType> dataTypes = new ArrayList<>();
     private static native DataType[] getDataTypeList();
 
-    static {
-        initDefaultTypes();
-    }
-
     public static List<DataType> getDataTypes() {
         return dataTypes;
     }
@@ -25,7 +21,7 @@ public class DataTypeLibrary {
         return null;
     }
 
-    private static void initDefaultTypes() {
+    public static void initDefaultTypes() {
         dataTypes.add(DataType.NUMBER);
         dataTypes.add(DataType.VECTOR2);
         dataTypes.add(DataType.VECTOR3);

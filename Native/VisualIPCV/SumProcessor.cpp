@@ -10,9 +10,9 @@
 
 bool _ = ProcessorManager::registerProcessor(new SumProcessor());
 
-SumProcessor::SumProcessor() : Processor("Sum", "Core", "Math",
-{ProcessorProperty("a", DataTypeJ()), ProcessorProperty("b", DataTypeJ())},
-{ProcessorProperty("result", DataTypeJ())}) {}
+SumProcessor::SumProcessor() : Processor("TestSum", "Core", "Math",
+{ProcessorProperty("a", DataTypeJ("Number", {0, 0, 0, 0})), ProcessorProperty("b", DataTypeJ("Number", {0, 0, 0, 0}))},
+{ProcessorProperty("result", DataTypeJ("Number", {0, 0, 0, 0}))}) {}
 
 DataBundle SumProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     double a = dataMap.read<double>("a");

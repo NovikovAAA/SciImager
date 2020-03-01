@@ -1,5 +1,6 @@
 package com.visualipcv;
 
+import com.visualipcv.core.DataTypeLibrary;
 import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.scripts.SciRunner;
 import com.visualipcv.utils.LinkUtils;
@@ -11,6 +12,7 @@ public class Starter {
     static {
         LinkUtils.linkNativeLibraries();
 //        SciRunner.load();
+        DataTypeLibrary.initDefaultTypes();
         ProcessorLibrary.getInstance();
     }
 
