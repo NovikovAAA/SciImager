@@ -4,29 +4,26 @@ import com.visualipcv.core.Connection;
 import javafx.scene.paint.Color;
 
 public class ConnectionController extends ConnectionBaseController {
-    private Connection connection;
-    private NodeSlotController source;
-    private NodeSlotController target;
+    private GraphController graphController;
 
-    public ConnectionController(NodeSlotController source, NodeSlotController target) {
+    public ConnectionController(GraphController controller) {
         super();
-        this.source = source;
-        this.target = target;
+        this.graphController = controller;
 
         sourceXProperty.setBinder((Object connection) -> {
-            return localToContainerCoords(source.getView(), source.getView().getWidth() * 0.5, source.getView().getHeight() * 0.5).getX();
+            return localToContainerCoords(getSourceSlot().getView(), getSourceSlot().getView().getWidth() * 0.5, getSourceSlot().getView().getHeight() * 0.5).getX();
         });
 
         sourceYProperty.setBinder((Object connection) -> {
-            return localToContainerCoords(source.getView(), source.getView().getWidth() * 0.5, source.getView().getHeight() * 0.5).getY();
+            return localToContainerCoords(getSourceSlot().getView(), getSourceSlot().getView().getWidth() * 0.5, getSourceSlot().getView().getHeight() * 0.5).getY();
         });
 
         targetXProperty.setBinder((Object connection) -> {
-            return localToContainerCoords(target.getView(), target.getView().getWidth() * 0.5, target.getView().getHeight() * 0.5).getX();
+            return localToContainerCoords(getTargetSlot().getView(), getTargetSlot().getView().getWidth() * 0.5, getTargetSlot().getView().getHeight() * 0.5).getX();
         });
 
         targetYProperty.setBinder((Object connection) -> {
-            return localToContainerCoords(target.getView(), target.getView().getWidth() * 0.5, target.getView().getHeight() * 0.5).getY();
+            return localToContainerCoords(getTargetSlot().getView(), getTargetSlot().getView().getWidth() * 0.5, getTargetSlot().getView().getHeight() * 0.5).getY();
         });
 
         paintProperty.setBinder((Object connection) -> {
@@ -36,10 +33,10 @@ public class ConnectionController extends ConnectionBaseController {
     }
 
     public NodeSlotController getSourceSlot() {
-        return source;
+        return graphController.findNodeSlotController(((Connection)getContext()).getSource());
     }
 
     public NodeSlotController getTargetSlot() {
-        return target;
+        return graphController.findNodeSlotController(((Connection)getContext()).getTarget());
     }
 }

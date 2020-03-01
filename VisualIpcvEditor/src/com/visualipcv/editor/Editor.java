@@ -139,7 +139,7 @@ public class Editor {
             @Override
             public void handle(ActionEvent event) {
                 GraphController graphController = new GraphController();
-                docs.addTab(graphController, new GraphTab(graphController, ""));
+                docs.addTab(graphController, new GraphTab(graphController));
             }
         }, new KeyCodeCombination(KeyCode.N, KeyCombination.CONTROL_DOWN));
 
@@ -147,8 +147,8 @@ public class Editor {
             @Override
             public void handle(ActionEvent event) {
                 GraphController graphController = new GraphController();
-                docs.addTab(graphController, new GraphTab(graphController, null));
-                graphController.onLoad();
+                docs.addTab(graphController, new GraphTab(graphController));
+                graphController.load();
             }
         }, new KeyCodeCombination(KeyCode.O, KeyCombination.CONTROL_DOWN));
 
@@ -164,7 +164,7 @@ public class Editor {
                     return;
 
                 GraphController graphController = ((GraphTab)selectedTab).getGraphController();
-                graphController.onSave();
+                graphController.save();
             }
         }, new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN));
 
@@ -180,7 +180,7 @@ public class Editor {
                     return;
 
                 GraphController graphController = ((GraphTab)selectedTab).getGraphController();
-                graphController.onSaveAs();
+                graphController.saveAs();
             }
         }, new KeyCodeCombination(KeyCode.S, KeyCombination.SHIFT_DOWN, KeyCombination.CONTROL_DOWN));
 

@@ -4,21 +4,36 @@ import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
 import com.visualipcv.core.Connection;
 import com.visualipcv.core.Graph;
+import com.visualipcv.core.GraphExecutionException;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorLibrary;
+import com.visualipcv.core.io.GraphEntity;
+import com.visualipcv.editor.Editor;
 import com.visualipcv.view.GraphView;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.FileChooser;
+import javafx.util.Duration;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -34,6 +49,7 @@ public class GraphController extends Controller<GraphView> {
     private ObservableList<NodeController> nodes = FXCollections.observableArrayList();
     private ObservableList<ConnectionController> connections = FXCollections.observableArrayList();
 
+    private UIProperty filePathProperty = new UIProperty();
     private UIProperty nodesProperty = new UIProperty();
     private UIProperty connectionsProperty = new UIProperty();
 
@@ -99,11 +115,24 @@ public class GraphController extends Controller<GraphView> {
         nodesProperty.setBinder((Object graph) -> {
             List<Node> nodes = ((Graph)graph).getNodes();
             List<NodeController> nodeControllers = new ArrayList<>();
+            HashMap<Node, NodeController> oldNodesHash = new HashMap<>();
+
+            List<NodeController> oldNodes = (List<NodeController>)nodesProperty.getValue();
+
+            if(oldNodes != null) {
+                for(NodeController node : oldNodes) {
+                    oldNodesHash.put((Node)node.getContext(), node);
+                }
+            }
 
             for(Node node : nodes) {
-                NodeController nodeController = new NodeController(this);
-                nodeController.setContext(node);
-                nodeControllers.add(nodeController);
+                if(oldNodesHash.containsKey(node)) {
+                    nodeControllers.add(oldNodesHash.get(node));
+                } else {
+                    NodeController nodeController = new NodeController(this);
+                    nodeController.setContext(node);
+                    nodeControllers.add(nodeController);
+                }
             }
 
             return nodeControllers;
@@ -114,15 +143,9 @@ public class GraphController extends Controller<GraphView> {
             List<ConnectionController> connectionControllers = new ArrayList<>();
 
             for(Connection connection : connections) {
-                ConnectionController connectionController = new ConnectionController(
-                        findNodeSlotController(connection.getSource()),
-                        findNodeSlotController(connection.getTarget()));
+                ConnectionController connectionController = new ConnectionController(this);
                 connectionController.setContext(connection);
                 connectionControllers.add(connectionController);
-            }
-
-            for(NodeController node : nodes) {
-                node.invalidate();
             }
 
             return connectionControllers;
@@ -150,6 +173,20 @@ public class GraphController extends Controller<GraphView> {
             }
         });
 
+        getView().addEventFilter(DragEvent.DRAG_DONE, new EventHandler<DragEvent>() {
+            @Override
+            public void handle(DragEvent event) {
+                stopConnectionDrag();
+            }
+        });
+
+        getView().addEventFilter(KeyEvent.KEY_TYPED, new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                removeSelected();
+            }
+        });
+
         getView().addEventHandler(MouseEvent.MOUSE_PRESSED, this::onMousePressed);
         getView().addEventHandler(MouseEvent.MOUSE_DRAGGED, this::onMouseDragged);
         getView().addEventHandler(MouseEvent.MOUSE_RELEASED, this::onMouseReleased);
@@ -159,7 +196,23 @@ public class GraphController extends Controller<GraphView> {
         getView().setOnDragDropped(this::onDragDropped);
     }
 
-    private NodeSlotController findNodeSlotController(NodeSlot slot) {
+    private void execution() {
+        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.2), new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                try {
+                    ((Graph)getContext()).execute();
+                } catch (GraphExecutionException e) {
+
+                }
+            }
+        }));
+
+        timeline.setCycleCount(-1);
+        timeline.play();
+    }
+
+    public NodeSlotController findNodeSlotController(NodeSlot slot) {
         for(NodeController controller : (List<NodeController>)nodesProperty.getValue()) {
             if(controller.getContext() == slot.getNode()) {
                 for(AdvancedNodeSlotController slotController : controller.getInputSlots()) {
@@ -204,8 +257,10 @@ public class GraphController extends Controller<GraphView> {
     }
 
     public void stopConnectionDrag() {
-        getView().getInternalPane().getChildren().remove(connectionPreview.getView());
-        connectionPreview = null;
+        if(connectionPreview != null) {
+            getView().getInternalPane().getChildren().remove(connectionPreview.getView());
+            connectionPreview = null;
+        }
     }
 
     public void onMousePressed(MouseEvent event) {
@@ -328,6 +383,7 @@ public class GraphController extends Controller<GraphView> {
 
     public void removeNode(NodeController node) {
         ((Graph)getContext()).removeNode(node.getContext());
+        invalidate();
     }
 
     public void removeSelected() {
@@ -349,15 +405,51 @@ public class GraphController extends Controller<GraphView> {
         node.setSelected(true);
     }
 
-    public void onSave() {
-        // TODO: save
+    public void save() {
+        if(filePathProperty.getValue() == null) {
+            saveAs();
+        } else {
+            try (ObjectInputStream stream = new ObjectInputStream(new FileInputStream((String)filePathProperty.getValue()))) {
+                setContext(new Graph((GraphEntity)stream.readObject()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    public void onSaveAs() {
-        // TODO: save as
+    public void load() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Open");
+
+        File file = chooser.showOpenDialog(Editor.getPrimaryStage().getScene().getWindow());
+
+        if(file != null) {
+            try (ObjectInputStream stream = new ObjectInputStream(new FileInputStream(file))) {
+                setContext(new Graph((GraphEntity)stream.readObject()));
+                filePathProperty.setValue(file.getAbsolutePath());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    public void onLoad() {
-        // TODO: load
+    public void saveAs() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save");
+
+        File file = chooser.showSaveDialog(Editor.getPrimaryStage().getScene().getWindow());
+
+        if(file != null) {
+            try (ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(file))) {
+                stream.writeObject(new GraphEntity((Graph)getContext()));
+                filePathProperty.setValue(file.getAbsolutePath());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public UIProperty filePathProperty() {
+        return filePathProperty;
     }
 }

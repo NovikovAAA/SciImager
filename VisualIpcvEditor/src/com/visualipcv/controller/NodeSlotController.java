@@ -84,14 +84,7 @@ public class NodeSlotController extends Controller<NodeSlotView> {
     }
 
     public List<ConnectionController> getConnections() {
-        List<ConnectionController> connections = new ArrayList<>();
-
-        for(ConnectionController connection : nodeController.getGraphController().getConnections()) {
-            if(connection.getSourceSlot() == this || connection.getTargetSlot() == this)
-                connections.add(connection);
-        }
-
-        return connections;
+        return nodeController.getGraphController().getConnections();
     }
 
     public boolean isOutput() {
@@ -119,7 +112,7 @@ public class NodeSlotController extends Controller<NodeSlotView> {
         dragboard.setContent(content);
         event.consume();
 
-        draggingSlot = this;
+        draggingSlot = source;
         nodeController.getGraphController().startConnectionDrag(source);
     }
 
@@ -134,8 +127,6 @@ public class NodeSlotController extends Controller<NodeSlotView> {
                 startConnectionDrag(event, this);
             } else {
                 NodeSlotController source = null;
-                ((NodeSlot)getContext()).disconnect();
-                invalidate();
 
                 if(connections.get(0).getSourceSlot() == this)
                     source = connections.get(0).getTargetSlot();
@@ -143,6 +134,8 @@ public class NodeSlotController extends Controller<NodeSlotView> {
                     source = connections.get(0).getSourceSlot();
 
                 startConnectionDrag(event, source);
+                ((NodeSlot)getContext()).disconnect();
+                nodeController.getGraphController().invalidate();
             }
         }
     }
