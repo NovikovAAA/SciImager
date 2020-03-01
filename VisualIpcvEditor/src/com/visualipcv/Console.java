@@ -1,6 +1,7 @@
 package com.visualipcv;
 
 import com.visualipcv.events.ConsoleEventListener;
+import com.visualipcv.scripts.SciRunner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,12 @@ public class Console {
     private static List<ConsoleEventListener> eventListeners = new ArrayList<>();
 
     public static String write(String cmd, boolean showCmd) {
-        throw new RuntimeException();
+        SciRunner.execute(cmd);
+
+        if(showCmd)
+            output(cmd);
+
+        return "";
     }
 
     public static void output(String text) {

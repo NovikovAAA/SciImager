@@ -19,6 +19,8 @@ public class SciRunner {
         } catch(JavasciException e) {
             e.printStackTrace();
         }
+
+        SciConverters.load();
     }
 
     public static void set(String name, ScilabType value) {

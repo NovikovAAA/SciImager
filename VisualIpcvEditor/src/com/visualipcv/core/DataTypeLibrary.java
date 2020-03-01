@@ -10,7 +10,6 @@ public class DataTypeLibrary {
 
     static {
         initDefaultTypes();
-        //Collections.addAll(dataTypes, getDataTypeList());
     }
 
     public static List<DataType> getDataTypes() {
