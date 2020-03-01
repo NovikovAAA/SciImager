@@ -2,9 +2,8 @@ package com.visualipcv.viewmodel;
 
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorLibrary;
-import com.visualipcv.view.FunctionListView;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import com.visualipcv.editor.Editor;
+import com.visualipcv.view.ScriptEditorView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +14,10 @@ public class FunctionListViewModel {
     private FunctionRecord root;
 
     public FunctionListViewModel() {
+        reload();
+    }
+
+    public void reload() {
         Map<String, List<Processor>> categories = new HashMap<>();
 
         for(Processor processor : ProcessorLibrary.getProcessors()) {
@@ -30,5 +33,9 @@ public class FunctionListViewModel {
 
     public FunctionRecord getRoot() {
         return root;
+    }
+
+    public void addFunction() {
+        Editor.openWindow(new ScriptEditorView(), "Script");
     }
 }

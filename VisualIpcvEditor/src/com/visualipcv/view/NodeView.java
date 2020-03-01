@@ -4,6 +4,7 @@ import com.visualipcv.controller.IGraphViewElement;
 import com.visualipcv.core.NativeProcessor;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
+import com.visualipcv.core.SciProcessor;
 import com.visualipcv.viewmodel.NodeViewModel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
@@ -92,11 +93,12 @@ public class NodeView extends AnchorPane implements IGraphViewElement {
             e.printStackTrace();
         }
 
-        if(!(node.getProcessor() instanceof NativeProcessor)) {
-            Text text = new Text("Java");
-            text.setLayoutY(title.getLayoutY());
-            text.setLayoutX(nodeClass.getWidth() - 10.0);
-            nodeClass.getChildren().add(text);
+        if(node.getProcessor() instanceof SciProcessor) {
+            setNodeClassLabel("SciLab");
+        } else if(!(node.getProcessor() instanceof NativeProcessor)) {
+            setNodeClassLabel("Java");
+        } else {
+            setNodeClassLabel("C++");
         }
 
         title.textProperty().bind(viewModel.getTitleProperty());
@@ -173,6 +175,13 @@ public class NodeView extends AnchorPane implements IGraphViewElement {
                 }
             }
         });
+    }
+
+    private void setNodeClassLabel(String label) {
+        Text text = new Text(label);
+        text.setLayoutY(title.getLayoutY());
+        text.setLayoutX(nodeClass.getWidth() - 10.0);
+        nodeClass.getChildren().add(text);
     }
 
     public List<AdvancedNodeSlotView> getInputSlots() {

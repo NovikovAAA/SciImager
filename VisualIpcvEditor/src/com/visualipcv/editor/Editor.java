@@ -236,4 +236,9 @@ public class Editor {
     public static MenuBar getMenuBar() {
         return menuBar;
     }
+
+    public static void openWindow(Node node, String title) {
+        DockNode dockNode = new DockNode(node, title);
+        dockNode.dock(getPrimaryPane(), DockPos.RIGHT);
+    }
 }
