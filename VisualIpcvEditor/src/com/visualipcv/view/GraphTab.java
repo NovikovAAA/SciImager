@@ -8,7 +8,7 @@ public class GraphTab extends Tab {
     private GraphController graphController;
 
     public GraphTab(GraphController graphController) {
-        super("", graphController.getView());
+        super((String)graphController.filePathProperty().getValue(), graphController.getView());
         this.graphController = graphController;
 
         this.graphController.filePathProperty().addEventListener(new PropertyChangedEventListener() {

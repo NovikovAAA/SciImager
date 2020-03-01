@@ -18,9 +18,8 @@ public class AdvancedNodeSlotController extends Controller<HBox> {
     private NodeSlotController slotController = null;
     private InputFieldController fieldController = null;
 
-    private UIProperty showControlProperty = new UIProperty();
-    private UIProperty showConnectorProperty = new UIProperty();
-    private UIProperty isOutputProperty = new UIProperty();
+    private UIProperty showControlProperty = new UIProperty(true);
+    private UIProperty showConnectorProperty = new UIProperty(true);
     private UIProperty titleProperty = new UIProperty();
 
     public AdvancedNodeSlotController(NodeController controller, DataType type) {
@@ -56,7 +55,7 @@ public class AdvancedNodeSlotController extends Controller<HBox> {
             }
         });
 
-        isOutputProperty.addEventListener(new PropertyChangedEventListener() {
+        slotController.isOutputProperty().addEventListener(new PropertyChangedEventListener() {
             @Override
             public void onChanged(Object oldValue, Object newValue) {
                 if((Boolean)newValue) {
@@ -82,13 +81,22 @@ public class AdvancedNodeSlotController extends Controller<HBox> {
             return ((InputNodeSlot)slot).getProperty().showControl();
         });
 
-        isOutputProperty.setBinder((Object slot) -> {
-            return slot instanceof OutputNodeSlot;
-        });
-
         titleProperty.setBinder((Object slot) -> {
             return ((NodeSlot)slot).getProperty().getName();
         });
+
+        if(fieldController != null && (Boolean)showControlProperty.getValue()) {
+            slotController.connectedProperty().addEventListener(new PropertyChangedEventListener() {
+                @Override
+                public void onChanged(Object oldValue, Object newValue) {
+                    if((Boolean)newValue) {
+                        fieldController.getView().setVisible(false);
+                    } else {
+                        fieldController.getView().setVisible(true);
+                    }
+                }
+            });
+        }
 
         initialize();
     }
@@ -103,8 +111,19 @@ public class AdvancedNodeSlotController extends Controller<HBox> {
 
     @Override
     public void setContext(Object context) {
-        super.setContext(context);
         fieldController.setContext(context);
         slotController.setContext(context);
+        super.setContext(context);
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
+
+        if(slotController != null)
+            slotController.invalidate();
+
+        if(fieldController != null)
+            fieldController.invalidate();
     }
 }

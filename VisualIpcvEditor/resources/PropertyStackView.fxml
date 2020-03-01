@@ -8,23 +8,23 @@
 <?import javafx.scene.control.Button?>
 
 <fx:root type="AnchorPane" xmlns:fx="http://javafx.com/fxml/1">
-   <ScrollPane fitToWidth="true" AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.bottomAnchor="0.0">
-      <VBox spacing="3.0" maxWidth="Infinity">
-         <Label fx:id="title" style="-fx-font-weight: bold;" text="Title">
-            <VBox.margin>
-               <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
-            </VBox.margin>
-         </Label>
+   <VBox spacing="3.0" AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+      <Label fx:id="title" style="-fx-font-weight: bold;" text="Title">
+         <VBox.margin>
+            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+         </VBox.margin>
+      </Label>
+      <ScrollPane fitToWidth="true">
          <VBox fx:id="propertyList">
             <VBox.margin>
                <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
             </VBox.margin>
          </VBox>
-         <Button fx:id="addButton" text="Add" maxWidth="Infinity">
-            <VBox.margin>
-               <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
-            </VBox.margin>
-         </Button>
-      </VBox>
-   </ScrollPane>
+      </ScrollPane>
+      <Button fx:id="addButton" text="Add" maxWidth="Infinity">
+         <VBox.margin>
+            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0"/>
+         </VBox.margin>
+      </Button>
+   </VBox>
 </fx:root>

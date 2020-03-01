@@ -68,7 +68,7 @@ public class NodeSlotController extends Controller<NodeSlotView> {
 
         backgroundColorProperty.setBinder((Object slot) -> {
             java.awt.Color color = ((NodeSlot)slot).getProperty().getType().getColor();
-            return new Color(color.getRed() / 400.0, color.getGreen() / 400.0, color.getBlue() / 400.0, 1.0);
+            return new Color(color.getRed() / 2550.0, color.getGreen() / 2550.0, color.getBlue() / 2550.0, 1.0);
         });
 
         foregroundColorProperty.setBinder((Object slot) -> {
@@ -160,5 +160,13 @@ public class NodeSlotController extends Controller<NodeSlotView> {
         event.setDropCompleted(true);
         event.consume();
         draggingSlot = null;
+    }
+
+    public UIProperty connectedProperty() {
+        return connectedProperty;
+    }
+
+    public UIProperty isOutputProperty() {
+        return isOutputProperty;
     }
 }

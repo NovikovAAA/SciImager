@@ -61,6 +61,7 @@ public class GraphController extends Controller<GraphView> {
     public GraphController() {
         super(GraphView.class);
         setContext(new Graph());
+        filePathProperty.setValue("New graph");
 
         nodes.addListener(new ListChangeListener<NodeController>() {
             @Override
@@ -386,11 +387,14 @@ public class GraphController extends Controller<GraphView> {
     }
 
     public void save() {
-        if(filePathProperty.getValue() == null) {
+        File file = new File((String)filePathProperty.getValue());
+
+        if(!file.exists()) {
             saveAs();
         } else {
-            try (ObjectInputStream stream = new ObjectInputStream(new FileInputStream((String)filePathProperty.getValue()))) {
-                setContext(new Graph((GraphEntity)stream.readObject()));
+            try (ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(file))) {
+                stream.writeObject(new GraphEntity((Graph)getContext()));
+                filePathProperty.setValue(file.getAbsolutePath());
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -1,7 +1,9 @@
 package com.visualipcv.controller;
 
+import com.visualipcv.controller.scriptconstruction.SciScriptEditor;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorLibrary;
+import com.visualipcv.editor.Editor;
 import com.visualipcv.editor.EditorWindow;
 import com.visualipcv.events.RefreshEventListener;
 import com.visualipcv.view.RecursiveTreeItem;
@@ -66,12 +68,12 @@ public class FunctionListController extends Controller<AnchorPane> {
             }
         });
 
-        /*addButton.setOnAction(new EventHandler<ActionEvent>() {
+        addButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                viewModel.addFunction();
+                Editor.openWindow(new SciScriptEditor(), "Script");
             }
-        });*/
+        });
     }
 
     @Override

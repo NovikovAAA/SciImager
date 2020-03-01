@@ -13,4 +13,8 @@ public class SciProcessor extends Processor {
     public DataBundle execute(DataBundle inputs, DataBundle state) {
         return script.run(inputs);
     }
+
+    public SciScript getScript() {
+        return script;
+    }
 }
