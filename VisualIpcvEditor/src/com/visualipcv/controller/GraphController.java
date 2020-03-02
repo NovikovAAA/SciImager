@@ -1,5 +1,6 @@
 package com.visualipcv.controller;
 
+import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import com.visualipcv.controller.binding.BindingHelper;
 import com.visualipcv.controller.binding.FactoryFunction;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
@@ -11,8 +12,12 @@ import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorLibrary;
+import com.visualipcv.core.io.ConnectionEntity;
+import com.visualipcv.core.io.GraphClipboard;
 import com.visualipcv.core.io.GraphEntity;
+import com.visualipcv.core.io.NodeEntity;
 import com.visualipcv.editor.Editor;
+import com.visualipcv.view.CustomDataFormats;
 import com.visualipcv.view.GraphView;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -27,17 +32,25 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
+import javafx.util.converter.ByteStringConverter;
+import sun.awt.image.ByteInterleavedRaster;
 
+import javax.sound.sampled.Clip;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 public class GraphController extends Controller<GraphView> {
     private MouseButton selectionButton = MouseButton.PRIMARY;
@@ -152,11 +165,22 @@ public class GraphController extends Controller<GraphView> {
             }
         });
 
-        Editor.getPrimaryStage().getScene().addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+        getView().addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent event) {
                 if(event.getCode() == KeyCode.DELETE)
                     removeSelected();
+                else if(event.getCode() == KeyCode.C && event.isControlDown()) {
+                    if(copy()) {
+                        event.consume();
+                    }
+                } else if(event.getCode() == KeyCode.V && event.isControlDown()) {
+                    if(past())
+                        event.consume();
+                } else if(event.getCode() == KeyCode.X && event.isControlDown()) {
+                    if(cut())
+                        event.consume();
+                }
             }
         });
 
@@ -172,7 +196,7 @@ public class GraphController extends Controller<GraphView> {
     }
 
     private void execution() {
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.2), new EventHandler<ActionEvent>() {
+        /*Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.2), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 for(NodeController node : getNodes())
@@ -190,7 +214,34 @@ public class GraphController extends Controller<GraphView> {
         }));
 
         timeline.setCycleCount(-1);
-        timeline.play();
+        timeline.play();*/
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true) {
+                    for(NodeController node : getNodes())
+                        node.errorProperty().setValue("");
+
+                    try {
+                        ((Graph)getContext()).execute();
+                    } catch (GraphExecutionException e) {
+
+                    }
+
+                    for(NodeController node : getNodes())
+                        node.poll(node.errorProperty());
+
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+
+                    }
+                }
+            }
+        });
+
+        thread.start();
     }
 
     public NodeSlotController findNodeSlotController(NodeSlot slot) {
@@ -377,6 +428,114 @@ public class GraphController extends Controller<GraphView> {
         for(NodeController node : nodes) {
             node.setSelected(false);
         }
+    }
+
+    private GraphClipboard createGraphClipboardFromSelection() {
+        List<Node> nodes = new ArrayList<>();
+        List<Connection> connections = new ArrayList<>();
+
+        for(NodeController node : this.nodes) {
+            if(node.isSelected()) {
+                nodes.add(node.getContext());
+            }
+        }
+
+        Set<Node> nodesHash = new HashSet<>(nodes);
+
+        for(Connection connection : ((Graph)getContext()).getConnections()) {
+            if(nodesHash.contains(connection.getSource().getNode()) && nodesHash.contains(connection.getTarget().getNode()))
+                connections.add(connection);
+        }
+
+        return new GraphClipboard(nodes, connections);
+    }
+
+    public boolean copy(GraphClipboard graphClipboard) {
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        GraphEntity entity = new GraphEntity(graphClipboard);
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+
+        try (ObjectOutputStream stream = new ObjectOutputStream(byteStream)) {
+            stream.writeObject(entity);
+            stream.flush();
+
+            byte[] data = byteStream.toByteArray();
+            ClipboardContent content = new ClipboardContent();
+            content.put(CustomDataFormats.OCTET_STREAM, data);
+            clipboard.setContent(content);
+        } catch (IOException e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public boolean copy() {
+        return copy(createGraphClipboardFromSelection());
+    }
+
+    public boolean cut() {
+        GraphClipboard clipboard = createGraphClipboardFromSelection();
+        boolean res = copy(clipboard);
+
+        for(NodeController node : getSelectedNodes())
+            removeNode(node);
+
+        return res;
+    }
+
+    public boolean past() {
+        ByteArrayInputStream byteStream;
+        byte[] bytes;
+
+        try {
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            bytes = (byte[])clipboard.getContent(CustomDataFormats.OCTET_STREAM);
+        } catch(Exception e) {
+            return false;
+        }
+
+        byteStream = new ByteArrayInputStream(bytes);
+
+        try (ObjectInputStream stream = new ObjectInputStream(byteStream)) {
+            GraphEntity entity = (GraphEntity)stream.readObject();
+            Graph graph = getContext();
+            Map<UUID, UUID> uidMapping = new HashMap<>();
+
+            clearSelection();
+            Set<Node> nodesToSelect = new HashSet<>();
+
+            for(NodeEntity node : entity.getNodes()) {
+                UUID oldId = node.getId();
+                node.resetUID();
+                UUID newId = node.getId();
+
+                Node newNode = new Node(graph, node);
+                graph.addNode(newNode);
+                uidMapping.put(oldId, newId);
+                nodesToSelect.add(newNode);
+            }
+
+            for(ConnectionEntity connection : entity.getConnections()) {
+                UUID newSourceId = uidMapping.get(connection.getSourceNodeId());
+                UUID newTargetId = uidMapping.get(connection.getTargetNodeId());
+                connection.updateUIDs(newSourceId, newTargetId);
+                graph.addConnectionRecord(new Connection(graph, connection));
+            }
+
+            stream.close();
+            invalidate();
+
+            for(NodeController controller : nodes) {
+                if(nodesToSelect.contains(controller.<Node>getContext())) {
+                    controller.setSelected(true);
+                }
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            return false;
+        }
+
+        return true;
     }
 
     public void select(NodeController node, boolean ctrlDown) {

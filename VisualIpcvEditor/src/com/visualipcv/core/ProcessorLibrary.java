@@ -36,7 +36,7 @@ public class ProcessorLibrary extends Refreshable {
             try {
                 processors.add(proc.newInstance());
             } catch(Exception e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
         }
     }

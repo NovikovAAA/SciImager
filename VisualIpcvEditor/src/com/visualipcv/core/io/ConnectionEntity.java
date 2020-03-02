@@ -18,6 +18,11 @@ public class ConnectionEntity implements Serializable {
         targetNodeProperty = connection.getTarget().getProperty().getName();
     }
 
+    public void updateUIDs(UUID sourceNodeId, UUID targetNodeId) {
+        this.sourceNodeId = sourceNodeId;
+        this.targetNodeId = targetNodeId;
+    }
+
     public UUID getSourceNodeId() {
         return sourceNodeId;
     }

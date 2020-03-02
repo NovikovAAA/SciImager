@@ -6,6 +6,7 @@ import com.visualipcv.core.io.GraphEntity;
 import com.visualipcv.core.io.NodeEntity;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +40,18 @@ public class Graph {
             node.onCreate();
         } catch (GraphExecutionException e) {
             Console.output(e.getMessage());
+        }
+    }
+
+    public void addNodes(Collection<Node> nodes) {
+        this.nodes.addAll(nodes);
+
+        for(Node node : nodes) {
+            try {
+                node.onCreate();
+            } catch (GraphExecutionException e) {
+                Console.output(e.getMessage());
+            }
         }
     }
 

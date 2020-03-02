@@ -83,7 +83,13 @@ public class VectorNFieldController extends Controller<Pane> {
             public void onChanged(Object oldValue, Object newValue) {
                 Double[] values = (Double[])newValue;
 
+                if(values == null)
+                    return;
+
                 for(int i = 0; i < n ; i++) {
+                    if(values[i] == null)
+                        continue;
+
                     textFields[i].setText(values[i].toString());
                 }
             }

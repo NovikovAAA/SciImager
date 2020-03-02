@@ -25,6 +25,19 @@ public class GraphEntity implements Serializable {
         }
     }
 
+    public GraphEntity(GraphClipboard graph) {
+        nodes = new ArrayList<>();
+        connections = new ArrayList<>();
+
+        for(Node node : graph.getNodes()) {
+            nodes.add(new NodeEntity(node));
+        }
+
+        for(Connection connection : graph.getConnections()) {
+            connections.add(new ConnectionEntity(connection));
+        }
+    }
+
     public List<NodeEntity> getNodes() {
         return nodes;
     }

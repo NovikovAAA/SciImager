@@ -29,6 +29,10 @@ public class NodeEntity implements Serializable {
         }
     }
 
+    public void resetUID() {
+        id = UUID.randomUUID();
+    }
+
     public UUID getId() {
         return id;
     }

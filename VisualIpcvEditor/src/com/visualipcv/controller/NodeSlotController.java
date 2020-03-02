@@ -83,8 +83,16 @@ public class NodeSlotController extends Controller<NodeSlotView> {
         initialize();
     }
 
+    // TODO: speed up
     public List<ConnectionController> getConnections() {
-        return nodeController.getGraphController().getConnections();
+        List<ConnectionController> connections = new ArrayList<>();
+
+        for(ConnectionController connection : getNodeController().getGraphController().getConnections()) {
+            if(connection.getSourceSlot() == this || connection.getTargetSlot() == this)
+                connections.add(connection);
+        }
+
+        return connections;
     }
 
     public boolean isOutput() {
@@ -160,6 +168,10 @@ public class NodeSlotController extends Controller<NodeSlotView> {
         event.setDropCompleted(true);
         event.consume();
         draggingSlot = null;
+    }
+
+    public NodeController getNodeController() {
+        return nodeController;
     }
 
     public UIProperty connectedProperty() {
