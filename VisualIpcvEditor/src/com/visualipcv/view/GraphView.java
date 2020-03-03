@@ -82,6 +82,9 @@ public class GraphView extends FreePane {
     }
 
     private void init() {
+        setPrefWidth(1280.0);
+        setPrefHeight(720.0);
+
         canvas = new Canvas();
         canvas.setManaged(false);
         canvas.setMouseTransparent(true);

@@ -238,7 +238,7 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
         }
 
         if (sibling != null && sibling != root) {
-            Stack<Parent> stack = new Stack<Parent>();
+            Stack<Parent> stack = new Stack<>();
             stack.push((Parent) root);
             while (!stack.isEmpty()) {
                 Parent parent = stack.pop();
@@ -341,7 +341,7 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
         node.removeEventFilter(DockEvent.DOCK_OVER, dockNodeEventHandler);
         dockNodeEventFilters.remove(node);
 
-        Stack<Parent> findStack = new Stack<Parent>();
+        Stack<Parent> findStack = new Stack<>();
         findStack.push((Parent) root);
         while (!findStack.isEmpty()) {
             Parent parent = findStack.pop();

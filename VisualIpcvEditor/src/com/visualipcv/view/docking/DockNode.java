@@ -100,6 +100,8 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     };
 
     public DockNode() {
+        setMinSize(200.0, 200.0);
+
         tabPane = new TabPane();
         getChildren().add(tabPane);
         VBox.setVgrow(tabPane, Priority.ALWAYS);

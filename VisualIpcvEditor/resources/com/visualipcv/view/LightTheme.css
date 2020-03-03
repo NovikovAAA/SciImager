@@ -90,3 +90,7 @@
     -fx-border-color: darkgray;
     -fx-border-width: 0.5;
 }
+
+.free-pane {
+    -fx-background-color: -fx-dark-color;
+}

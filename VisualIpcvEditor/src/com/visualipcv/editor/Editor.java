@@ -218,6 +218,8 @@ public class Editor {
 
         docs = new DockNode();
         docs.setStatic(true);
+        docs.setPrefWidth(1280.0);
+        docs.setPrefHeight(720.0);
 
         ConsoleController consoleController = new ConsoleController();
         DockNode consolePanel = new DockNode(consoleController, new Tab("Console", consoleController.getView()));

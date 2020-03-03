@@ -4,6 +4,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.css.CssMetaData;
 import javafx.css.SimpleStyleableDoubleProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
@@ -12,6 +13,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 public class FreePane extends AnchorPane {
     private Pane internalPane;
@@ -25,6 +28,8 @@ public class FreePane extends AnchorPane {
     private DoubleProperty zoom = new SimpleDoubleProperty(1.0);
 
     public FreePane() {
+        getStyleClass().add("free-pane");
+
         internalPane = new Pane();
         internalPane.setPrefWidth(0.0);
         internalPane.setPrefHeight(0.0);
@@ -147,5 +152,11 @@ public class FreePane extends AnchorPane {
         yOffset.set(yOffset.get() + deltaY);
 
         event.consume();
+    }
+
+    @Override
+    public void layoutChildren() {
+        super.layoutChildren();
+        setClip(new Rectangle(0.0, 0.0, getWidth(), getHeight()));
     }
 }

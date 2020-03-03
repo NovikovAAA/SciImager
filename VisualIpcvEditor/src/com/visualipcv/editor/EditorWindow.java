@@ -13,4 +13,6 @@ public @interface EditorWindow {
     String path();
     String name();
     DockPos dockPos();
+    double prefWidth() default 0.0;
+    double prefHeight() default 0.0;
 }
