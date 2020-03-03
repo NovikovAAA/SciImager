@@ -29,15 +29,20 @@ public class EnumFieldController extends Controller<Pane> {
 
         valueField = new ComboBox<>();
         valueField.setPrefSize(InputFieldController.STD_WIDTH, InputFieldController.STD_HEIGHT);
-        valueField.setMinSize(valueField.getMinWidth(), valueField.getMinHeight());
-        valueField.setMaxSize(valueField.getMaxWidth(), valueField.getMaxHeight());
+        valueField.setMinSize(valueField.getPrefWidth(), valueField.getPrefHeight());
+        valueField.setMaxSize(valueField.getPrefWidth(), valueField.getPrefHeight());
         valueField.setPadding(new Insets(InputFieldController.STD_TEXT_PADDING));
+        valueField.setStyle("-fx-padding: " + InputFieldController.STD_TEXT_PADDING + "; -fx-label-padding: " + InputFieldController.STD_TEXT_PADDING);
         valueField.getItems().addAll(constraint.getValues());
+        valueField.setValue(valueField.getItems().get(0));
 
         valueProperty.addEventListener(new PropertyChangedEventListener() {
             @Override
             public void onChanged(Object oldValue, Object newValue) {
-                valueField.setValue(newValue);
+                for(Object value : valueField.getItems()) {
+                    if(((EnumConstraint.Value)value).getValue() == newValue)
+                        valueField.setValue(value);
+                }
             }
         });
 
@@ -49,7 +54,7 @@ public class EnumFieldController extends Controller<Pane> {
             @Override
             public void handle(ActionEvent event) {
                 try {
-                    ((InputNodeSlot)getContext()).setValue(valueField.getValue());
+                    ((InputNodeSlot)getContext()).setValue(((EnumConstraint.Value)valueField.getValue()).getValue());
                     valueField.setBorder(null);
                     poll(valueProperty);
                 } catch (ValidationException e) {

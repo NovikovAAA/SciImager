@@ -5,23 +5,49 @@ import com.visualipcv.core.ValidationException;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 public class EnumConstraint extends DataTypeConstraint {
-    private Object[] values;
+    private List<Value> values;
 
-    public EnumConstraint(Object... values) {
-        this.values = values;
+    public static class Value {
+        private Object value;
+        private Object visual;
+
+        public Value(Object value, Object visual) {
+            this.value = value;
+            this.visual = visual;
+        }
+
+        public Object getValue() {
+            return value;
+        }
+
+        public Object getVisual() {
+            return visual;
+        }
+
+        @Override
+        public String toString() {
+            return visual.toString();
+        }
     }
 
-    public Object[] getValues() {
+    public EnumConstraint(Value... values) {
+        this.values = Arrays.asList(values);
+    }
+
+    public List<Value> getValues() {
         return values;
     }
 
     @Override
     public Object validate(Object value) throws ValidationException {
-        if(!Arrays.asList(values).contains(value)) {
-            throw new ValidationException(getClass(), value);
+        for(Value v : values) {
+            if(v.getValue().equals(value)) {
+                return value;
+            }
         }
-        return value;
+        throw new ValidationException(EnumConstraint.class, value);
     }
 }
