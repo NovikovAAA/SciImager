@@ -9,7 +9,7 @@ public class DataTypeLibrary {
     private static native DataType[] getDataTypeList();
 
     static {
-        initDefaultTypes();
+
     }
 
     public static List<DataType> getDataTypes() {
@@ -25,13 +25,7 @@ public class DataTypeLibrary {
         return null;
     }
 
-    private static void initDefaultTypes() {
-        dataTypes.add(DataType.NUMBER);
-        dataTypes.add(DataType.VECTOR2);
-        dataTypes.add(DataType.VECTOR3);
-        dataTypes.add(DataType.VECTOR4);
-        dataTypes.add(DataType.IMAGE);
-        dataTypes.add(DataType.STRING);
-        dataTypes.add(DataType.BYTES);
+    public static void registerDataType(DataType type) {
+        dataTypes.add(type);
     }
 }

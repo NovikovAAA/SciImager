@@ -6,6 +6,7 @@ import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
 import com.visualipcv.core.InputNodeSlot;
 import com.visualipcv.controller.InputFieldController;
+import com.visualipcv.core.ValidationException;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -49,8 +50,15 @@ public class VectorNFieldController extends Controller<Pane> {
                         }
                     }
 
-                    ((InputNodeSlot)getContext()).setValue(values);
-                    poll(valueProperty);
+                    try {
+                        ((InputNodeSlot)getContext()).setValue(values);
+                        for(TextField field : textFields)
+                            field.setBorder(null);
+                        poll(valueProperty);
+                    } catch (ValidationException e) {
+                        for(TextField field : textFields)
+                            field.setBorder(BorderUtils.createErrorBorder());
+                    }
                 }
             });
 
@@ -69,8 +77,15 @@ public class VectorNFieldController extends Controller<Pane> {
                             }
                         }
 
-                        ((InputNodeSlot)getContext()).setValue(values);
-                        poll(valueProperty);
+                        try {
+                            ((InputNodeSlot)getContext()).setValue(values);
+                            for(TextField field : textFields)
+                                field.setBorder(null);
+                            poll(valueProperty);
+                        } catch (ValidationException e) {
+                            for(TextField field : textFields)
+                                field.setBorder(BorderUtils.createErrorBorder());
+                        }
                     }
                 }
             });

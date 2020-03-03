@@ -89,9 +89,9 @@ public class AdvancedNodeSlotController extends Controller<HBox> {
             slotController.connectedProperty().addEventListener(new PropertyChangedEventListener() {
                 @Override
                 public void onChanged(Object oldValue, Object newValue) {
-                    if((Boolean)newValue) {
+                    if((boolean)newValue) {
                         fieldController.getView().setVisible(false);
-                    } else {
+                    } else if((boolean)showControlProperty.getValue()) {
                         fieldController.getView().setVisible(true);
                     }
                 }

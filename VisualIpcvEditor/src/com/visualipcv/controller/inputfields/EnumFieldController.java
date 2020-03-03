@@ -2,39 +2,42 @@ package com.visualipcv.controller.inputfields;
 
 import com.visualipcv.controller.BorderUtils;
 import com.visualipcv.controller.Controller;
+import com.visualipcv.controller.InputFieldController;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
+import com.visualipcv.core.DataType;
 import com.visualipcv.core.InputNodeSlot;
-import com.visualipcv.controller.InputFieldController;
 import com.visualipcv.core.ValidationException;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import com.visualipcv.core.dataconstraints.EnumConstraint;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.scene.control.TextField;
+import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 
-public class StringFieldController extends Controller<Pane> {
-    private TextField valueField;
+public class EnumFieldController extends Controller<Pane> {
+    private ComboBox<Object> valueField;
     private UIProperty valueProperty = new UIProperty();
 
-    public StringFieldController() {
+    public EnumFieldController(DataType type) {
         super(Pane.class);
+        EnumConstraint constraint = type.getConstraint(EnumConstraint.class);
 
-        valueField = new TextField();
+        if(constraint == null)
+            return;
+
+        valueField = new ComboBox<>();
         valueField.setPrefSize(InputFieldController.STD_WIDTH, InputFieldController.STD_HEIGHT);
-        valueField.setMaxSize(valueField.getPrefWidth(), valueField.getPrefHeight());
-        valueField.setMinSize(valueField.getPrefWidth(), valueField.getPrefHeight());
-        valueField.setFont(new Font(InputFieldController.STD_FONT_SIZE));
+        valueField.setMinSize(valueField.getMinWidth(), valueField.getMinHeight());
+        valueField.setMaxSize(valueField.getMaxWidth(), valueField.getMaxHeight());
         valueField.setPadding(new Insets(InputFieldController.STD_TEXT_PADDING));
-        getView().getChildren().add(valueField);
+        valueField.getItems().addAll(constraint.getValues());
 
         valueProperty.addEventListener(new PropertyChangedEventListener() {
             @Override
             public void onChanged(Object oldValue, Object newValue) {
-                valueField.setText((String)newValue);
+                valueField.setValue(newValue);
             }
         });
 
@@ -46,7 +49,7 @@ public class StringFieldController extends Controller<Pane> {
             @Override
             public void handle(ActionEvent event) {
                 try {
-                    ((InputNodeSlot)getContext()).setValue(valueField.getText());
+                    ((InputNodeSlot)getContext()).setValue(valueField.getValue());
                     valueField.setBorder(null);
                     poll(valueProperty);
                 } catch (ValidationException e) {
@@ -55,21 +58,6 @@ public class StringFieldController extends Controller<Pane> {
             }
         });
 
-        valueField.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if(!newValue) {
-                    try {
-                        ((InputNodeSlot)getContext()).setValue(valueField.getText());
-                        valueField.setBorder(null);
-                        poll(valueProperty);
-                    } catch (ValidationException e) {
-                        valueField.setBorder(BorderUtils.createErrorBorder());
-                    }
-                }
-            }
-        });
-
-        initialize();
+        getView().getChildren().add(valueField);
     }
 }

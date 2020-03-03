@@ -1,13 +1,19 @@
 package com.visualipcv.controller;
 
+import com.visualipcv.controller.inputfields.EnumFieldController;
 import com.visualipcv.controller.inputfields.NumberFieldController;
 import com.visualipcv.controller.inputfields.StringFieldController;
 import com.visualipcv.controller.inputfields.VectorNFieldController;
 import com.visualipcv.core.DataType;
+import com.visualipcv.core.dataconstraints.EnumConstraint;
 
 public class DefaultInputFieldFactory extends InputFieldFactory {
     @Override
     public Controller<?> create(DataType type) {
+        if(type.getConstraint(EnumConstraint.class) != null) {
+            return new EnumFieldController(type);
+        }
+
         if(type == DataType.NUMBER) {
             return new NumberFieldController();
         } else if(type == DataType.STRING) {

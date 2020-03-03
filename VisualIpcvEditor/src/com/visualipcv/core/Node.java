@@ -1,5 +1,6 @@
 package com.visualipcv.core;
 
+import com.visualipcv.Console;
 import com.visualipcv.core.io.NodeEntity;
 import org.opencv.core.CvException;
 
@@ -31,7 +32,11 @@ public class Node {
 
         for(InputNodeSlot slot : inputSlots) {
             if(nodeEntity.getInputValues().containsKey(slot.getProperty().getName())) {
-                slot.setValue(nodeEntity.getInputValues().get(slot.getProperty().getName()));
+                try {
+                    slot.setValue(nodeEntity.getInputValues().get(slot.getProperty().getName()));
+                } catch (ValidationException e) {
+                    Console.output(e.getMessage());
+                }
             }
         }
     }

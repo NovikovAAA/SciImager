@@ -44,8 +44,8 @@ public class InputNodeSlot extends NodeSlot {
         return null;
     }
 
-    public void setValue(Object value) {
-        this.value = value;
+    public void setValue(Object value) throws ValidationException {
+        this.value = getProperty().getType().validate(value);
     }
 
     public Object getValue() {

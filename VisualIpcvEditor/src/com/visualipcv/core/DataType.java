@@ -1,5 +1,8 @@
 package com.visualipcv.core;
 
+import com.visualipcv.core.dataconstraints.DataTypeConstraint;
+
+import javax.xml.datatype.DatatypeConstants;
 import java.awt.*;
 import java.util.Objects;
 
@@ -56,10 +59,13 @@ public abstract class DataType {
 
     private String name;
     private Color color;
+    private DataTypeConstraint[] constraints = new DataTypeConstraint[0];
 
-    public DataType(String name, Color color) {
+    public DataType(String name, Color color, DataTypeConstraint... constraints) {
         this.name = name;
         this.color = color;
+        this.constraints = constraints;
+        DataTypeLibrary.registerDataType(this);
     }
 
     public String getName() {
@@ -89,5 +95,24 @@ public abstract class DataType {
     @Override
     public String toString() {
         return name;
+    }
+
+    public Object validate(Object value) throws ValidationException {
+        for(DataTypeConstraint constraint : constraints) {
+            value = constraint.validate(value);
+        }
+        return value;
+    }
+
+    public DataTypeConstraint[] getConstraints() {
+        return constraints;
+    }
+
+    public <T extends DataTypeConstraint> T getConstraint(Class<T> clazz) {
+        for(DataTypeConstraint constraint : constraints) {
+            if(constraint.getClass() == clazz)
+                return (T)constraint;
+        }
+        return null;
     }
 }

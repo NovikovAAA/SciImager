@@ -11,7 +11,7 @@ public class ConsoleOutputProcessor extends Processor {
         super("ConsoleOutput", "Core", "Output",
                 new ArrayList<ProcessorProperty>() {
                     {
-                        add(new ProcessorProperty("Text", DataType.STRING, false, true));
+                        add(new ProcessorProperty("Text", DataType.STRING, true, true));
                     }
                 },
                 new ArrayList<>());
