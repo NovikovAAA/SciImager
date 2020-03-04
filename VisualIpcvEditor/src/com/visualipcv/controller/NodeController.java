@@ -14,6 +14,7 @@ import javafx.beans.property.BooleanPropertyBase;
 import javafx.fxml.FXML;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Border;
@@ -237,8 +238,11 @@ public class NodeController extends Controller<AnchorPane> {
         double deltaY = event.getScreenY() - previousMouseY;
         previousMouseX = event.getScreenX();
         previousMouseY = event.getScreenY();
-        getGraphController().moveSelected(deltaX, deltaY);
-        event.consume();
+
+        if(event.getButton() == MouseButton.PRIMARY) {
+            getGraphController().moveSelected(deltaX, deltaY);
+            event.consume();
+        }
     }
 
     @FXML

@@ -2,6 +2,7 @@ package com.visualipcv.controller;
 
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
+import com.visualipcv.core.DataType;
 import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.OutputNodeSlot;
 import com.visualipcv.view.NodeSlotView;
@@ -67,12 +68,12 @@ public class NodeSlotController extends Controller<NodeSlotView> {
         });
 
         backgroundColorProperty.setBinder((Object slot) -> {
-            java.awt.Color color = ((NodeSlot)slot).getProperty().getType().getColor();
+            java.awt.Color color = ((NodeSlot)slot).getActualType().getColor();
             return new Color(color.getRed() / 2550.0, color.getGreen() / 2550.0, color.getBlue() / 2550.0, 1.0);
         });
 
         foregroundColorProperty.setBinder((Object slot) -> {
-            java.awt.Color color = ((NodeSlot)slot).getProperty().getType().getColor();
+            java.awt.Color color = ((NodeSlot)slot).getActualType().getColor();
             return new Color(color.getRed() / 255.0, color.getGreen() / 255.0, color.getBlue() / 255.0, 1.0);
         });
 
@@ -83,7 +84,7 @@ public class NodeSlotController extends Controller<NodeSlotView> {
         initialize();
     }
 
-    // TODO: speed up
+    // TODO: need optimization
     public List<ConnectionController> getConnections() {
         List<ConnectionController> connections = new ArrayList<>();
 
@@ -150,8 +151,14 @@ public class NodeSlotController extends Controller<NodeSlotView> {
 
     @FXML
     public void onDragOver(DragEvent event) {
-        if(event.getDragboard().getString().equals("Slot") && draggingSlot != null) {
-            event.acceptTransferModes(TransferMode.LINK);
+        if(draggingSlot == null)
+            return;
+
+        NodeSlot slot1 = draggingSlot.getContext();
+        NodeSlot slot2 = getContext();
+
+        if(NodeSlot.isConnectionAvailable(slot1, slot2)) {
+            event.acceptTransferModes(TransferMode.ANY);
             event.consume();
         }
     }
@@ -161,7 +168,13 @@ public class NodeSlotController extends Controller<NodeSlotView> {
         if(!event.getDragboard().getString().equals("Slot"))
             return;
 
-        NodeSlotController slotController = (NodeSlotController)draggingSlot;
+        if(draggingSlot == null)
+            return;
+
+        if(!NodeSlot.isConnectionAvailable(draggingSlot.getContext(), getContext()))
+            return;
+
+        NodeSlotController slotController = draggingSlot;
         ((NodeSlot)getContext()).connect(slotController.getContext());
         nodeController.getGraphController().invalidate();
 

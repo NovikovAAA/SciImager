@@ -27,7 +27,7 @@ public class ConnectionController extends ConnectionBaseController {
         });
 
         paintProperty.setBinder((Object connection) -> {
-            java.awt.Color color = ((Connection)connection).getSource().getProperty().getType().getColor();
+            java.awt.Color color = ((Connection)connection).getSource().getActualType().getColor();
             return new Color(color.getRed() / 255.0, color.getGreen() / 255.0, color.getBlue() / 255.0, 1.0);
         });
     }

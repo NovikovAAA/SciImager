@@ -8,6 +8,13 @@ import java.util.Objects;
 
 public abstract class DataType {
 
+    public static final DataType ANY = new DataType("Any", Color.GRAY) {
+        @Override
+        public Object getDefaultValue() {
+            return null;
+        }
+    };
+
     public static final DataType NUMBER = new DataType("Number", Color.GREEN) {
         @Override
         public Object getDefaultValue() {

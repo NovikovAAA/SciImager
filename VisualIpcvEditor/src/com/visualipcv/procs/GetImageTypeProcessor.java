@@ -6,22 +6,20 @@ import com.visualipcv.core.OpenCvDataTypes;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorProperty;
 import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 
-public class ConvertImageProcessor extends Processor {
-    public ConvertImageProcessor() {
-        super("ConvertImage", "Core", "Image",
+public class GetImageTypeProcessor extends Processor {
+    public GetImageTypeProcessor() {
+        super("GetImageType", "Core", "Image",
                 new ArrayList<ProcessorProperty>() {
                     {
                         add(new ProcessorProperty("Image", DataType.IMAGE));
-                        add(new ProcessorProperty("Target", OpenCvDataTypes.CV_IMAGE_TYPE));
                     }
                 },
                 new ArrayList<ProcessorProperty>() {
                     {
-                        add(new ProcessorProperty("Result", DataType.IMAGE));
+                        add(new ProcessorProperty("Type", OpenCvDataTypes.CV_IMAGE_TYPE));
                     }
                 });
     }
@@ -29,18 +27,8 @@ public class ConvertImageProcessor extends Processor {
     @Override
     public DataBundle execute(DataBundle inputs, DataBundle state) {
         Mat image = inputs.read("Image");
-        int cvType = inputs.read("Target");
-
-        Mat result = new Mat();
         DataBundle outputs = new DataBundle();
-
-        if(image.type() != cvType) {
-            image.convertTo(result, cvType);
-        } else {
-            image.copyTo(result);
-        }
-
-        outputs.write("Result", result);
+        outputs.write("Type", image.type());
         return outputs;
     }
 }

@@ -68,4 +68,5 @@ public abstract class Processor {
     public void postExecute(DataBundle nodeState) throws CommonException {}
     public void onCreated(DataBundle nodeState) throws CommonException {}
     public void onDestroyed(DataBundle nodeState) throws CommonException {}
+    public void onUpdatePropTypes(Node node) throws CommonException {}
 }

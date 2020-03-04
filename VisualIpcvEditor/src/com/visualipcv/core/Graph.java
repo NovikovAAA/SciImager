@@ -17,6 +17,7 @@ import java.util.UUID;
 public class Graph {
     private ArrayList<Node> nodes = new ArrayList<>();
     private Set<Connection> connections = new HashSet<>();
+    private Map<NodeSlot, List<Connection>> slotConnectionAssoc = new HashMap<>();
     private Map<Node, Map<String, Object>> cache = new HashMap<>();
 
     public Graph() {
@@ -29,7 +30,7 @@ public class Graph {
         }
 
         for(ConnectionEntity connection : graphEntity.getConnections()) {
-            addConnectionRecord(new Connection(this, connection));
+            addConnection(new Connection(this, connection));
         }
     }
 
@@ -80,17 +81,31 @@ public class Graph {
         }
     }
 
-    public void addConnectionRecord(Connection connection) {
+    public void addConnection(Connection connection) {
         connections.add(connection);
+        slotConnectionAssoc.computeIfAbsent(connection.getSource(), k -> new ArrayList<>());
+        slotConnectionAssoc.computeIfAbsent(connection.getTarget(), k -> new ArrayList<>());
+        slotConnectionAssoc.get(connection.getSource()).add(connection);
+        slotConnectionAssoc.get(connection.getTarget()).add(connection);
+        updateProperties(connection.getSource().getNode(), new HashSet<>());
     }
 
-    public void removeConnectionRecords(NodeSlot slot) {
+    public void removeConnections(NodeSlot slot) {
         List<Connection> connectionsToRemove = new ArrayList<>();
 
         for(Connection connection : connections) {
             if(connection.getSource() == slot || connection.getTarget() == slot) {
                 connectionsToRemove.add(connection);
             }
+        }
+
+        for(Connection connection : connectionsToRemove) {
+            slotConnectionAssoc.get(connection.getSource()).remove(connection);
+            slotConnectionAssoc.get(connection.getTarget()).remove(connection);
+
+            HashSet<Node> updatedNodes = new HashSet<>();
+            updateProperties(connection.getSource().getNode(), updatedNodes);
+            updateProperties(connection.getTarget().getNode(), updatedNodes);
         }
 
         connections.removeAll(connectionsToRemove);
@@ -102,6 +117,11 @@ public class Graph {
 
     public Set<Connection> getConnections() {
         return connections;
+    }
+
+    public List<Connection> getConnections(NodeSlot slot) {
+        slotConnectionAssoc.computeIfAbsent(slot, nodeSlot -> new ArrayList<>());
+        return slotConnectionAssoc.get(slot);
     }
 
     public List<Node> getOutputNodes() {
@@ -133,6 +153,37 @@ public class Graph {
             return null;
 
         return cache.get(node).get(name);
+    }
+
+    private void updateProperties(Node node, Set<Node> updatedNodes) {
+        if(updatedNodes.contains(node))
+            return;
+
+        try {
+            node.getProcessor().onUpdatePropTypes(node);
+        } catch (CommonException e) {
+            Console.output(e.getMessage());
+        }
+
+        updatedNodes.add(node);
+
+        for(InputNodeSlot slot : node.getInputSlots()) {
+            for(Connection connection : getConnections(slot)) {
+                if(connection.getSource().getNode() != node)
+                    updateProperties(connection.getSource().getNode(), updatedNodes);
+                if(connection.getTarget().getNode() != node)
+                    updateProperties(connection.getTarget().getNode(), updatedNodes);
+            }
+        }
+
+        for(NodeSlot slot : node.getOutputSlots()) {
+            for(Connection connection : getConnections(slot)) {
+                if(connection.getSource().getNode() != node)
+                    updateProperties(connection.getSource().getNode(), updatedNodes);
+                if(connection.getTarget().getNode() != node)
+                    updateProperties(connection.getTarget().getNode(), updatedNodes);
+            }
+        }
     }
 
     public void execute() throws GraphExecutionException {

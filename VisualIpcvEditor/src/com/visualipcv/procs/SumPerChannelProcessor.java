@@ -2,26 +2,25 @@ package com.visualipcv.procs;
 
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
-import com.visualipcv.core.OpenCvDataTypes;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorProperty;
+import org.opencv.core.Core;
 import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
+import org.opencv.core.Scalar;
 
 import java.util.ArrayList;
 
-public class ConvertImageProcessor extends Processor {
-    public ConvertImageProcessor() {
-        super("ConvertImage", "Core", "Image",
+public class SumPerChannelProcessor extends Processor {
+    public SumPerChannelProcessor() {
+        super("SumPerChannel", "Core", "Image",
                 new ArrayList<ProcessorProperty>() {
                     {
                         add(new ProcessorProperty("Image", DataType.IMAGE));
-                        add(new ProcessorProperty("Target", OpenCvDataTypes.CV_IMAGE_TYPE));
                     }
                 },
                 new ArrayList<ProcessorProperty>() {
                     {
-                        add(new ProcessorProperty("Result", DataType.IMAGE));
+                        add(new ProcessorProperty("Result", DataType.VECTOR4));
                     }
                 });
     }
@@ -29,17 +28,15 @@ public class ConvertImageProcessor extends Processor {
     @Override
     public DataBundle execute(DataBundle inputs, DataBundle state) {
         Mat image = inputs.read("Image");
-        int cvType = inputs.read("Target");
+        Scalar res = Core.sumElems(image);
 
-        Mat result = new Mat();
-        DataBundle outputs = new DataBundle();
+        Double[] result = new Double[4];
 
-        if(image.type() != cvType) {
-            image.convertTo(result, cvType);
-        } else {
-            image.copyTo(result);
+        for(int i = 0; i < res.val.length; i++) {
+            result[i] = res.val[i];
         }
 
+        DataBundle outputs = new DataBundle();
         outputs.write("Result", result);
         return outputs;
     }

@@ -104,6 +104,10 @@ public class Node {
         return getOutputNodeSlot(name);
     }
 
+    public DataBundle getState() {
+        return state;
+    }
+
     public void setLocation(double x, double y) {
         this.x = x;
         this.y = y;

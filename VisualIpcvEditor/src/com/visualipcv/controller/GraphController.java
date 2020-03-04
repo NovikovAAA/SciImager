@@ -1,8 +1,6 @@
 package com.visualipcv.controller;
 
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import com.visualipcv.controller.binding.BindingHelper;
-import com.visualipcv.controller.binding.FactoryFunction;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
 import com.visualipcv.core.Connection;
@@ -19,23 +17,16 @@ import com.visualipcv.core.io.NodeEntity;
 import com.visualipcv.editor.Editor;
 import com.visualipcv.view.CustomDataFormats;
 import com.visualipcv.view.GraphView;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
-import javafx.util.Duration;
-import javafx.util.converter.ByteStringConverter;
-import sun.awt.image.ByteInterleavedRaster;
 
-import javax.sound.sampled.Clip;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -520,7 +511,7 @@ public class GraphController extends Controller<GraphView> {
                 UUID newSourceId = uidMapping.get(connection.getSourceNodeId());
                 UUID newTargetId = uidMapping.get(connection.getTargetNodeId());
                 connection.updateUIDs(newSourceId, newTargetId);
-                graph.addConnectionRecord(new Connection(graph, connection));
+                graph.addConnection(new Connection(graph, connection));
             }
 
             stream.close();

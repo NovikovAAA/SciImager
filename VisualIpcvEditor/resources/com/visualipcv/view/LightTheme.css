@@ -94,3 +94,12 @@
 .free-pane {
     -fx-background-color: -fx-dark-color;
 }
+
+.combo-box-base {
+    -fx-padding: 1;
+    -fx-font-size: 14;
+}
+
+.combo-box {
+    -fx-font-size: 14;
+}

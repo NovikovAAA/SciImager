@@ -9,27 +9,18 @@ public class InputNodeSlot extends NodeSlot {
     }
 
     public void connect(NodeSlot slot) {
-        if(!(slot instanceof OutputNodeSlot)) {
-            throw new IllegalArgumentException("Cannot connect input slot to input slot");
-        }
-
-        if(slot.getProperty().getType() != getProperty().getType()) {
-            throw new IllegalArgumentException("Slot types mismatch");
-        }
-
-        if(slot.getNode().getGraph() != getNode().getGraph()) {
-            throw new IllegalArgumentException("Nodes from different graphs cannot be connected");
-        }
+        if(!isConnectionAvailable(this, slot))
+            throw new IllegalArgumentException("Connection failed");
 
         if(getConnectedSlot() != null) {
             disconnect();
         }
 
-        getNode().getGraph().addConnectionRecord(new Connection(slot, this));
+        getNode().getGraph().addConnection(new Connection(slot, this));
     }
 
     public void disconnect() {
-        getNode().getGraph().removeConnectionRecords(this);
+        getNode().getGraph().removeConnections(this);
     }
 
     public boolean isConnected() {

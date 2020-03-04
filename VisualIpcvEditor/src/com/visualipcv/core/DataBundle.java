@@ -1,5 +1,7 @@
 package com.visualipcv.core;
 
+import javafx.beans.property.Property;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -27,5 +29,9 @@ public class DataBundle implements Iterable<Object> {
 
     public void clear() {
         values.clear();
+    }
+
+    public void clear(String key) {
+        values.remove(key);
     }
 }
