@@ -6,14 +6,22 @@ import com.visualipcv.controller.binding.UIProperty;
 import com.visualipcv.core.InputNodeSlot;
 import com.visualipcv.core.NativeProcessor;
 import com.visualipcv.core.Node;
+import com.visualipcv.core.NodeCommand;
 import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.OutputNodeSlot;
+import com.visualipcv.core.ProcessorCommand;
 import com.visualipcv.core.SciProcessor;
+import com.visualipcv.editor.Editor;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.Mnemonic;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -57,6 +65,8 @@ public class NodeController extends Controller<AnchorPane> {
     private UIProperty errorProperty = new UIProperty();
     private UIProperty xOffsetProperty = new UIProperty();
     private UIProperty yOffsetProperty = new UIProperty();
+
+    private ContextMenu contextMenu;
 
     public NodeController(GraphController controller) {
         super(AnchorPane.class, "NodeView.fxml");
@@ -194,6 +204,62 @@ public class NodeController extends Controller<AnchorPane> {
         initialize();
     }
 
+    private void addDefaultCommands() {
+        Node node = (Node)getContext();
+
+        node.addCommand(new NodeCommand() {
+            @Override
+            public void execute(Node node) {
+                getGraphController().copy();
+            }
+
+            @Override
+            public String getName() {
+                return "Copy";
+            }
+        });
+
+        node.addCommand(new NodeCommand() {
+            @Override
+            public void execute(Node node) {
+                getGraphController().cut();
+            }
+
+            @Override
+            public String getName() {
+                return "Cut";
+            }
+        });
+    }
+
+    private ContextMenu createContextMenu() {
+        ContextMenu menu = new ContextMenu();
+
+        for(NodeCommand command : ((Node)getContext()).getCommands()) {
+            MenuItem item = new MenuItem(command.getName());
+            item.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    command.execute(((Node)getContext()));
+                }
+            });
+            menu.getItems().add(item);
+        }
+
+        for(ProcessorCommand command : ((Node)getContext()).getProcessor().getCommands()) {
+            MenuItem item = new MenuItem(command.getName());
+            item.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    command.execute(((Node)getContext()).getState());
+                }
+            });
+            menu.getItems().add(item);
+        }
+
+        return menu;
+    }
+
     public List<AdvancedNodeSlotController> getInputSlots() {
         return (List<AdvancedNodeSlotController>)inputSlotsProperty.getValue();
     }
@@ -229,6 +295,10 @@ public class NodeController extends Controller<AnchorPane> {
         previousMouseX = event.getScreenX();
         previousMouseY = event.getScreenY();
         graphController.select(this, event.isControlDown());
+
+        if(event.getButton() == MouseButton.SECONDARY)
+            contextMenu.show(getView(), event.getScreenX(), event.getScreenY());
+
         event.consume();
     }
 
@@ -258,5 +328,12 @@ public class NodeController extends Controller<AnchorPane> {
 
     public GraphController getGraphController() {
         return graphController;
+    }
+
+    @Override
+    public void setContext(Object context) {
+        super.setContext(context);
+        addDefaultCommands();
+        contextMenu = createContextMenu();
     }
 }

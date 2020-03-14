@@ -3,6 +3,7 @@ package com.visualipcv.procs;
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
 import com.visualipcv.core.Processor;
+import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
 import org.opencv.core.Mat;
 import org.opencv.video.BackgroundSubtractorMOG2;
@@ -12,19 +13,14 @@ import java.util.ArrayList;
 
 public class BackgroundMaskProcessor extends Processor {
     public BackgroundMaskProcessor() {
-        super("BackgroundMask", "Core", "Image",
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Image", DataType.IMAGE));
-                        add(new ProcessorProperty("Threshold", DataType.NUMBER));
-                        add(new ProcessorProperty("History", DataType.NUMBER));
-                    }
-                },
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Output", DataType.IMAGE));
-                    }
-                });
+        super(new ProcessorBuilder()
+            .setName("BackgroundMask")
+            .setModule("Core")
+            .setCategory("Image")
+            .addInputProperty(new ProcessorProperty("Image", DataType.IMAGE))
+            .addInputProperty(new ProcessorProperty("Threshold", DataType.NUMBER))
+            .addInputProperty(new ProcessorProperty("History", DataType.NUMBER))
+            .addOutputProperty(new ProcessorProperty("Output", DataType.IMAGE)));
     }
 
     @Override

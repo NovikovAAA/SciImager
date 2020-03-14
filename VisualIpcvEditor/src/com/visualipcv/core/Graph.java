@@ -1,11 +1,21 @@
 package com.visualipcv.core;
 
 import com.visualipcv.Console;
+import com.visualipcv.controller.NodeController;
 import com.visualipcv.core.io.ConnectionEntity;
+import com.visualipcv.core.io.GraphClipboard;
 import com.visualipcv.core.io.GraphEntity;
 import com.visualipcv.core.io.NodeEntity;
 import com.visualipcv.utils.ProcUtils;
+import com.visualipcv.view.CustomDataFormats;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;

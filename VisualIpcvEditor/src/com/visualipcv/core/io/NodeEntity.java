@@ -52,4 +52,9 @@ public class NodeEntity implements Serializable {
     public double getY() {
         return y;
     }
+
+    public void addOffset(double dx, double dy) {
+        this.x += dx;
+        this.y += dy;
+    }
 }

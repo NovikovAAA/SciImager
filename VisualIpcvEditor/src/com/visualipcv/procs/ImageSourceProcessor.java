@@ -5,6 +5,7 @@ import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
 import com.visualipcv.core.GraphExecutionException;
 import com.visualipcv.core.Processor;
+import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -13,17 +14,12 @@ import java.util.ArrayList;
 
 public class ImageSourceProcessor extends Processor {
     public ImageSourceProcessor() {
-        super("ImageSource", "Core", "Input",
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Path", DataType.STRING));
-                    }
-                },
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Image", DataType.IMAGE));
-                    }
-                });
+        super(new ProcessorBuilder()
+            .setName("ImageSource")
+            .setModule("Core")
+            .setCategory("Input")
+            .addInputProperty(new ProcessorProperty("Path", DataType.STRING))
+            .addOutputProperty(new ProcessorProperty("Image", DataType.IMAGE)));
     }
 
     @Override

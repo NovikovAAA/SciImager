@@ -3,6 +3,7 @@ package com.visualipcv.procs;
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
 import com.visualipcv.core.Processor;
+import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -12,17 +13,12 @@ import java.util.ArrayList;
 
 public class SumPerChannelProcessor extends Processor {
     public SumPerChannelProcessor() {
-        super("SumPerChannel", "Core", "Image",
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Image", DataType.IMAGE));
-                    }
-                },
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Result", DataType.VECTOR4));
-                    }
-                });
+        super(new ProcessorBuilder()
+            .setName("SumPerChannel")
+            .setModule("Core")
+            .setCategory("Image")
+            .addInputProperty(new ProcessorProperty("Image", DataType.IMAGE))
+            .addOutputProperty(new ProcessorProperty("Result", DataType.VECTOR4)));
     }
 
     @Override

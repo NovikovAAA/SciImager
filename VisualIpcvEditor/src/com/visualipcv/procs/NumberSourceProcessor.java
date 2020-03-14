@@ -7,17 +7,12 @@ import java.util.List;
 
 public class NumberSourceProcessor extends Processor {
     public NumberSourceProcessor() {
-        super("NumberSource", "Core", "Input",
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Number", DataType.NUMBER, true, false));
-                    }
-                },
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Number", DataType.NUMBER));
-                    }
-                });
+        super(new ProcessorBuilder()
+            .setName("NumberSource")
+            .setModule("Core")
+            .setCategory("Input")
+            .addInputProperty(new ProcessorProperty("Number", DataType.NUMBER, true, false))
+            .addOutputProperty(new ProcessorProperty("Number", DataType.NUMBER)));
     }
 
     @Override

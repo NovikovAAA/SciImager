@@ -7,18 +7,13 @@ import java.util.List;
 
 public class SumProcessor extends Processor {
     public SumProcessor() {
-        super("Sum", "Core", "Math",
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("A", DataType.NUMBER));
-                        add(new ProcessorProperty("B", DataType.NUMBER));
-                    }
-                },
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Result", DataType.NUMBER));
-                    }
-                });
+        super(new ProcessorBuilder()
+            .setName("Sum")
+            .setModule("Core")
+            .setCategory("Math")
+            .addInputProperty(new ProcessorProperty("A", DataType.NUMBER))
+            .addInputProperty(new ProcessorProperty("B", DataType.NUMBER))
+            .addOutputProperty(new ProcessorProperty("Result", DataType.NUMBER)));
     }
 
     @Override

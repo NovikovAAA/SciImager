@@ -3,6 +3,7 @@ package com.visualipcv.procs;
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
 import com.visualipcv.core.Processor;
+import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
@@ -12,19 +13,14 @@ import java.util.ArrayList;
 
 public class ResizeProcessor extends Processor {
     public ResizeProcessor() {
-        super("Resize", "Core", "Image",
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Image", DataType.IMAGE));
-                        add(new ProcessorProperty("Width", DataType.NUMBER));
-                        add(new ProcessorProperty("Height", DataType.NUMBER));
-                    }
-                },
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Result", DataType.IMAGE));
-                    }
-                });
+        super(new ProcessorBuilder()
+            .setName("Resize")
+            .setModule("Core")
+            .setCategory("Image")
+            .addInputProperty(new ProcessorProperty("Image", DataType.IMAGE))
+            .addInputProperty(new ProcessorProperty("Width", DataType.NUMBER))
+            .addInputProperty(new ProcessorProperty("Height", DataType.NUMBER))
+            .addOutputProperty(new ProcessorProperty("Result", DataType.IMAGE)));
     }
 
     @Override

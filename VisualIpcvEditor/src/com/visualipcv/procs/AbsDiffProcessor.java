@@ -7,6 +7,7 @@ import com.visualipcv.core.GraphExecutionException;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.Processor;
+import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
 import com.visualipcv.utils.ProcUtils;
 import org.opencv.core.Core;
@@ -17,18 +18,13 @@ import java.util.ArrayList;
 
 public class AbsDiffProcessor extends Processor {
     public AbsDiffProcessor() {
-        super("AbsDiff", "Core", "Math",
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("A", DataType.ANY));
-                        add(new ProcessorProperty("B", DataType.ANY));
-                    }
-                },
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Result", DataType.ANY));
-                    }
-                });
+        super(new ProcessorBuilder()
+                .setName("AbsDiff")
+                .setModule("Core")
+                .setCategory("Math")
+                .addInputProperty(new ProcessorProperty("A", DataType.ANY))
+                .addInputProperty(new ProcessorProperty("B", DataType.ANY))
+                .addOutputProperty(new ProcessorProperty("Result", DataType.ANY)));
     }
 
     @Override

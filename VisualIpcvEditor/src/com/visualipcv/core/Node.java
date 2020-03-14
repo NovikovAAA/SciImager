@@ -17,6 +17,7 @@ public class Node {
     private DataBundle state = new DataBundle();
     private double x;
     private double y;
+    private List<NodeCommand> commands = new ArrayList<>();
 
     private GraphExecutionException lastError;
 
@@ -95,6 +96,10 @@ public class Node {
         return null;
     }
 
+    public List<NodeCommand> getCommands() {
+        return commands;
+    }
+
     public NodeSlot getNodeSlot(String name) {
         InputNodeSlot inputNodeSlot = getInputNodeSlot(name);
 
@@ -161,6 +166,10 @@ public class Node {
         for (OutputNodeSlot outputSlot : outputSlots) {
             graph.writeCache(this, outputSlot.getProperty().getName(), res.read(outputSlot.getProperty().getName()));
         }
+    }
+
+    public void addCommand(NodeCommand command) {
+        this.commands.add(command);
     }
 
     public void onCreate() throws GraphExecutionException {

@@ -3,6 +3,7 @@ package com.visualipcv.procs;
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
 import com.visualipcv.core.Processor;
+import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -11,18 +12,13 @@ import java.util.ArrayList;
 
 public class BlendProcessor extends Processor {
     public BlendProcessor() {
-        super("Blend", "Core", "Image",
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("A", DataType.IMAGE));
-                        add(new ProcessorProperty("B", DataType.IMAGE));
-                    }
-                },
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Result", DataType.IMAGE));
-                    }
-                });
+        super(new ProcessorBuilder()
+            .setName("Blend")
+            .setModule("Core")
+            .setCategory("Image")
+            .addInputProperty(new ProcessorProperty("A", DataType.IMAGE))
+            .addInputProperty(new ProcessorProperty("B", DataType.IMAGE))
+            .addOutputProperty(new ProcessorProperty("Result", DataType.IMAGE)));
     }
 
     @Override

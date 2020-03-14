@@ -442,9 +442,16 @@ public class GraphController extends Controller<GraphView> {
     }
 
     public boolean copy(GraphClipboard graphClipboard) {
+        if(graphClipboard.getNodes().isEmpty())
+            return false;
+
         Clipboard clipboard = Clipboard.getSystemClipboard();
         GraphEntity entity = new GraphEntity(graphClipboard);
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+
+        for(NodeEntity node : entity.getNodes()) {
+            node.addOffset(20.0, 20.0);
+        }
 
         try (ObjectOutputStream stream = new ObjectOutputStream(byteStream)) {
             stream.writeObject(entity);

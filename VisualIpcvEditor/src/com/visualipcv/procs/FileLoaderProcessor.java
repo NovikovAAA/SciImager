@@ -7,17 +7,12 @@ import java.util.List;
 
 public class FileLoaderProcessor extends Processor {
     public FileLoaderProcessor() {
-        super("FileLoader", "Core", "Input",
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Path", DataType.STRING));
-                    }
-                },
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("File", DataType.BYTES));
-                    }
-                });
+        super(new ProcessorBuilder()
+            .setName("FileLoader")
+            .setModule("Core")
+            .setCategory("Input")
+            .addInputProperty(new ProcessorProperty("Path", DataType.STRING))
+            .addOutputProperty(new ProcessorProperty("File", DataType.BYTES)));
     }
 
     @Override

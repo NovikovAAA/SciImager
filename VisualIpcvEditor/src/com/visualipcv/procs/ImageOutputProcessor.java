@@ -3,6 +3,8 @@ package com.visualipcv.procs;
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
 import com.visualipcv.core.Processor;
+import com.visualipcv.core.ProcessorBuilder;
+import com.visualipcv.core.ProcessorCommand;
 import com.visualipcv.core.ProcessorProperty;
 import com.visualipcv.editor.Editor;
 import com.visualipcv.view.ImageWindow;
@@ -19,13 +21,34 @@ import java.util.ArrayList;
 
 public class ImageOutputProcessor extends Processor {
     public ImageOutputProcessor() {
-        super("ImageOutput", "Core", "Output",
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Image", DataType.IMAGE));
-                    }
-                },
-                new ArrayList<>());
+        super(new ProcessorBuilder()
+            .setName("ImageOutput")
+            .setModule("Core")
+            .setCategory("Output")
+            .addInputProperty(new ProcessorProperty("Image", DataType.IMAGE)));
+
+        addCommand(new ProcessorCommand() {
+            @Override
+            public void execute(DataBundle state) {
+                showWindow(state);
+            }
+
+            @Override
+            public String getName() {
+                return "Open window";
+            }
+        });
+    }
+
+    private void showWindow(DataBundle state) {
+        DockNode stage = state.read("Stage");
+        ImageWindow window = state.read("Image");
+
+        if(stage.isDocked() || stage.isFloating())
+            return;
+
+        stage.addTab(window, new Tab("Output", window.getView()));
+        stage.dock(Editor.getPrimaryPane(), DockPos.RIGHT);
     }
 
     private DockNode createWindow(DataBundle state) {

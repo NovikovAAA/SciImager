@@ -3,6 +3,7 @@ package com.visualipcv.procs;
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
 import com.visualipcv.core.Processor;
+import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
@@ -12,19 +13,14 @@ import java.util.ArrayList;
 
 public class BlurProcessor extends Processor {
     public BlurProcessor() {
-        super("Blur", "Core", "Image",
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Image", DataType.IMAGE));
-                        add(new ProcessorProperty("SizeX", DataType.NUMBER));
-                        add(new ProcessorProperty("SizeY", DataType.NUMBER));
-                    }
-                },
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Output", DataType.IMAGE));
-                    }
-                });
+        super(new ProcessorBuilder()
+            .setName("Blur")
+            .setModule("Core")
+            .setCategory("Image")
+            .addInputProperty(new ProcessorProperty("Image", DataType.IMAGE))
+            .addInputProperty(new ProcessorProperty("SizeX", DataType.NUMBER))
+            .addInputProperty(new ProcessorProperty("SizeY", DataType.NUMBER))
+            .addOutputProperty(new ProcessorProperty("Output", DataType.NUMBER)));
     }
 
     @Override

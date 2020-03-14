@@ -8,13 +8,11 @@ import java.util.List;
 
 public class ConsoleOutputProcessor extends Processor {
     public ConsoleOutputProcessor() {
-        super("ConsoleOutput", "Core", "Output",
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Text", DataType.STRING, true, true));
-                    }
-                },
-                new ArrayList<>());
+        super(new ProcessorBuilder()
+            .setName("ConsoleOutput")
+            .setModule("Core")
+            .setCategory("Output")
+            .addInputProperty(new ProcessorProperty("Text", DataType.STRING, true, true)));
     }
 
     @Override

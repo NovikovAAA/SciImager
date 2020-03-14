@@ -3,24 +3,20 @@ package com.visualipcv.procs;
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
 import com.visualipcv.core.Processor;
+import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
 
 import java.util.ArrayList;
 
 public class Vector2BreakProcessor extends Processor {
     public Vector2BreakProcessor() {
-        super("Vector2Break", "Core", "Vectors",
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Vector2", DataType.VECTOR2));
-                    }
-                },
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("X", DataType.NUMBER));
-                        add(new ProcessorProperty("Y", DataType.NUMBER));
-                    }
-                });
+        super(new ProcessorBuilder()
+            .setName("Vector2Break")
+            .setModule("Core")
+            .setCategory("Math")
+            .addInputProperty(new ProcessorProperty("Vector2", DataType.VECTOR2))
+            .addOutputProperty(new ProcessorProperty("X", DataType.NUMBER))
+            .addOutputProperty(new ProcessorProperty("Y", DataType.NUMBER)));
     }
 
     @Override

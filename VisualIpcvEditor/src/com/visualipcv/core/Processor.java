@@ -8,13 +8,15 @@ public abstract class Processor {
     private String category;
     private List<ProcessorProperty> inputProperties;
     private List<ProcessorProperty> outputProperties;
+    private List<ProcessorCommand> commands;
 
-    public Processor(String name, String module, String category, List<ProcessorProperty> inputProperties, List<ProcessorProperty> outputProperties) {
-        this.name = name;
-        this.module = module;
-        this.category = category;
-        this.inputProperties = inputProperties;
-        this.outputProperties = outputProperties;
+    public Processor(ProcessorBuilder builder) {
+        this.name = builder.getName();
+        this.module = builder.getModule();
+        this.category = builder.getCategory();
+        this.inputProperties = builder.getInputProperties();
+        this.outputProperties = builder.getOutputProperties();
+        this.commands = builder.getCommands();
     }
 
     public String getName() {
@@ -58,9 +60,17 @@ public abstract class Processor {
         return outputProperties;
     }
 
+    public List<ProcessorCommand> getCommands() {
+        return commands;
+    }
+
     @Override
     public String toString() {
         return name;
+    }
+
+    public void addCommand(ProcessorCommand command) {
+        this.commands.add(command);
     }
 
     public abstract DataBundle execute(DataBundle inputs, DataBundle nodeState) throws CommonException;

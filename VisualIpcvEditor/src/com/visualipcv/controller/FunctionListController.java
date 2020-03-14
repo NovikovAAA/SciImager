@@ -8,6 +8,7 @@ import com.visualipcv.editor.EditorWindow;
 import com.visualipcv.events.RefreshEventListener;
 import com.visualipcv.view.RecursiveTreeItem;
 import com.visualipcv.view.FunctionRecord;
+import com.visualipcv.view.SearchListView;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -28,15 +29,14 @@ import java.util.List;
 @EditorWindow(path = "View/Function list", name = "Function list", dockPos = DockPos.LEFT)
 public class FunctionListController extends Controller<AnchorPane> {
     @FXML
-    private TreeView<FunctionRecord> treeView;
+    private SearchListView<FunctionRecord> treeView;
     @FXML
     private Button addButton;
 
     public FunctionListController() {
         super(AnchorPane.class, "FunctionListView.fxml");
 
-        treeView.setShowRoot(false);
-        treeView.setCellFactory((view) -> {
+        treeView.getTree().setCellFactory((view) -> {
             TreeCell<FunctionRecord> cell = new TextFieldTreeCell<>();
 
             cell.setOnDragDetected(new EventHandler<MouseEvent>() {

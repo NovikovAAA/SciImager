@@ -6,7 +6,12 @@ public class SciProcessor extends Processor {
     SciScript script;
 
     public SciProcessor(String name, String module, String category, SciScript script) {
-        super(name, module, category, script.getInputProperties(), script.getOutputProperties());
+        super(new ProcessorBuilder()
+            .setName(name)
+            .setModule(module)
+            .setCategory(category));
+        getInputProperties().addAll(script.getInputProperties());
+        getOutputProperties().addAll(script.getOutputProperties());
         this.script = script;
     }
 

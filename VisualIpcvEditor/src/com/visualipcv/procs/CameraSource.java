@@ -3,6 +3,7 @@ package com.visualipcv.procs;
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
 import com.visualipcv.core.Processor;
+import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
@@ -12,17 +13,12 @@ import java.util.ArrayList;
 
 public class CameraSource extends Processor {
     public CameraSource() {
-        super("CameraSource", "Core", "Input",
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Index", DataType.NUMBER));
-                    }
-                },
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("Output", DataType.IMAGE));
-                    }
-                });
+        super(new ProcessorBuilder()
+            .setName("CameraSource")
+            .setModule("Core")
+            .setCategory("Input")
+            .addInputProperty(new ProcessorProperty("Index", DataType.NUMBER))
+            .addOutputProperty(new ProcessorProperty("Output", DataType.IMAGE)));
     }
 
     @Override

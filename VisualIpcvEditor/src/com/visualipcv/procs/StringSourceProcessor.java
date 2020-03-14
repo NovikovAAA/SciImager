@@ -7,17 +7,12 @@ import java.util.List;
 
 public class StringSourceProcessor extends Processor {
     public StringSourceProcessor() {
-        super("StringSource", "Core", "Input",
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("String", DataType.STRING, true, false));
-                    }
-                },
-                new ArrayList<ProcessorProperty>() {
-                    {
-                        add(new ProcessorProperty("String", DataType.STRING));
-                    }
-                });
+        super(new ProcessorBuilder()
+            .setName("StringSource")
+            .setModule("Core")
+            .setCategory("Input")
+            .addInputProperty(new ProcessorProperty("String", DataType.STRING, true, false))
+            .addOutputProperty(new ProcessorProperty("String", DataType.STRING)));
     }
 
     @Override
