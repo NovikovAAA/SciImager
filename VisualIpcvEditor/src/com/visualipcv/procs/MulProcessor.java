@@ -30,11 +30,6 @@ public class MulProcessor extends Processor {
     }
 
     @Override
-    public void onUpdatePropTypes(Node node) {
-        ProcUtils.shareType(node);
-    }
-
-    @Override
     public DataBundle execute(DataBundle inputs, DataBundle state) throws CommonException {
         Object a = inputs.read("A");
         Object b = inputs.read("B");

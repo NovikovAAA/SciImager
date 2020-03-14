@@ -4,6 +4,7 @@ import com.visualipcv.Console;
 import com.visualipcv.core.io.ConnectionEntity;
 import com.visualipcv.core.io.GraphEntity;
 import com.visualipcv.core.io.NodeEntity;
+import com.visualipcv.utils.ProcUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -159,12 +160,7 @@ public class Graph {
         if(updatedNodes.contains(node))
             return;
 
-        try {
-            node.getProcessor().onUpdatePropTypes(node);
-        } catch (CommonException e) {
-            Console.output(e.getMessage());
-        }
-
+        ProcUtils.shareType(node);
         updatedNodes.add(node);
 
         for(InputNodeSlot slot : node.getInputSlots()) {
