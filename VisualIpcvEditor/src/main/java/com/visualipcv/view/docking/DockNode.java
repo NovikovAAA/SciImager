@@ -26,7 +26,6 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.HashMap;
 import java.util.List;
@@ -141,7 +140,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     }
 
     public void setContents(Node contents) {
-        throw new NotImplementedException();
+        throw new RuntimeException();
     }
 
     public final void setMaximized(boolean maximized) {

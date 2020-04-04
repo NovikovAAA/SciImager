@@ -1,6 +1,5 @@
 package com.visualipcv.procs;
 
-import com.sun.org.apache.xerces.internal.impl.dv.DatatypeValidator;
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
 import com.visualipcv.core.Processor;

@@ -20,7 +20,7 @@ public class BlurProcessor extends Processor {
             .addInputProperty(new ProcessorProperty("Image", DataType.IMAGE))
             .addInputProperty(new ProcessorProperty("SizeX", DataType.NUMBER))
             .addInputProperty(new ProcessorProperty("SizeY", DataType.NUMBER))
-            .addOutputProperty(new ProcessorProperty("Output", DataType.NUMBER)));
+            .addOutputProperty(new ProcessorProperty("Output", DataType.IMAGE)));
     }
 
     @Override

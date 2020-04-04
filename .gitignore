@@ -373,3 +373,6 @@ MigrationBackup/
 *.DS_Store
 
 */IPCV/*
+
+VisualIpcvEditor/.gradle/*
+VisualIpcvEditor/build/*
