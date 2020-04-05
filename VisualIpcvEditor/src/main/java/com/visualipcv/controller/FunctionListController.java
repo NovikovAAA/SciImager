@@ -1,6 +1,8 @@
 package com.visualipcv.controller;
 
 import com.visualipcv.controller.scriptconstruction.SciScriptEditor;
+import com.visualipcv.core.Graph;
+import com.visualipcv.core.Node;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.editor.Editor;
@@ -33,6 +35,31 @@ public class FunctionListController extends Controller<AnchorPane> {
     @FXML
     private Button addButton;
 
+    private GraphController graph;
+    private double x;
+    private double y;
+
+    public FunctionListController(GraphController graph, double x, double y) {
+        this();
+        this.graph = graph;
+        this.x = x;
+        this.y = y;
+
+        treeView.getTree().addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if(event.getCode() == KeyCode.ENTER) {
+                    Processor proc = treeView.getTree().getSelectionModel().getSelectedItem().getValue().getProcessor();
+
+                    if(proc != null) {
+                        ((Graph)graph.getContext()).addNode(new Node(graph.getContext(), proc, x, y));
+                        graph.invalidate();
+                    }
+                }
+            }
+        });
+    }
+
     public FunctionListController() {
         super(AnchorPane.class, "FunctionListView.fxml");
 
@@ -55,6 +82,20 @@ public class FunctionListController extends Controller<AnchorPane> {
                     event.consume();
                 }
             });
+
+            if(graph != null) {
+                cell.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        if(event.getClickCount() == 2) {
+                            if(cell.getItem().getProcessor() != null) {
+                                ((Graph)graph.getContext()).addNode(new Node(graph.getContext(), cell.getItem().getProcessor(), x, y));
+                                graph.invalidate();
+                            }
+                        }
+                    }
+                });
+            }
 
             return cell;
         });
@@ -91,5 +132,10 @@ public class FunctionListController extends Controller<AnchorPane> {
         }
 
         treeView.setRoot(new RecursiveTreeItem<FunctionRecord>(new FunctionRecord(categories), FunctionRecord::getSubFunctions));
+    }
+
+    public void disableAddButton() {
+        addButton.setManaged(false);
+        addButton.setVisible(false);
     }
 }

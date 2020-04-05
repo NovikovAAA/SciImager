@@ -1,5 +1,6 @@
 package com.visualipcv.controller;
 
+import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
 import com.visualipcv.controller.binding.BindingHelper;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
@@ -16,10 +17,12 @@ import com.visualipcv.core.io.GraphEntity;
 import com.visualipcv.core.io.NodeEntity;
 import com.visualipcv.editor.Editor;
 import com.visualipcv.view.CustomDataFormats;
+import com.visualipcv.view.FunctionListPopup;
 import com.visualipcv.view.GraphView;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.input.*;
@@ -61,6 +64,8 @@ public class GraphController extends Controller<GraphView> {
 
     private ConnectionPreviewController connectionPreview;
     private Rectangle selectionPreview;
+
+    private boolean wasDragged = false;
 
     public GraphController() {
         super(GraphView.class);
@@ -175,13 +180,35 @@ public class GraphController extends Controller<GraphView> {
             }
         });
 
+        getView().addEventFilter(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(wasDragged) {
+                    event.consume();
+                }
+            }
+        });
+
+        getView().addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                wasDragged = false;
+            }
+        });
+
+        getView().addEventFilter(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if(event.getButton() == dragButton)
+                    wasDragged = true;
+            }
+        });
+
         getView().addEventHandler(MouseEvent.MOUSE_PRESSED, this::onMousePressed);
         getView().addEventHandler(MouseEvent.MOUSE_DRAGGED, this::onMouseDragged);
         getView().addEventHandler(MouseEvent.MOUSE_RELEASED, this::onMouseReleased);
-
-        getView().setOnMouseReleased(this::onMouseReleased);
-        getView().setOnDragOver(this::onDragOver);
-        getView().setOnDragDropped(this::onDragDropped);
+        getView().addEventHandler(DragEvent.DRAG_OVER, this::onDragOver);
+        getView().addEventHandler(DragEvent.DRAG_DROPPED, this::onDragDropped);
 
         execution();
     }
@@ -345,6 +372,12 @@ public class GraphController extends Controller<GraphView> {
                     node.setSelected(true);
                 }
             }
+        }
+
+        if(event.getButton() == dragButton) {
+            Point2D p = getView().getInternalPane().parentToLocal(event.getX(), event.getY());
+            FunctionListPopup popup = new FunctionListPopup(this, p.getX(), p.getY(), event.getScreenX(), event.getScreenY());
+            popup.show();
         }
     }
 

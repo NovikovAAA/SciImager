@@ -17,6 +17,7 @@ import javafx.beans.property.BooleanPropertyBase;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
@@ -56,6 +57,8 @@ public class NodeController extends Controller<AnchorPane> {
     private Pane errorPane;
     @FXML
     private Pane nodeClass;
+    @FXML
+    private AnchorPane wrapper;
 
     private UIProperty selectedProperty = new UIProperty(false);
     private UIProperty titleProperty = new UIProperty();
@@ -93,10 +96,20 @@ public class NodeController extends Controller<AnchorPane> {
         selectedProperty.addEventListener(new PropertyChangedEventListener() {
             @Override
             public void onChanged(Object oldValue, Object newValue) {
-                if((Boolean)newValue)
-                    getView().setBorder(BorderUtils.createHighlightBorder());
-                else
-                    getView().setBorder(null);
+                if((Boolean)newValue) {
+                    wrapper.setBorder(BorderUtils.createHighlightBorder());
+                    AnchorPane.setBottomAnchor(wrapper, 0.0);
+                    AnchorPane.setTopAnchor(wrapper, 0.0);
+                    AnchorPane.setLeftAnchor(wrapper, 0.0);
+                    AnchorPane.setRightAnchor(wrapper, 0.0);
+                }
+                else {
+                    wrapper.setBorder(null);
+                    AnchorPane.setBottomAnchor(wrapper, 3.0);
+                    AnchorPane.setTopAnchor(wrapper, 3.0);
+                    AnchorPane.setLeftAnchor(wrapper, 3.0);
+                    AnchorPane.setRightAnchor(wrapper, 3.0);
+                }
             }
         });
 
@@ -201,6 +214,13 @@ public class NodeController extends Controller<AnchorPane> {
             return ((Node)node).getY();
         });
 
+        getView().addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                contextMenu.hide();
+            }
+        });
+
         initialize();
     }
 
@@ -295,7 +315,11 @@ public class NodeController extends Controller<AnchorPane> {
         previousMouseX = event.getScreenX();
         previousMouseY = event.getScreenY();
         graphController.select(this, event.isControlDown());
+        event.consume();
+    }
 
+    @FXML
+    public void onMouseReleased(MouseEvent event) {
         if(event.getButton() == MouseButton.SECONDARY)
             contextMenu.show(getView(), event.getScreenX(), event.getScreenY());
 

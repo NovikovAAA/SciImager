@@ -3,9 +3,12 @@ package com.visualipcv.view;
 import com.visualipcv.controller.InputFieldController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.EventHandler;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
 public class SearchListView<T> extends AnchorPane {
@@ -41,6 +44,25 @@ public class SearchListView<T> extends AnchorPane {
             }
         });
 
+        searchField.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if(event.getCode() == KeyCode.DOWN) {
+                    getTree().requestFocus();
+                    getTree().getSelectionModel().select(0);
+                }
+            }
+        });
+
+        tree.addEventHandler(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if(event.getCode() == KeyCode.UP && tree.getSelectionModel().getSelectedIndex() == 0) {
+                    searchField.requestFocus();
+                }
+            }
+        });
+
         tree.setShowRoot(false);
     }
 
@@ -60,11 +82,11 @@ public class SearchListView<T> extends AnchorPane {
         newItem.setExpanded(true);
 
         for(TreeItem<T> child : item.getChildren()) {
-            if(child.isLeaf() && !child.getValue().toString().contains(searchField.getText()) &&
+            if(child.isLeaf() && !child.getValue().toString().toLowerCase().contains(searchField.getText().toLowerCase()) &&
                 !searchField.getText().isEmpty() && filter)
                 continue;
 
-            TreeItem<T> childCopy = copyTreeItemAndFilter(child, !child.getValue().toString().contains(searchField.getText()));
+            TreeItem<T> childCopy = copyTreeItemAndFilter(child, !child.getValue().toString().toLowerCase().contains(searchField.getText().toLowerCase()));
 
             if(!child.isLeaf() && childCopy.getChildren().isEmpty())
                 continue;
