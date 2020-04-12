@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<fx:root type="AnchorPane" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml">
+    <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <FlowPane>
+            <padding>
+                <Insets topRightBottomLeft="3.0"/>
+            </padding>
+            <Button fx:id="saveButton" text="Save"/>
+        </FlowPane>
+        <SplitPane VBox.vgrow="ALWAYS" dividerPositions="0.2">
+            <VBox fx:id="properties"/>
+            <VBox>
+                <TextArea fx:id="codeField" VBox.vgrow="ALWAYS">
+                    <VBox.margin>
+                        <Insets topRightBottomLeft="3.0"/>
+                    </VBox.margin>
+                </TextArea>
+            </VBox>
+        </SplitPane>
+    </VBox>
+</fx:root>
+
