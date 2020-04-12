@@ -371,3 +371,4 @@ MigrationBackup/
 
 # DS_Store
 *.DS_Store
+/VisualIpcvEditor/logs.txt

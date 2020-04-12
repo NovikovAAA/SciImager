@@ -15,13 +15,13 @@ extern "C"
 		jmethodID arrayAdd = env->GetMethodID(arrayClass, "add", "(Ljava/lang/Object;)Z");
 		assert(arrayAdd != nullptr);
 
+        jobject res = env->NewObject(arrayClass, arrayConstructor);
+        
 		jclass processorUidClass = env->FindClass("com/visualipcv/core/ProcessorUID");
 		assert(processorUidClass != nullptr);
 
 		jmethodID processorConstructor = env->GetMethodID(processorUidClass, "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");
 		assert(processorConstructor != nullptr);
-
-		jobject res = env->NewObject(arrayClass, arrayConstructor);
         
         std::map<std::string, std::map<std::string, Processor *>>& modules = ProcessorManager::getModules();
         for (auto& moduleItem : modules) {
