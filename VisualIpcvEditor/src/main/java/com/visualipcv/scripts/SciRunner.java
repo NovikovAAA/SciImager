@@ -1,5 +1,6 @@
 package com.visualipcv.scripts;
 
+import com.visualipcv.Console;
 import org.scilab.modules.javasci.JavasciException;
 import org.scilab.modules.javasci.Scilab;
 import org.scilab.modules.types.*;
@@ -43,5 +44,6 @@ public class SciRunner {
 
     public static void execute(String code) {
         scilab.exec(code);
+
     }
 }

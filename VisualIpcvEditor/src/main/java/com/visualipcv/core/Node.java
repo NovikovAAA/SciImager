@@ -36,7 +36,7 @@ public class Node {
                 try {
                     slot.setValue(nodeEntity.getInputValues().get(slot.getProperty().getName()));
                 } catch (ValidationException e) {
-                    Console.output(e.getMessage());
+                    System.out.println(e.getMessage());
                 }
             }
         }

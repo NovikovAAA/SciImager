@@ -1,17 +1,11 @@
-package com.visualipcv.view;
+package com.visualipcv.controller;
 
-import com.visualipcv.controller.Controller;
 import com.visualipcv.editor.Editor;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import com.visualipcv.view.FreePane;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;

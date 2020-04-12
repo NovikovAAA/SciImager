@@ -214,26 +214,6 @@ public class GraphController extends Controller<GraphView> {
     }
 
     private void execution() {
-        /*Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.2), new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                for(NodeController node : getNodes())
-                    node.errorProperty().setValue("");
-
-                try {
-                    ((Graph)getContext()).execute();
-                } catch (GraphExecutionException e) {
-
-                }
-
-                for(NodeController node : getNodes())
-                    node.poll(node.errorProperty());
-            }
-        }));
-
-        timeline.setCycleCount(-1);
-        timeline.play();*/
-
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {

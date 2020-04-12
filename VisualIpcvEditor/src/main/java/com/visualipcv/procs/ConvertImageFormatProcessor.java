@@ -11,10 +11,10 @@ import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
 
-public class ConvertImageProcessor extends Processor {
-    public ConvertImageProcessor() {
+public class ConvertImageFormatProcessor extends Processor {
+    public ConvertImageFormatProcessor() {
         super(new ProcessorBuilder()
-            .setName("ConvertImage")
+            .setName("ConvertImageFormat")
             .setModule("Core")
             .setCategory("Image")
             .addInputProperty(new ProcessorProperty("Image", DataType.IMAGE))
