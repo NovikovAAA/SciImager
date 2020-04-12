@@ -18,10 +18,10 @@
                 <children>
                     <Pane minWidth="160.0" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                         <children>
-                            <Text fx:id="title" layoutX="15.0" layoutY="21.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                            <Text fx:id="title" styleClass="node-title" layoutX="15.0" layoutY="21.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                         </children>
                     </Pane>
-                    <Pane fx:id="nodeClass" layoutX="145.0" maxWidth="40.0" minWidth="40.0" prefHeight="34.0" prefWidth="40.0" />
+                    <Pane fx:id="nodeClass" styleClass="node-class" layoutX="145.0" maxWidth="40.0" minWidth="40.0" prefHeight="34.0" prefWidth="40.0" />
                 </children>
             </HBox>
             <GridPane alignment="CENTER" style="-fx-background-color: #00000000;">

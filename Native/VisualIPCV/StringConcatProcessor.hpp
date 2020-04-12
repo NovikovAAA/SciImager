@@ -12,7 +12,7 @@
 #include <string>
 #include "Processor.hpp"
 
-class StringConcatProcessor : public Processor {
+class IPCV_API StringConcatProcessor : public Processor {
 public:
     StringConcatProcessor();
     DataBundle execute(const DataBundle &dataMap, DataBundle &nodeSate) override;

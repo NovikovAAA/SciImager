@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 #include <VisualIPCV/BaseDataTypeClassifier.hpp>
-#include "PrimitiveTypeСlassifier.hpp"
+#include "PrimitiveTypeClassifier.hpp"
 #include "DataTypeJNIObject.hpp"
 #include "jni.h"
 

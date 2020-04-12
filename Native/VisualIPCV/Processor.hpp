@@ -15,8 +15,8 @@
 
 class Processor {
 public:
-    Processor(const Processor & object);
-    Processor(std::string name, std::string module, std::string category, std::vector<ProcessorProperty> inputProperties, std::vector<ProcessorProperty> outputProperties);
+    IPCV_API Processor(const Processor & object);
+    IPCV_API Processor(std::string name, std::string module, std::string category, std::vector<ProcessorProperty> inputProperties, std::vector<ProcessorProperty> outputProperties);
     
     std::string name;
     std::string module;
@@ -25,13 +25,13 @@ public:
     std::vector<ProcessorProperty> inputProperties;
     std::vector<ProcessorProperty> outputProperties;
     
-    virtual DataBundle execute(DataBundle const &dataMap, DataBundle &nodeSate) = 0;
-    virtual void preExecute(DataBundle nodeState) {}
-    virtual void postExecute(DataBundle nodeState) {}
-    virtual void onCreate(DataBundle nodeState) {}
-    virtual void onDestroyed(DataBundle nodeState) {}
+    IPCV_API virtual DataBundle execute(DataBundle const &dataMap, DataBundle &nodeSate) = 0;
+    IPCV_API virtual void preExecute(DataBundle nodeState) {}
+    IPCV_API virtual void postExecute(DataBundle nodeState) {}
+    IPCV_API virtual void onCreate(DataBundle nodeState) {}
+    IPCV_API virtual void onDestroyed(DataBundle nodeState) {}
     
-    void prepareResult(DataBundle *resultDataBundle);
+    IPCV_API void prepareResult(DataBundle *resultDataBundle);
 };
 
 #endif /* Processor_hpp */

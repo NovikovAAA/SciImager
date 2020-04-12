@@ -16,6 +16,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+import java.awt.event.MouseWheelEvent;
+
 public class FreePane extends AnchorPane {
     private Pane internalPane;
 
@@ -61,9 +63,9 @@ public class FreePane extends AnchorPane {
             }
         });
 
-        setOnMousePressed(this::onMousePressed);
-        setOnMouseDragged(this::onMouseDragged);
-        setOnScroll(this::onScroll);
+        addEventHandler(MouseEvent.MOUSE_PRESSED, this::onMousePressed);
+        addEventHandler(MouseEvent.MOUSE_DRAGGED, this::onMouseDragged);
+        addEventHandler(ScrollEvent.SCROLL, this::onScroll);
 
         getChildren().add(internalPane);
     }

@@ -314,16 +314,16 @@ public class NodeController extends Controller<AnchorPane> {
     public void onMousePressed(MouseEvent event) {
         previousMouseX = event.getScreenX();
         previousMouseY = event.getScreenY();
+
         graphController.select(this, event.isControlDown());
-        event.consume();
     }
 
     @FXML
     public void onMouseReleased(MouseEvent event) {
-        if(event.getButton() == MouseButton.SECONDARY)
+        if(event.getButton() == MouseButton.SECONDARY) {
             contextMenu.show(getView(), event.getScreenX(), event.getScreenY());
-
-        event.consume();
+            event.consume();
+        }
     }
 
     @FXML

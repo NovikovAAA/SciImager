@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include "Processor.hpp"
 
-class SumProcessor : public Processor {
+class IPCV_API SumProcessor : public Processor {
 public:
     SumProcessor();
     DataBundle execute(const DataBundle &dataMap, DataBundle &nodeSate) override;

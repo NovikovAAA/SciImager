@@ -19,5 +19,6 @@
 #include "VisualIPCV/VisualIPCV.h"
 
 #include "opencv2/opencv.hpp"
+#include <functional>
 
 #endif //PCH_H

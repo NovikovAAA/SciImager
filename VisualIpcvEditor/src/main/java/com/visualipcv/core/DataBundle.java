@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class DataBundle implements Iterable<Object> {
-    private Map<String, Object> values = new HashMap<String, Object>();
+    public Map<String, Object> values = new HashMap<String, Object>();
 
     public DataBundle() {
 

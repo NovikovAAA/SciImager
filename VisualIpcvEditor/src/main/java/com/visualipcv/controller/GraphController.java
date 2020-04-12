@@ -321,17 +321,17 @@ public class GraphController extends Controller<GraphView> {
         initialMouseX = initial.getX();
         initialMouseY = initial.getY();
 
-        if(event.getButton() == selectionButton) {
+        if(event.getTarget() == getView().getInternalPane() && event.getButton() == selectionButton) {
             selectionPreview = new Rectangle();
             selectionPreview.setX(initialMouseX);
             selectionPreview.setY(initialMouseY);
             selectionPreview.setFill(new Color(1.0, 1.0, 1.0, 0.5));
             selectionPreview.setStroke(new Color(0, 0, 0, 1));
             getView().getInternalPane().getChildren().add(selectionPreview);
-        }
 
-        if(event.getButton() == selectionButton)
             clearSelection();
+            event.consume();
+        }
     }
 
     public void onMouseDragged(MouseEvent event) {
@@ -340,7 +340,7 @@ public class GraphController extends Controller<GraphView> {
         previousMouseX = event.getScreenX();
         previousMouseY = event.getScreenY();
 
-        if(event.getButton() == selectionButton) {
+        if(selectionPreview != null && event.getButton() == selectionButton) {
             Point2D newPos = getView().getInternalPane().parentToLocal(event.getX(), event.getY());
 
             double minX = Math.min(initialMouseX, newPos.getX());
@@ -352,6 +352,8 @@ public class GraphController extends Controller<GraphView> {
             selectionPreview.setHeight(maxY - minY);
             selectionPreview.setX(minX);
             selectionPreview.setY(minY);
+
+            event.consume();
         }
     }
 
@@ -379,6 +381,8 @@ public class GraphController extends Controller<GraphView> {
             FunctionListPopup popup = new FunctionListPopup(this, p.getX(), p.getY(), event.getScreenX(), event.getScreenY());
             popup.show();
         }
+
+        event.consume();
     }
 
     private Processor getProcessorFromDragEvent(DragEvent event) {
