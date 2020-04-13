@@ -11,5 +11,6 @@
 #include "opencv2/opencv.hpp"
 
 #include "DllExport.h"
+#include "framework.h"
 
 #endif //PCH_H
