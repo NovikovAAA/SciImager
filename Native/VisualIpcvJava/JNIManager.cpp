@@ -6,6 +6,7 @@
 //
 
 #include "JNIManager.hpp"
+#include "DataTypesManager.hpp"
 
 Processor* JNIManager::processorFromJava(JNIEnv *env, jobject uid) {
     jclass uidClass = env->FindClass("com/visualipcv/core/ProcessorUID");
@@ -75,13 +76,14 @@ jobject JNIManager::propertiesForJava(JNIEnv *env, jobject uid, std::vector<Proc
 
 jobject JNIManager::processorResultForJava(JNIEnv *env, DataBundle result) {
     DataBundleJNIModel model = getDataBundleModel(env);
-    DataTypeJNIModel typeModel = getDataTypeModel(env);
+    DataTypeJNIObject typeModel = getDataTypeModel(env);
     
     jobject outputDataBundle = env->NewObject(model.dataBundleClass, model.dataBundleConstructor);
     assert(outputDataBundle != nullptr);
     
     for (auto& item : result.dataMap) {
         jstring key = env->NewStringUTF(item.first.c_str());
+        
         jobject value = env->NewObject(typeModel.dataTypeClass, typeModel.dataTypeConstructor, result.read<double>(item.first));
         env->CallVoidMethod(outputDataBundle, model.dataBundleWriteMethod, key, value);
     }
@@ -117,8 +119,6 @@ DataBundle JNIManager::dataBundleFromJava(JNIEnv *env, jobject inputValues) {
     jobjectArray keysArray = (jobjectArray)env->CallObjectMethod(keySet, setToArray);
     assert(keysArray != nullptr);
     
-    DataTypeJNIModel typeModel = getDataTypeModel(env);
-    
     DataBundle valuesBundle;
     int size = env-> GetArrayLength(keysArray);
     for (int i = 0; i < size; i++) {
@@ -128,13 +128,16 @@ DataBundle JNIManager::dataBundleFromJava(JNIEnv *env, jobject inputValues) {
         assert(dataValueObject != nullptr);
         
         std::string key = env->GetStringUTFChars(keyString, 0);
-        double value = (double) env->CallDoubleMethod(dataValueObject, typeModel.dataTypeGetValueMethod);
+        DataTypeJNIObject* dataTypeJniObject = DataTypesManager::getInstance().getPrimitiveType(env, dataValueObject);
+        double value = (double) env->CallDoubleMethod(dataValueObject, dataTypeJniObject->dataTypeGetValueMethod);
         valuesBundle.write(key, value);
     }
     return valuesBundle;
 }
 
 #pragma mark - Private
+
+
 
 DataBundleJNIModel JNIManager::getDataBundleModel(JNIEnv *env) {
     jclass dataBundleClass = env->FindClass("com/visualipcv/core/DataBundle");
@@ -155,20 +158,39 @@ DataBundleJNIModel JNIManager::getDataBundleModel(JNIEnv *env) {
     return model;
 }
 
-#warning
+void JNIManager::writeToBundle(JNIEnv *env, jobject object, DataBundle valuesBundle, std::string key) {
+    DataTypeJNIObject* dataTypeJniObject = DataTypesManager::getInstance().getPrimitiveType(env, object);
+    switch (dataTypeJniObject->classifier) {
+        case DOUBLE: {
+            assert(dataTypeJniObject->dataTypeGetValueMethod != nullptr);
+            double value = (double) env->CallDoubleMethod(object, dataTypeJniObject->dataTypeGetValueMethod);
+            valuesBundle.write(key, value);
+            }
+            break;
+        case STRING: {
+            
+            }
+            break;
+        default:
+            break;
+    }
+}
+
 // Расширить на стандартные типы данных
-DataTypeJNIModel JNIManager::getDataTypeModel(JNIEnv *env) {
+DataTypeJNIObject JNIManager::getDataTypeModel(JNIEnv *env) {
     jclass doubleClass = env->FindClass("Ljava/lang/Double;");
     assert(doubleClass != nullptr);
     jmethodID doubleConstructor = env->GetMethodID(doubleClass, "<init>", "(D)V");
     assert(doubleConstructor != nullptr);
     jmethodID getPrimitiveValueMethod = env->GetMethodID(doubleClass, "doubleValue", "()D");
     assert(getPrimitiveValueMethod != nullptr);
-    
-    DataTypeJNIModel typeModel;
+
+    DataTypeJNIObject typeModel;
     typeModel.dataTypeClass = doubleClass;
     typeModel.dataTypeConstructor = doubleConstructor;
     typeModel.dataTypeGetValueMethod = getPrimitiveValueMethod;
-    
+
     return typeModel;
 }
+
+

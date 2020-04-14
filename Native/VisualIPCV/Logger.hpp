@@ -21,7 +21,7 @@ private:
 public:
     static Logger& getInstance() {
         static Logger instance;
-        return instance;;
+        return instance;
     }
     void log(string info);
 };

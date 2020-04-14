@@ -9,15 +9,15 @@
 
 ProcessorProperty::ProcessorProperty() {
     name = "";
-    type = DataTypeJ();
+    type = BaseDataType();
 }
 
 ProcessorProperty::ProcessorProperty(const ProcessorProperty & object) {
     this->name = object.name;
-    this->type = DataTypeJ(object.type);
+    this->type = BaseDataType(object.type);
 }
 
-ProcessorProperty::ProcessorProperty(std::string name, DataTypeJ type) {
+ProcessorProperty::ProcessorProperty(std::string name, BaseDataType type) {
     this->name = name;
-    this->type = DataTypeJ(type);
+    this->type = BaseDataType(type);
 }

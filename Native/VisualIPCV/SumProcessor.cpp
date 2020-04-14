@@ -11,8 +11,8 @@
 bool _ = ProcessorManager::registerProcessor(new SumProcessor());
 
 SumProcessor::SumProcessor() : Processor("TestSum", "Core", "Math",
-{ProcessorProperty("a", DataTypeJ("Number", {0, 0, 0, 0})), ProcessorProperty("b", DataTypeJ("Number", {0, 0, 0, 0}))},
-{ProcessorProperty("result", DataTypeJ("Number", {0, 0, 0, 0}))}) {}
+{ProcessorProperty("a", BaseDataType("Number", {0, 0, 0, 0})), ProcessorProperty("b", BaseDataType("Number", {0, 0, 0, 0}))},
+{ProcessorProperty("result", BaseDataType("Number", {0, 0, 0, 0}))}) {}
 
 DataBundle SumProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     double a = dataMap.read<double>("a");

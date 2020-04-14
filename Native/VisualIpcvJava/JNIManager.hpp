@@ -11,20 +11,30 @@
 #include <stdio.h>
 #include <VisualIPCV/ProcessorManager.hpp>
 #include "DataBundleJNIModel.hpp"
-#include "DataTypeJNIModel.hpp"
+#include "DataTypeJNIObject.hpp"
 #include "jni.h"
 
 class JNIManager {
 public:
-    static Processor* processorFromJava(JNIEnv* env, jobject uid);
-    static DataBundle dataBundleFromJava(JNIEnv *env, jobject inputValues);
+    static JNIManager& getInstance() {
+        static JNIManager instance;
+        return instance;
+    }
+    Processor* processorFromJava(JNIEnv* env, jobject uid);
+    DataBundle dataBundleFromJava(JNIEnv *env, jobject inputValues);
     
-    static jobject propertiesForJava(JNIEnv* env, jobject uid, std::vector<ProcessorProperty> sourceProperties);
-    static jobject processorResultForJava(JNIEnv *env, DataBundle result);
-    static jobject dataBundleValuesObjectForJava(JNIEnv *env, jobject valuesObject);
+    jobject propertiesForJava(JNIEnv* env, jobject uid, std::vector<ProcessorProperty> sourceProperties);
+    jobject processorResultForJava(JNIEnv *env, DataBundle result);
+    jobject dataBundleValuesObjectForJava(JNIEnv *env, jobject valuesObject);
 private:
-    static DataBundleJNIModel getDataBundleModel(JNIEnv *env);
-    static DataTypeJNIModel getDataTypeModel(JNIEnv *env);
+    JNIManager() {}
+    JNIManager(const JNIManager&);
+    JNIManager& operator=(JNIManager&);
+    
+    void writeToBundle(JNIEnv* env, jobject object, DataBundle valuesBundle, std::string key);
+    
+    DataBundleJNIModel getDataBundleModel(JNIEnv *env);
+    DataTypeJNIObject getDataTypeModel(JNIEnv *env);
 };
 
 #endif /* JNIHelper_hpp */

@@ -11,7 +11,7 @@ import java.io.IOException;
 public class Starter {
     static {
         LinkUtils.linkNativeLibraries();
-        SciRunner.load();
+//        SciRunner.load();
 //        DataTypeLibrary.initDefaultTypes();
         ProcessorLibrary.getInstance();
     }

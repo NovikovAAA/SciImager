@@ -14,11 +14,11 @@
 
 #define COLOR_ARRAY_SIZE 4
 
-class DataTypeJ {
+class BaseDataType {
 public:
-    DataTypeJ();
-    DataTypeJ(const DataTypeJ & object);
-    DataTypeJ(std::string name, std::array<double, COLOR_ARRAY_SIZE> color);
+    BaseDataType();
+    BaseDataType(const BaseDataType & object);
+    BaseDataType(std::string name, std::array<double, COLOR_ARRAY_SIZE> color);
     
     void setName(std::string name);
     void setColor(std::array<double, COLOR_ARRAY_SIZE> color);
