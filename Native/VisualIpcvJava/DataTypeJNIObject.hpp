@@ -15,7 +15,7 @@
 class DataTypeJNIObject {
 public:
     DataTypeJNIObject() {}
-    DataTypeJNIObject(PrimitiveTypeСlassifier classifier, jclass dataTypeClass, jmethodID dataTypeConstructor, jmethodID dataTypeGetValueMethod);
+    DataTypeJNIObject(PrimitiveTypeСlassifier _classifier, jclass dataTypeClass, jmethodID dataTypeConstructor, jmethodID dataTypeGetValueMethod);
     
     PrimitiveTypeСlassifier classifier;
     

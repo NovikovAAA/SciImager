@@ -7,6 +7,7 @@
 
 #include "JNIManager.hpp"
 #include "DataTypesManager.hpp"
+#include <iostream>
 
 Processor* JNIManager::processorFromJava(JNIEnv *env, jobject uid) {
     jclass uidClass = env->FindClass("com/visualipcv/core/ProcessorUID");
@@ -126,18 +127,14 @@ DataBundle JNIManager::dataBundleFromJava(JNIEnv *env, jobject inputValues) {
         assert(keyString != nullptr);
         jobject dataValueObject = env->CallObjectMethod(dataBundleValuesObject, mapGet, keyString);
         assert(dataValueObject != nullptr);
-        
+
         std::string key = env->GetStringUTFChars(keyString, 0);
-        DataTypeJNIObject* dataTypeJniObject = DataTypesManager::getInstance().getPrimitiveType(env, dataValueObject);
-        double value = (double) env->CallDoubleMethod(dataValueObject, dataTypeJniObject->dataTypeGetValueMethod);
-        valuesBundle.write(key, value);
+        writeToBundle(env, dataValueObject, &valuesBundle, key);
     }
     return valuesBundle;
 }
 
 #pragma mark - Private
-
-
 
 DataBundleJNIModel JNIManager::getDataBundleModel(JNIEnv *env) {
     jclass dataBundleClass = env->FindClass("com/visualipcv/core/DataBundle");
@@ -158,18 +155,17 @@ DataBundleJNIModel JNIManager::getDataBundleModel(JNIEnv *env) {
     return model;
 }
 
-void JNIManager::writeToBundle(JNIEnv *env, jobject object, DataBundle valuesBundle, std::string key) {
+void JNIManager::writeToBundle(JNIEnv *env, jobject object, DataBundle *valuesBundle, std::string key) {
     DataTypeJNIObject* dataTypeJniObject = DataTypesManager::getInstance().getPrimitiveType(env, object);
+    assert(dataTypeJniObject->dataTypeGetValueMethod != nullptr);
     switch (dataTypeJniObject->classifier) {
         case DOUBLE: {
-            assert(dataTypeJniObject->dataTypeGetValueMethod != nullptr);
             double value = (double) env->CallDoubleMethod(object, dataTypeJniObject->dataTypeGetValueMethod);
-            valuesBundle.write(key, value);
-            }
+            valuesBundle->write(key, value);
             break;
-        case STRING: {
-            
-            }
+        }
+        case STRING:
+            std::cout << "string" << std::endl;
             break;
         default:
             break;

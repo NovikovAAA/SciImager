@@ -31,7 +31,7 @@ private:
     JNIManager(const JNIManager&);
     JNIManager& operator=(JNIManager&);
     
-    void writeToBundle(JNIEnv* env, jobject object, DataBundle valuesBundle, std::string key);
+    void writeToBundle(JNIEnv* env, jobject object, DataBundle *valuesBundle, std::string key);
     
     DataBundleJNIModel getDataBundleModel(JNIEnv *env);
     DataTypeJNIObject getDataTypeModel(JNIEnv *env);
