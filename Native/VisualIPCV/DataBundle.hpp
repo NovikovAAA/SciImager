@@ -10,11 +10,15 @@
 
 #include <stdio.h>
 #include <map>
+#include <vector>
 #include <string>
 #include "DataValue.hpp"
+#include "BaseDataType.hpp"
 
 struct DataBundle {
     std::map<std::string, DataValue> dataMap;
+    std::vector<BaseDataTypeClassifier> outputPropertiesDataTypes;
+    
     template <class T>
     T read(std::string name) const {
         DataValue dataValue = dataMap.find(name)->second;

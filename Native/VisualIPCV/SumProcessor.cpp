@@ -8,11 +8,11 @@
 #include "SumProcessor.hpp"
 #include "ProcessorManager.hpp"
 
-bool _ = ProcessorManager::registerProcessor(new SumProcessor());
+bool sumLoadResult = ProcessorManager::registerProcessor(new SumProcessor());
 
-SumProcessor::SumProcessor() : Processor("TestSum", "Core", "Math",
-{ProcessorProperty("a", BaseDataType("Number", {0, 0, 0, 0})), ProcessorProperty("b", BaseDataType("Number", {0, 0, 0, 0}))},
-{ProcessorProperty("result", BaseDataType("Number", {0, 0, 0, 0}))}) {}
+SumProcessor::SumProcessor() : Processor("SumC++", "Core", "TEST_C++",
+{ProcessorProperty("a", BaseDataType(NUMBER, {0, 0, 0, 0})), ProcessorProperty("b", BaseDataType(NUMBER, {0, 0, 0, 0}))},
+{ProcessorProperty("result", BaseDataType(NUMBER, {0, 0, 0, 0}))}) {}
 
 DataBundle SumProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     double a = dataMap.read<double>("a");
@@ -22,6 +22,7 @@ DataBundle SumProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate
     
     DataBundle resultDataBundle;
     resultDataBundle.write("result", result);
+    prepareResult(&resultDataBundle);
     return resultDataBundle;
 }
 

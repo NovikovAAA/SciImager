@@ -20,5 +20,12 @@ Processor::Processor(std::string name, std::string module, std::string category,
     
     for (int i = 0; i < outputProperties.size(); i++) {
         this->outputProperties.push_back(ProcessorProperty(outputProperties[i]));
+        
+    }
+}
+
+void Processor::prepareResult(DataBundle *resultDataBundle) {
+    for (int i = 0; i < outputProperties.size(); i++) {
+        resultDataBundle->outputPropertiesDataTypes.push_back(outputProperties[i].type.getTypeClassifier());
     }
 }

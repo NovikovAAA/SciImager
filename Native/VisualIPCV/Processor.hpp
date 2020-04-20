@@ -30,6 +30,8 @@ public:
     virtual void postExecute(DataBundle nodeState) {}
     virtual void onCreate(DataBundle nodeState) {}
     virtual void onDestroyed(DataBundle nodeState) {}
+    
+    void prepareResult(DataBundle *resultDataBundle);
 };
 
 #endif /* Processor_hpp */

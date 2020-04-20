@@ -6,9 +6,10 @@
 //
 
 #include "DataTypesManager.hpp"
+#include <VisualIPCV/Logger.hpp>
 
 DataTypesManager::DataTypesManager() {
-    classifiers = {DOUBLE, STRING, IMAGE, UNKNOWN};
+    classifiers = {JNI_DOUBLE, JNI_STRING, JNI_IMAGE, UNKNOWN};
 }
 
 DataTypeJNIObject* DataTypesManager::getPrimitiveType(JNIEnv* env, jobject object) {
@@ -18,6 +19,11 @@ DataTypeJNIObject* DataTypesManager::getPrimitiveType(JNIEnv* env, jobject objec
         }
     }
     return nullptr;
+}
+
+DataTypeJNIObject* DataTypesManager::getPrimitiveType(JNIEnv* env, BaseDataTypeClassifier dataTypeClassifier) {
+    PrimitiveTypeСlassifier classifier = primitiveTypeClassifier(dataTypeClassifier);
+    return createPrimitiveType(env, classifier);
 }
 
 bool DataTypesManager::checkType(JNIEnv* env, PrimitiveTypeСlassifier classifier, jobject object) {
@@ -31,14 +37,18 @@ bool DataTypesManager::checkType(JNIEnv* env, PrimitiveTypeСlassifier classifie
 DataTypeJNIObject* DataTypesManager::createPrimitiveType(JNIEnv* env, PrimitiveTypeСlassifier classifier) {
     string javaTypeName = javaTypeNameForClassifier(classifier);
     jclass typeClass = env->FindClass(javaTypeName.c_str());
-    return new DataTypeJNIObject(classifier, typeClass, dataTypeConstructorForClassifier(env, typeClass, classifier), dataTypeGetValueMethodForClassifier(env, typeClass, classifier));
+    
+    jmethodID constructor = dataTypeConstructorForClassifier(env, typeClass, classifier);
+    jmethodID getValueMethod = dataTypeGetValueMethodForClassifier(env, typeClass, classifier);
+    
+    return new DataTypeJNIObject(classifier, typeClass, constructor, getValueMethod);
 }
 
 string DataTypesManager::javaTypeNameForClassifier(PrimitiveTypeСlassifier classifier) {
     switch (classifier) {
-        case DOUBLE:
+        case JNI_DOUBLE:
             return "java/lang/Double";
-        case STRING:
+        case JNI_STRING:
             return "java/lang/String";
         default:
             return "java/lang/Object";
@@ -49,14 +59,12 @@ jmethodID DataTypesManager::dataTypeConstructorForClassifier(JNIEnv* env, jclass
     string constructorString;
     string signatureString;
     switch (classifier) {
-        case DOUBLE:
+        case JNI_DOUBLE:
             constructorString = "<init>";
             signatureString = "(D)V";
             break;
         default:
-            constructorString = "";
-            signatureString = "";
-            break;
+            return nullptr;
     }
     return env->GetMethodID(typeClass, constructorString.c_str(), signatureString.c_str());
 }
@@ -65,14 +73,25 @@ jmethodID DataTypesManager::dataTypeGetValueMethodForClassifier(JNIEnv* env, jcl
     string getValueString;
     string signatureString;
     switch (classifier) {
-        case DOUBLE:
+        case JNI_DOUBLE:
             getValueString = "doubleValue";
             signatureString = "()D";
             break;
         default:
-            getValueString = "";
-            signatureString = "";
-            break;
+            return nullptr;
     }
     return env->GetMethodID(typeClass, getValueString.c_str(), signatureString.c_str());
+}
+
+PrimitiveTypeСlassifier DataTypesManager::primitiveTypeClassifier(BaseDataTypeClassifier dataTypeClassifier) {
+    switch (dataTypeClassifier) {
+        case NUMBER:
+            return JNI_DOUBLE;
+        case STRING:
+            return JNI_STRING;
+        case IMAGE:
+            return JNI_IMAGE;
+        default:
+            return UNKNOWN;
+    }
 }

@@ -9,9 +9,9 @@
 #define PrimitiveDataTypeClassifier_h
 
 enum PrimitiveTypeСlassifier {
-    DOUBLE,
-    STRING,
-    IMAGE,
+    JNI_DOUBLE,
+    JNI_STRING,
+    JNI_IMAGE,
     UNKNOWN
 };
 
