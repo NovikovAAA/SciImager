@@ -54,6 +54,7 @@ public class ConsoleController extends Controller<AnchorPane> {
             @Override
             public void onUpdate(String text) {
                 output.setText(text);
+                output.setScrollTop(Double.MAX_VALUE);
             }
         });
     }

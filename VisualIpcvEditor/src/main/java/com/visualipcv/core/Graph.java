@@ -51,7 +51,7 @@ public class Graph {
         try {
             node.onCreate();
         } catch (GraphExecutionException e) {
-            System.out.println(e.getMessage());
+            Console.write(e.getMessage());
         }
     }
 
@@ -62,7 +62,7 @@ public class Graph {
             try {
                 node.onCreate();
             } catch (GraphExecutionException e) {
-                System.out.println(e.getMessage());
+                Console.write(e.getMessage());
             }
         }
     }
@@ -88,7 +88,7 @@ public class Graph {
         try {
             node.onDestroy();
         } catch (GraphExecutionException e) {
-            System.out.println(e.getMessage());
+            Console.write(e.getMessage());
         }
     }
 

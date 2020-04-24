@@ -16,7 +16,7 @@ public class Console {
         byteStream = new ByteArrayOutputStream();
         PrintStream stream = new PrintStream(byteStream);
         System.setOut(stream);
-        System.setErr(stream);
+        //System.setErr(stream);
     }
 
     public static String execute(String cmd, boolean showCmd) {
@@ -28,6 +28,15 @@ public class Console {
         }
 
         return "";
+    }
+
+    public static void write(String msg) {
+        System.out.println(msg);
+        update();
+    }
+
+    public static void clear() {
+        byteStream.reset();
     }
 
     public static void update() {

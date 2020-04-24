@@ -1,6 +1,7 @@
 package com.visualipcv.controller;
 
 import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
+import com.visualipcv.Console;
 import com.visualipcv.controller.binding.BindingHelper;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
@@ -19,9 +20,13 @@ import com.visualipcv.editor.Editor;
 import com.visualipcv.view.CustomDataFormats;
 import com.visualipcv.view.FunctionListPopup;
 import com.visualipcv.view.GraphView;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -29,6 +34,7 @@ import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -45,6 +51,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 
 public class GraphController extends Controller<GraphView> {
     private MouseButton selectionButton = MouseButton.PRIMARY;
@@ -66,6 +75,9 @@ public class GraphController extends Controller<GraphView> {
     private Rectangle selectionPreview;
 
     private boolean wasDragged = false;
+
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private Semaphore semaphore = new Semaphore(1);
 
     public GraphController() {
         super(GraphView.class);
@@ -210,36 +222,43 @@ public class GraphController extends Controller<GraphView> {
         getView().addEventHandler(DragEvent.DRAG_OVER, this::onDragOver);
         getView().addEventHandler(DragEvent.DRAG_DROPPED, this::onDragDropped);
 
-        execution();
-    }
-
-    private void execution() {
-        Thread thread = new Thread(new Runnable() {
+        Timeline timer = new Timeline(new KeyFrame(Duration.millis(100), new EventHandler<ActionEvent>() {
             @Override
-            public void run() {
-                while(true) {
-                    for(NodeController node : getNodes())
-                        node.errorProperty().setValue("");
-
-                    try {
-                        ((Graph)getContext()).execute();
-                    } catch (GraphExecutionException e) {
-
-                    }
-
-                    for(NodeController node : getNodes())
+            public void handle(ActionEvent event) {
+                if(semaphore.tryAcquire()) {
+                    for (NodeController node : getNodes())
                         node.poll(node.errorProperty());
 
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-
-                    }
+                    execute();
+                    semaphore.release();
                 }
             }
-        });
+        }));
 
-        thread.start();
+        timer.setCycleCount(Animation.INDEFINITE);
+        timer.play();
+    }
+
+    private void execute() {
+        executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    semaphore.acquire();
+                } catch (InterruptedException e) {
+
+                }
+
+                try {
+                    ((Graph) getContext()).execute();
+                } catch (GraphExecutionException e) {
+                    Console.write(e.getMessage());
+                    semaphore.release();
+                }
+
+                semaphore.release();
+            }
+        });
     }
 
     public NodeSlotController findNodeSlotController(NodeSlot slot) {
@@ -301,7 +320,7 @@ public class GraphController extends Controller<GraphView> {
         initialMouseX = initial.getX();
         initialMouseY = initial.getY();
 
-        if(event.getTarget() == getView().getInternalPane() && event.getButton() == selectionButton) {
+        if(event.getButton() == selectionButton) {
             selectionPreview = new Rectangle();
             selectionPreview.setX(initialMouseX);
             selectionPreview.setY(initialMouseY);

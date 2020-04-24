@@ -316,6 +316,7 @@ public class NodeController extends Controller<AnchorPane> {
         previousMouseY = event.getScreenY();
 
         graphController.select(this, event.isControlDown());
+        event.consume();
     }
 
     @FXML
@@ -343,6 +344,7 @@ public class NodeController extends Controller<AnchorPane> {
     public void onKeyPressed(KeyEvent event) {
         if(event.getCode() == KeyCode.DELETE) {
             getGraphController().removeSelected();
+            event.consume();
         }
     }
 
