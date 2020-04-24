@@ -17,7 +17,7 @@ public class CameraSource extends Processor {
             .setName("CameraSource")
             .setModule("Core")
             .setCategory("Input")
-            .addInputProperty(new ProcessorProperty("Index", DataType.NUMBER))
+            .addInputProperty(new ProcessorProperty("Index", DataType.INTEGER))
             .addOutputProperty(new ProcessorProperty("Output", DataType.IMAGE)));
     }
 

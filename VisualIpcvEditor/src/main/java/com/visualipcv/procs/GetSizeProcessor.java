@@ -16,16 +16,16 @@ public class GetSizeProcessor extends Processor {
             .setModule("Core")
             .setCategory("Image")
             .addInputProperty(new ProcessorProperty("Image", DataType.IMAGE))
-            .addOutputProperty(new ProcessorProperty("Width", DataType.NUMBER))
-            .addOutputProperty(new ProcessorProperty("Height", DataType.NUMBER)));
+            .addOutputProperty(new ProcessorProperty("Width", DataType.INTEGER))
+            .addOutputProperty(new ProcessorProperty("Height", DataType.INTEGER)));
     }
 
     @Override
     public DataBundle execute(DataBundle inputs, DataBundle state) {
         Mat image = inputs.read("Image");
         DataBundle outputs = new DataBundle();
-        outputs.write("Width", (double)image.width());
-        outputs.write("Height", (double)image.height());
+        outputs.write("Width", image.width());
+        outputs.write("Height", image.height());
         return outputs;
     }
 }

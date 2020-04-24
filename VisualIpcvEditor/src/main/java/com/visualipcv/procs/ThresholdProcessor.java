@@ -15,8 +15,8 @@ public class ThresholdProcessor extends Processor {
             .setModule("Core")
             .setCategory("Image")
             .addInputProperty(new ProcessorProperty("Image", DataType.IMAGE))
-            .addInputProperty(new ProcessorProperty("Value", DataType.NUMBER))
-            .addInputProperty(new ProcessorProperty("Max", DataType.NUMBER))
+            .addInputProperty(new ProcessorProperty("Value", DataType.DOUBLE))
+            .addInputProperty(new ProcessorProperty("Max", DataType.DOUBLE))
             .addOutputProperty(new ProcessorProperty("Result", DataType.IMAGE)));
     }
 

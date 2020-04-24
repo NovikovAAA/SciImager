@@ -36,7 +36,7 @@ public class ConsoleController extends Controller<AnchorPane> {
         clearButton.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
             @Override
             public void handle(javafx.event.ActionEvent event) {
-                output.clear();
+                Console.clear();
             }
         });
 

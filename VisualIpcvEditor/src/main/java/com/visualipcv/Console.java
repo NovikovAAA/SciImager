@@ -37,6 +37,7 @@ public class Console {
 
     public static void clear() {
         byteStream.reset();
+        update();
     }
 
     public static void update() {

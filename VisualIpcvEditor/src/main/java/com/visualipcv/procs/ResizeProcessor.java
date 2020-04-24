@@ -18,8 +18,8 @@ public class ResizeProcessor extends Processor {
             .setModule("Core")
             .setCategory("Image")
             .addInputProperty(new ProcessorProperty("Image", DataType.IMAGE))
-            .addInputProperty(new ProcessorProperty("Width", DataType.NUMBER))
-            .addInputProperty(new ProcessorProperty("Height", DataType.NUMBER))
+            .addInputProperty(new ProcessorProperty("Width", DataType.DOUBLE))
+            .addInputProperty(new ProcessorProperty("Height", DataType.DOUBLE))
             .addOutputProperty(new ProcessorProperty("Result", DataType.IMAGE)));
     }
 

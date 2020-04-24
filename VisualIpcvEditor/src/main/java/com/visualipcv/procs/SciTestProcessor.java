@@ -10,7 +10,7 @@ public class SciTestProcessor extends SciProcessor {
         super("Test", "Test", "Test", new SciScript());
         getScript().setCode("Result=Image*K");
         getScript().addInputProperty(new ProcessorProperty("Image", DataType.IMAGE));
-        getScript().addInputProperty(new ProcessorProperty("K", DataType.NUMBER));
+        getScript().addInputProperty(new ProcessorProperty("K", DataType.DOUBLE));
         getScript().addOutputProperty(new ProcessorProperty("Result", DataType.IMAGE));
     }
 }

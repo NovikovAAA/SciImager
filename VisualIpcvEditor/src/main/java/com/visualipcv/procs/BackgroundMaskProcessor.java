@@ -18,8 +18,8 @@ public class BackgroundMaskProcessor extends Processor {
             .setModule("Core")
             .setCategory("Image")
             .addInputProperty(new ProcessorProperty("Image", DataType.IMAGE))
-            .addInputProperty(new ProcessorProperty("Threshold", DataType.NUMBER))
-            .addInputProperty(new ProcessorProperty("History", DataType.NUMBER))
+            .addInputProperty(new ProcessorProperty("Threshold", DataType.DOUBLE))
+            .addInputProperty(new ProcessorProperty("History", DataType.DOUBLE))
             .addOutputProperty(new ProcessorProperty("Output", DataType.IMAGE)));
     }
 

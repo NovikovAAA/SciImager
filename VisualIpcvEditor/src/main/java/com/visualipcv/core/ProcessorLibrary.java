@@ -1,6 +1,7 @@
 package com.visualipcv.core;
 
 import com.visualipcv.procs.*;
+import org.opencv.core.Mat;
 import org.reflections.Reflections;
 
 import java.io.File;
