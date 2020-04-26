@@ -17,10 +17,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-public class FunctionListPopup extends Stage {
+public class FunctionListPopup extends NormalStage {
     private FunctionListController functionListController;
 
     public FunctionListPopup(GraphController graph, double graphX, double graphY, double screenX, double screenY) {

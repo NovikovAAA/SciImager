@@ -39,7 +39,7 @@ public class ReflectedProcessor extends Processor {
             DataType type = DataTypeLibrary.getUniqueFromClass(method.getReturnType());
             builder.addOutputProperty(new ProcessorProperty("Result", type));
         } catch(CommonException e) {
-            Console.write("Creation reflection processor for method " + method.getName() + " failed");
+            Console.write("Creation reflection processor for method '" + method.getName() + "' failed");
             throw e;
         }
 
@@ -64,7 +64,7 @@ public class ReflectedProcessor extends Processor {
             outputs.write("Result", result);
             return outputs;
         } catch (Exception e) {
-            throw new CommonException("Failed invocation reflection processor " + getName());
+            throw new CommonException("Failed invocation reflection processor '" + getName() + "'");
         }
     }
 }

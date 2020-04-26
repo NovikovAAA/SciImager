@@ -1,6 +1,6 @@
 package com.visualipcv;
 
-import com.visualipcv.events.ConsoleEventListener;
+import com.visualipcv.core.events.ConsoleEventListener;
 import com.visualipcv.scripts.SciRunner;
 
 import java.io.ByteArrayOutputStream;
@@ -16,7 +16,6 @@ public class Console {
         byteStream = new ByteArrayOutputStream();
         PrintStream stream = new PrintStream(byteStream);
         System.setOut(stream);
-        //System.setErr(stream);
     }
 
     public static String execute(String cmd, boolean showCmd) {

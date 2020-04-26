@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.UUID;
 
 public class Graph {
+    private String name;
     private ArrayList<Node> nodes = new ArrayList<>();
     private Set<Connection> connections = new HashSet<>();
     private Map<NodeSlot, List<Connection>> slotConnectionAssoc = new HashMap<>();
@@ -36,6 +37,8 @@ public class Graph {
     }
 
     public Graph(GraphEntity graphEntity) {
+        name = graphEntity.getName();
+
         for(NodeEntity node : graphEntity.getNodes()) {
             addNode(new Node(this, node));
         }
@@ -43,6 +46,14 @@ public class Graph {
         for(ConnectionEntity connection : graphEntity.getConnections()) {
             addConnection(new Connection(this, connection));
         }
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void addNode(Node node) {

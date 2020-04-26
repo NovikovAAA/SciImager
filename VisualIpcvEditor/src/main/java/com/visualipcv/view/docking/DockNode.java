@@ -3,6 +3,7 @@ package com.visualipcv.view.docking;
 import com.visualipcv.editor.Editor;
 import com.visualipcv.view.AppScene;
 import com.visualipcv.controller.Controller;
+import com.visualipcv.view.NormalStage;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ListChangeListener;
@@ -27,13 +28,13 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
 public class DockNode extends VBox implements EventHandler<MouseEvent> {
-
     private abstract class EventTask {
         protected int executions = 0;
 
@@ -51,7 +52,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     private StageStyle stageStyle = StageStyle.TRANSPARENT;
 
     private Map<Tab, Controller<?>> controllers = new HashMap<>();
-    private Stage stage;
+    private NormalStage stage;
     private DockNodeMoveEventHandler moveEventHandler;
 
     private HashMap<Window, Node> dragNodes = new HashMap<Window, Node>();
@@ -147,11 +148,11 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
         maximizedProperty.set(maximized);
     }
 
-    private Stage createStage(Point2D translation) {
+    private NormalStage createStage(Point2D translation) {
         Point2D floatScene = this.localToScene(0, 0);
         Point2D floatScreen = this.localToScreen(0, 0);
 
-        stage = new Stage();
+        stage = new NormalStage();
 
         if (dockPane != null && dockPane.getScene() != null
                 && dockPane.getScene().getWindow() != null) {
@@ -220,7 +221,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
             if(dockPane != null && dockPane.isLastDockNode(this))
                 return;
 
-            Stage stage = createStage(translation);
+            NormalStage stage = createStage(translation);
             this.floatingProperty.set(floating);
 
             this.applyCss();
@@ -255,7 +256,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
         return dockPane;
     }
 
-    public final Stage getStage() {
+    public final NormalStage getStage() {
         return stage;
     }
 
@@ -402,14 +403,17 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     }
 
     public void addTab(Controller<?> controller, Tab tab) {
+        if(controller == null)
+            throw new RuntimeException("Cannot add dock node without controller");
+
         tabPane.getTabs().add(tab);
         controllers.put(tab, controller);
     }
 
     public DockNode floatTab(Tab tab) {
-        Stage stage = createStage(null);
-        tabPane.getTabs().remove(tab);
+        NormalStage stage = createStage(null);
         DockNode newDockNode = new DockNode(getController(tab), tab);
+        tabPane.getTabs().remove(tab);
         newDockNode.floatingProperty.set(true);
 
         newDockNode.stage = stage;
@@ -428,7 +432,15 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
         for(Tab tab : dockNode.tabPane.getTabs()) {
             addTab(dockNode.getController(tab), tab);
         }
+
         dockNode.close();
+
+        // Блядский костыль для блядского JavaFX: вкладки рисуются поверх друг друга, если убрать этот ебанутый код
+        for(Tab tab : tabPane.getTabs()) {
+            tabPane.getSelectionModel().select(tab);
+        }
+
+        tabPane.getSelectionModel().select(0);
     }
 
     public void dock(DockPane dockPane, DockPos dockPos) {
@@ -606,7 +618,7 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
                 DockNode target = newDockNode == null ? DockNode.this : newDockNode;
 
-                Stage stage = target.getStage();
+                NormalStage stage = target.getStage();
                 Insets insetsDelta = target.getBorderPane() != null ? target.getBorderPane().getInsets() : new Insets(0.0);
                 stage.setX(event.getScreenX() - dragStart.getX() - insetsDelta.getLeft());
                 stage.setY(event.getScreenY() - dragStart.getY() - insetsDelta.getTop());

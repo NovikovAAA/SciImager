@@ -1,5 +1,6 @@
 package com.visualipcv;
 
+import com.sun.javafx.runtime.VersionInfo;
 import com.visualipcv.core.DataTypeLibrary;
 import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.core.ReflectedProcessorGenerator;
@@ -18,6 +19,8 @@ public class Starter {
     }
 
     public static void main(String[] args) throws IOException {
+        System.out.println("Java version: " + System.getProperty("java.version"));
+        System.out.println("JavaFX version: " + VersionInfo.getRuntimeVersion());
         Main.start(args);
     }
 }

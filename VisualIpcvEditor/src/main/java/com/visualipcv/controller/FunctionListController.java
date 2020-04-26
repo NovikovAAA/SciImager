@@ -7,7 +7,7 @@ import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.editor.Editor;
 import com.visualipcv.editor.EditorWindow;
-import com.visualipcv.events.RefreshEventListener;
+import com.visualipcv.core.events.RefreshEventListener;
 import com.visualipcv.view.RecursiveTreeItem;
 import com.visualipcv.view.FunctionRecord;
 import com.visualipcv.view.SearchListView;
@@ -16,8 +16,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TreeCell;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
@@ -25,7 +23,6 @@ import com.visualipcv.view.docking.DockPos;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 @EditorWindow(path = "View/Function list", name = "Function list", dockPos = DockPos.LEFT)
@@ -112,7 +109,7 @@ public class FunctionListController extends Controller<AnchorPane> {
         addButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                Editor.openWindow(new SciScriptEditor(), "Script");
+                Editor.openWindow(new SciScriptEditor());
             }
         });
     }

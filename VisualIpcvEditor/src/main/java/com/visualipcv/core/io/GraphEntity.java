@@ -9,10 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GraphEntity implements Serializable {
+    private String name;
     private List<NodeEntity> nodes;
     private List<ConnectionEntity> connections;
 
     public GraphEntity(Graph graph) {
+        name = graph.getName();
         nodes = new ArrayList<>();
         connections = new ArrayList<>();
 
@@ -36,6 +38,10 @@ public class GraphEntity implements Serializable {
         for(Connection connection : graph.getConnections()) {
             connections.add(new ConnectionEntity(connection));
         }
+    }
+
+    public String getName() {
+        return name;
     }
 
     public List<NodeEntity> getNodes() {

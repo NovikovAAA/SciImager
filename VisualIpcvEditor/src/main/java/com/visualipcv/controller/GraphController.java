@@ -2,6 +2,7 @@ package com.visualipcv.controller;
 
 import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
 import com.visualipcv.Console;
+import com.visualipcv.controller.binding.Binder;
 import com.visualipcv.controller.binding.BindingHelper;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
@@ -17,9 +18,11 @@ import com.visualipcv.core.io.GraphClipboard;
 import com.visualipcv.core.io.GraphEntity;
 import com.visualipcv.core.io.NodeEntity;
 import com.visualipcv.editor.Editor;
+import com.visualipcv.editor.EditorWindow;
 import com.visualipcv.view.CustomDataFormats;
 import com.visualipcv.view.FunctionListPopup;
 import com.visualipcv.view.GraphView;
+import com.visualipcv.view.docking.DockPos;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -55,6 +58,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
+@EditorWindow(path = "", name = "Graph", dockPos = DockPos.CENTER, prefWidth = 1280.0, prefHeight = 720.0)
 public class GraphController extends Controller<GraphView> {
     private MouseButton selectionButton = MouseButton.PRIMARY;
     private MouseButton dragButton = MouseButton.SECONDARY;
@@ -67,7 +71,7 @@ public class GraphController extends Controller<GraphView> {
     private ObservableList<NodeController> nodes = FXCollections.observableArrayList();
     private ObservableList<ConnectionController> connections = FXCollections.observableArrayList();
 
-    private UIProperty filePathProperty = new UIProperty();
+    private UIProperty nameProperty = new UIProperty();
     private UIProperty nodesProperty = new UIProperty();
     private UIProperty connectionsProperty = new UIProperty();
 
@@ -79,10 +83,16 @@ public class GraphController extends Controller<GraphView> {
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private Semaphore semaphore = new Semaphore(1);
 
-    public GraphController() {
+    public GraphController(Graph graph) {
         super(GraphView.class);
-        setContext(new Graph());
-        filePathProperty.setValue("New graph");
+        setContext(graph);
+
+        nameProperty.setBinder(new Binder() {
+            @Override
+            public Object update(Object context) {
+                return ((Graph)context).getName();
+            }
+        });
 
         nodes.addListener(new ListChangeListener<NodeController>() {
             @Override
@@ -136,12 +146,12 @@ public class GraphController extends Controller<GraphView> {
             }
         });
 
-        nodesProperty.setBinder((Object graph) -> {
-            return BindingHelper.bindList(nodesProperty, ((Graph) graph).getNodes(), (Node node) -> new NodeController(this));
+        nodesProperty.setBinder((Object g) -> {
+            return BindingHelper.bindList(nodesProperty, ((Graph) g).getNodes(), (Node node) -> new NodeController(this));
         });
 
-        connectionsProperty.setBinder((Object graph) -> {
-            return BindingHelper.bindList(connectionsProperty, ((Graph)graph).getConnections(), (Connection connection) -> new ConnectionController(this));
+        connectionsProperty.setBinder((Object g) -> {
+            return BindingHelper.bindList(connectionsProperty, ((Graph) g).getConnections(), (Connection connection) -> new ConnectionController(this));
         });
 
         initialize();
@@ -237,6 +247,8 @@ public class GraphController extends Controller<GraphView> {
 
         timer.setCycleCount(Animation.INDEFINITE);
         timer.play();
+
+        invalidate();
     }
 
     private void execute() {
@@ -579,54 +591,7 @@ public class GraphController extends Controller<GraphView> {
         node.setSelected(true);
     }
 
-    public void save() {
-        File file = new File((String)filePathProperty.getValue());
-
-        if(!file.exists()) {
-            saveAs();
-        } else {
-            try (ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(file))) {
-                stream.writeObject(new GraphEntity((Graph)getContext()));
-                filePathProperty.setValue(file.getAbsolutePath());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void load() {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Open");
-
-        File file = chooser.showOpenDialog(Editor.getPrimaryStage().getScene().getWindow());
-
-        if(file != null) {
-            try (ObjectInputStream stream = new ObjectInputStream(new FileInputStream(file))) {
-                setContext(new Graph((GraphEntity)stream.readObject()));
-                filePathProperty.setValue(file.getAbsolutePath());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void saveAs() {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Save");
-
-        File file = chooser.showSaveDialog(Editor.getPrimaryStage().getScene().getWindow());
-
-        if(file != null) {
-            try (ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(file))) {
-                stream.writeObject(new GraphEntity((Graph)getContext()));
-                filePathProperty.setValue(file.getAbsolutePath());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public UIProperty filePathProperty() {
-        return filePathProperty;
+    public UIProperty nameProperty() {
+        return nameProperty;
     }
 }

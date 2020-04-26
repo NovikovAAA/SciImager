@@ -5,7 +5,9 @@ import com.visualipcv.controller.binding.UIProperty;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.core.SciProcessor;
+import com.visualipcv.editor.EditorWindow;
 import com.visualipcv.scripts.SciScript;
+import com.visualipcv.view.docking.DockPos;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -19,6 +21,7 @@ import javafx.scene.layout.VBox;
 import java.util.ArrayList;
 import java.util.Optional;
 
+@EditorWindow(path = "Edit/New script", name = "Script", dockPos = DockPos.CENTER, prefWidth = 1280.0, prefHeight = 720.0)
 public class SciScriptEditor extends Controller<AnchorPane> {
     @FXML
     private TextArea codeField;

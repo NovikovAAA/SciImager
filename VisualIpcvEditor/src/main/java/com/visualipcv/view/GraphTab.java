@@ -2,16 +2,17 @@ package com.visualipcv.view;
 
 import com.visualipcv.controller.GraphController;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
+import com.visualipcv.core.Graph;
 import javafx.scene.control.Tab;
 
 public class GraphTab extends Tab {
     private GraphController graphController;
 
     public GraphTab(GraphController graphController) {
-        super((String)graphController.filePathProperty().getValue(), graphController.getView());
+        super(((Graph)graphController.getContext()).getName(), graphController.getView());
         this.graphController = graphController;
 
-        this.graphController.filePathProperty().addEventListener(new PropertyChangedEventListener() {
+        this.graphController.nameProperty().addEventListener(new PropertyChangedEventListener() {
             @Override
             public void onChanged(Object oldValue, Object newValue) {
                 String name = (String)newValue;

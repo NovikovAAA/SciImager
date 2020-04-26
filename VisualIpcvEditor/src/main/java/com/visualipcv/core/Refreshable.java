@@ -1,6 +1,6 @@
 package com.visualipcv.core;
 
-import com.visualipcv.events.RefreshEventListener;
+import com.visualipcv.core.events.RefreshEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
