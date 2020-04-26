@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "com_visualipcv_ProcessorLibrary.h"
+#include <VisualIPCV/ProcessorManager.hpp>
 
 extern "C"
 {
@@ -14,25 +15,29 @@ extern "C"
 		jmethodID arrayAdd = env->GetMethodID(arrayClass, "add", "(Ljava/lang/Object;)Z");
 		assert(arrayAdd != nullptr);
 
+        jobject res = env->NewObject(arrayClass, arrayConstructor);
+        
 		jclass processorUidClass = env->FindClass("com/visualipcv/core/ProcessorUID");
 		assert(processorUidClass != nullptr);
 
 		jmethodID processorConstructor = env->GetMethodID(processorUidClass, "<init>", "(Ljava/lang/String;Ljava/lang/String;)V");
 		assert(processorConstructor != nullptr);
-
-		jobject res = env->NewObject(arrayClass, arrayConstructor);
-
-		for (int i = 0; i < 100; i++)
-		{
-			std::wstring name = L"Processor " + std::to_wstring(i);
-			jstring nameStr = env->NewString((jchar*)name.c_str(), name.size());
-			std::wstring modul = L"Core";
-			jstring moduleStr = env->NewString((jchar*)modul.c_str(), modul.size());
-
-			jobject proc = env->NewObject(processorUidClass, processorConstructor, nameStr, moduleStr);
-			env->CallVoidMethod(res, arrayAdd, proc);
-		}
-
+        
+        std::map<std::string, std::map<std::string, Processor *>>& modules = ProcessorManager::getModules();
+        for (auto& moduleItem : modules) {
+            std::map<std::string, Processor *> processors = moduleItem.second;
+            for (auto& processorItem : processors) {
+                Processor *processor = processorItem.second;
+                std::string processorName = processor->name;
+                std::string moduleName = processor->module;
+                
+                jstring processorNameStr = env->NewStringUTF(processorName.c_str());
+                jstring moduleNameStr = env->NewStringUTF(moduleName.c_str());
+                
+                jobject proc = env->NewObject(processorUidClass, processorConstructor, processorNameStr, moduleNameStr);
+                env->CallVoidMethod(res, arrayAdd, proc);
+            }
+        }
 		return res;
 	}
 }

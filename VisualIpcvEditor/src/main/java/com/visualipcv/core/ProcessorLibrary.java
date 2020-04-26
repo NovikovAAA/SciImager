@@ -25,6 +25,11 @@ public class ProcessorLibrary extends Refreshable {
 
     public ProcessorLibrary() {
         loadProcessorsFromPackage("com.visualipcv.procs");
+        List<ProcessorUID> uids = getProcessorList();
+
+        for (ProcessorUID uid: uids) {
+            processors.add(new NativeProcessor(uid));
+        }
     }
 
     public void loadProcessorsFromPackage(String packageName) {

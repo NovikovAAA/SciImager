@@ -10,16 +10,16 @@
 
 #include <stdio.h>
 #include <string>
-#include "DataTypeJ.hpp"
+#include "BaseDataType.hpp"
 
 class ProcessorProperty {
 public:
     ProcessorProperty();
     ProcessorProperty(const ProcessorProperty & object);
-    ProcessorProperty(std::string name, DataTypeJ type);
+    ProcessorProperty(std::string name, BaseDataType type);
     
     std::string name;
-    DataTypeJ type;
+    BaseDataType type;
 };
 
 #endif /* ProcessorProperty_hpp */

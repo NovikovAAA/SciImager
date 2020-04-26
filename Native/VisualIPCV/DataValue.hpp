@@ -14,18 +14,32 @@
 
 class DataValue {
     std::vector<char> m_data;
+    std::function<void()> denit;
 public:
     template <class T>
     void read(T* data) {
         assert(sizeof(T) == m_data.size());
-        std::memcpy(data, &m_data[0], sizeof(T));
+        *data = *((T*)&m_data[0]);
     }
     
     template <class T>
     void write(T* data) {
+        if (denit != nullptr) {
+            denit();
+        }
+        
         m_data.resize(sizeof(T));
-        std::memcpy(&m_data[0], data, sizeof(T));
+        *((typename std::remove_cv<T>::type*)&m_data[0]) = *data;
+        denit = [this](){
+            ((T*)(&m_data[0]))->~T();
+        };
     }
+    
+    ~DataValue() {
+       if (denit != nullptr) {
+            denit();
+       }
+    };
 };
 
 #endif /* DataValue_hpp */
