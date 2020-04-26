@@ -1,7 +1,9 @@
 package com.visualipcv.controller;
 
 import com.visualipcv.editor.Editor;
+import com.visualipcv.editor.EditorWindow;
 import com.visualipcv.view.FreePane;
+import com.visualipcv.view.docking.DockPos;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -16,6 +18,7 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 
+@EditorWindow(path = "", name = "Image output", dockPos = DockPos.LEFT, prefWidth = 600.0, prefHeight = 400.0)
 public class ImageWindow extends Controller<AnchorPane> {
     @FXML
     private FreePane pane;

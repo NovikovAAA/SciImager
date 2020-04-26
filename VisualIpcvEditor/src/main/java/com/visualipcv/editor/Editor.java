@@ -7,15 +7,10 @@ import com.visualipcv.view.AppScene;
 import com.visualipcv.controller.ConsoleController;
 import com.visualipcv.controller.Controller;
 import com.visualipcv.controller.FunctionListController;
-import com.visualipcv.view.GraphTab;
-import com.visualipcv.controller.GraphController;
-import com.visualipcv.view.GraphView;
 import com.visualipcv.view.NormalStage;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.Control;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -30,11 +25,15 @@ import com.visualipcv.view.docking.DockNode;
 import com.visualipcv.view.docking.DockPane;
 import com.visualipcv.view.docking.DockPos;
 import javafx.stage.Stage;
-import javafx.stage.Window;
 import org.reflections.Reflections;
+import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -124,7 +123,7 @@ public class Editor {
     }
 
     private static void createAppMenu() {
-        Reflections reflections = new Reflections("com.visualipcv");
+        Reflections reflections = new Reflections("com.visualipcv", new SubTypesScanner(), new TypeAnnotationsScanner(), new MethodAnnotationsScanner());
         Set<Class<?>> classes = reflections.getTypesAnnotatedWith(EditorWindow.class);
 
         for(Class<?> clazz : classes) {
@@ -132,12 +131,35 @@ public class Editor {
             String path = clazz.getAnnotation(EditorWindow.class).path();
             DockPos dockPos = clazz.getAnnotation(EditorWindow.class).dockPos();
 
+            if(path.isEmpty())
+                continue;
+
             Editor.addMenuCommand(path, new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
                     try {
                         openDockedWindow((Controller<?>)clazz.newInstance());
                     } catch(Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, null);
+        }
+
+        Set<Method> commands = reflections.getMethodsAnnotatedWith(EditorCommand.class);
+
+        for(Method method : commands) {
+            String path = method.getAnnotation(EditorCommand.class).path();
+
+            if(!Modifier.isStatic(method.getModifiers()))
+                Console.write("Failed adding editor command '" + path + "': method is not static");
+
+            Editor.addMenuCommand(path, new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    try {
+                        method.invoke(null);
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -202,13 +224,13 @@ public class Editor {
         root.getChildren().add(dockPane);
 
         FunctionListController functionListController = new FunctionListController();
-        DockNode functionListPanel = new DockNode(functionListController, new Tab("Function list", functionListController.getView()));
+        DockNode functionListPanel = new DockNode(functionListController);
 
         DocumentManagerController documentManagerController = new DocumentManagerController();
-        DockNode documentManagerPanel = new DockNode(documentManagerController, new Tab("Document manager", documentManagerController.getView()));
+        DockNode documentManagerPanel = new DockNode(documentManagerController);
 
         ConsoleController consoleController = new ConsoleController();
-        DockNode consolePanel = new DockNode(consoleController, new Tab("Console", consoleController.getView()));
+        DockNode consolePanel = new DockNode(consoleController);
 
         functionListPanel.dock(dockPane, DockPos.LEFT);
         documentManagerPanel.dock(dockPane, DockPos.BOTTOM);
@@ -234,23 +256,15 @@ public class Editor {
     }
 
     public static void openFloatingWindow(Controller<?> controller) {
-        openFloatingWindow(controller, new Tab(getWindowName(controller), controller.getView()));
-    }
-
-    public static void openFloatingWindow(Controller<?> controller, Tab tab) {
         if(activateIfExists(controller.getClass(), controller.getContext()))
             return;
 
-        DockNode dockNode = new DockNode(controller, tab);
+        DockNode dockNode = new DockNode(controller);
         dockNode.setFloating(true);
         dockNode.setMaximized(true);
     }
 
     public static void openDockedWindow(Controller<?> controller) {
-        openDockedWindow(controller, new Tab(getWindowName(controller), controller.getView()));
-    }
-
-    public static void openDockedWindow(Controller<?> controller, Tab tab) {
         if(activateIfExists(controller.getClass(), controller.getContext()))
             return;
 
@@ -261,26 +275,23 @@ public class Editor {
 
         DockPos dockPos = anno.dockPos();
 
-        DockNode node = new DockNode(controller, tab);
+        DockNode node = new DockNode(controller);
         node.dock(getPrimaryPane(), dockPos);
     }
 
     public static void openWindow(Controller<?> controller) {
-        openWindow(controller, new Tab(getWindowName(controller), controller.getView()));
-    }
-
-    public static void openWindow(Controller<?> controller, Tab tab) {
         if(activateIfExists(controller.getClass(), controller.getContext()))
             return;
 
         DockNode node = findDockNodeWithController(controller.getClass());
 
         if(node != null) {
-            node.addTab(controller, tab);
+            node.addTab(controller);
+            activateIfExists(controller.getClass(), controller.getContext());
             return;
         }
 
-        openFloatingWindow(controller, tab);
+        openFloatingWindow(controller);
     }
 
     private static Set<Node> getAllDockNodes() {
@@ -332,24 +343,38 @@ public class Editor {
         return anno.name();
     }
 
-    private static boolean activateIfExists(Class<?> controllerClass, Object context) {
+    public static boolean activateIfExists(Class<?> controllerClass, Object context) {
         Set<Node> nodes = getAllDockNodes();
 
         for(Node node : nodes) {
             DockNode dockNode = (DockNode)node;
 
-            int index = 0;
-
             for(Tab tab : dockNode.getTabPane().getTabs()) {
                 if(dockNode.getController(tab).getClass() == controllerClass &&
                     dockNode.getController(tab).getContext() == context) {
-                    dockNode.getTabPane().getSelectionModel().clearAndSelect(index);
+                    dockNode.getTabPane().getSelectionModel().select(tab);
+                    dockNode.getTabPane().requestFocus();
                     return true;
                 }
-                index++;
             }
         }
 
         return false;
+    }
+
+    public static void closeWindow(Class<?> controllerClass, Object context) {
+        Set<Node> nodes = getAllDockNodes();
+
+        for(Node node : nodes) {
+            DockNode dockNode = (DockNode)node;
+
+            List<Tab> tabs = new ArrayList<>(dockNode.getTabPane().getTabs());
+
+            for(Tab tab : tabs) {
+                if((dockNode.getController(tab).getClass() == controllerClass || controllerClass == null) && dockNode.getController(tab).getContext() == context) {
+                    dockNode.closeTab(tab);
+                }
+            }
+        }
     }
 }

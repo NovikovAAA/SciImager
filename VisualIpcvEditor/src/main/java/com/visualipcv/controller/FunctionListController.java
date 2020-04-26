@@ -29,8 +29,6 @@ import java.util.List;
 public class FunctionListController extends Controller<AnchorPane> {
     @FXML
     private SearchListView<FunctionRecord> treeView;
-    @FXML
-    private Button addButton;
 
     private GraphController graph;
     private double x;
@@ -105,13 +103,6 @@ public class FunctionListController extends Controller<AnchorPane> {
                 invalidate();
             }
         });
-
-        addButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Editor.openWindow(new SciScriptEditor());
-            }
-        });
     }
 
     @Override
@@ -129,10 +120,5 @@ public class FunctionListController extends Controller<AnchorPane> {
         }
 
         treeView.setRoot(new RecursiveTreeItem<FunctionRecord>(new FunctionRecord(categories), FunctionRecord::getSubFunctions));
-    }
-
-    public void disableAddButton() {
-        addButton.setManaged(false);
-        addButton.setVisible(false);
     }
 }

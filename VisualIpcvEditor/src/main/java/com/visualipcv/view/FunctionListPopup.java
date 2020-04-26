@@ -43,7 +43,6 @@ public class FunctionListPopup extends NormalStage {
         AnchorPane.setLeftAnchor(functionListController.getView(), 0.0);
         AnchorPane.setRightAnchor(functionListController.getView(), 0.0);
 
-        functionListController.disableAddButton();
         setScene(new Scene(root));
         getScene().setFill(Color.TRANSPARENT);
         initStyle(StageStyle.TRANSPARENT);

@@ -1,52 +1,71 @@
 package com.visualipcv.core;
 
 import com.visualipcv.core.io.DocumentEntity;
-import com.visualipcv.core.io.GraphEntity;
-import com.visualipcv.core.io.SciScriptEntity;
 import com.visualipcv.scripts.SciScript;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Document {
-    private List<Graph> graphList = new ArrayList<>();
-    private List<SciScript> scriptList = new ArrayList<>();
+public class Document implements IDocumentPart {
+    private List<IDocumentPart> parts = new ArrayList<>();
+    private File file;
+    private String name = "New document*";
 
     public Document() {
 
     }
 
     public Document(DocumentEntity entity) {
-        for(GraphEntity graph : entity.getGraphList()) {
-            graphList.add(new Graph(graph));
-        }
-
-        for(SciScriptEntity script : entity.getScriptList()) {
-            scriptList.add(new SciScript(script));
+        for(Object part : entity.getEntities()) {
+            try {
+                Class<?> clazz = Class.forName(entity.getClassName(part));
+                parts.add((IDocumentPart)clazz.getConstructor(part.getClass()).newInstance(part));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
     public Graph addGraph() {
         Graph graph = new Graph();
-        graphList.add(graph);
-        graph.setName("New graph " + graphList.size());
+        parts.add(graph);
+        graph.setName("New graph " + parts.size());
         DocumentManager.getInstance().refresh();
         return graph;
     }
 
     public SciScript addScript() {
         SciScript script = new SciScript();
-        scriptList.add(script);
-        script.setName("New script " + scriptList.size());
+        parts.add(script);
+        script.setName("New script " + parts.size());
         DocumentManager.getInstance().refresh();
         return script;
     }
 
-    public List<Graph> getGraphList() {
-        return graphList;
+    public List<IDocumentPart> getParts() {
+        return parts;
     }
 
-    public List<SciScript> getScriptList() {
-        return scriptList;
+    public void setFile(File file) {
+        this.file = file;
+    }
+
+    public File getFile() {
+        return file;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return file == null ? name : file.getName();
+    }
+
+    @Override
+    public Object getSerializableProxy() {
+        return new DocumentEntity(this);
     }
 }

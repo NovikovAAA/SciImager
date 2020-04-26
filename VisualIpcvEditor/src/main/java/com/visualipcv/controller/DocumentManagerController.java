@@ -7,11 +7,11 @@ import com.visualipcv.controller.scriptconstruction.SciScriptEditor;
 import com.visualipcv.core.Document;
 import com.visualipcv.core.DocumentManager;
 import com.visualipcv.core.Graph;
+import com.visualipcv.core.IDocumentPart;
 import com.visualipcv.core.events.RefreshEventListener;
 import com.visualipcv.editor.Editor;
 import com.visualipcv.editor.EditorWindow;
 import com.visualipcv.scripts.SciScript;
-import com.visualipcv.view.GraphTab;
 import com.visualipcv.view.docking.DockPos;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -26,6 +26,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,19 +36,9 @@ public class DocumentManagerController extends Controller<AnchorPane> {
         private String name;
         private Object object;
 
-        public DocumentElement(Graph graph) {
-            this.name = graph.getName();
-            this.object = graph;
-        }
-
-        public DocumentElement(SciScript script) {
-            this.name = script.getName();
-            this.object = script;
-        }
-
-        public DocumentElement(Document document) {
-            this.name = DocumentManager.getDocumentName(document);
-            this.object = document;
+        public DocumentElement(IDocumentPart part) {
+            this.name = part.getName();
+            this.object = part;
         }
 
         public String getName() {
@@ -105,7 +96,7 @@ public class DocumentManagerController extends Controller<AnchorPane> {
                         public void handle(MouseEvent event) {
                             if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
                                 GraphController controller = new GraphController(document.getGraph());
-                                Editor.openWindow(controller, new GraphTab(controller));
+                                Editor.openWindow(controller);
                                 event.consume();
                             }
                         }
@@ -115,8 +106,9 @@ public class DocumentManagerController extends Controller<AnchorPane> {
                         @Override
                         public void handle(MouseEvent event) {
                             if(event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-                                SciScriptEditor editor = new SciScriptEditor();
-
+                                SciScriptEditor editor = new SciScriptEditor(document.getScript());
+                                Editor.openWindow(editor);
+                                event.consume();
                             }
                         }
                     });
@@ -189,7 +181,7 @@ public class DocumentManagerController extends Controller<AnchorPane> {
         documentsProperty.addEventListener(new PropertyChangedEventListener() {
             @Override
             public void onChanged(Object oldValue, Object newValue) {
-                rebuildTree((Set<Document>)newValue);
+                rebuildTree((Set<Document>)oldValue, (Set<Document>)newValue);
             }
         });
 
@@ -211,21 +203,27 @@ public class DocumentManagerController extends Controller<AnchorPane> {
         invalidate();
     }
 
-    private void rebuildTree(Set<Document> documents) {
+    private void rebuildTree(Set<Document> oldList, Set<Document> documents) {
         TreeItem<DocumentElement> root = new TreeItem<>();
+
+        if(oldList != null) {
+            for(Document document : oldList) {
+                if(!documents.contains(document)) {
+                    for(IDocumentPart part : document.getParts()) {
+                        Editor.closeWindow(null, part);
+                    }
+                }
+            }
+        }
 
         for(Document document : documents) {
             TreeItem<DocumentElement> documentItem = new TreeItem<>(new DocumentElement(document));
             root.getChildren().add(documentItem);
+            documentItem.setExpanded(true);
 
-            for(Graph graph : document.getGraphList()) {
-                TreeItem<DocumentElement> graphItem = new TreeItem<>(new DocumentElement(graph));
-                documentItem.getChildren().add(graphItem);
-            }
-
-            for(SciScript script : document.getScriptList()) {
-                TreeItem<DocumentElement> graphItem = new TreeItem<>(new DocumentElement(script));
-                documentItem.getChildren().add(graphItem);
+            for(IDocumentPart part : document.getParts()) {
+                TreeItem<DocumentElement> item = new TreeItem<>(new DocumentElement(part));
+                documentItem.getChildren().add(item);
             }
         }
 

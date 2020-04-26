@@ -7,6 +7,8 @@ import com.visualipcv.controller.binding.BindingHelper;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
 import com.visualipcv.core.Connection;
+import com.visualipcv.core.Document;
+import com.visualipcv.core.DocumentManager;
 import com.visualipcv.core.Graph;
 import com.visualipcv.core.GraphExecutionException;
 import com.visualipcv.core.Node;
@@ -18,6 +20,7 @@ import com.visualipcv.core.io.GraphClipboard;
 import com.visualipcv.core.io.GraphEntity;
 import com.visualipcv.core.io.NodeEntity;
 import com.visualipcv.editor.Editor;
+import com.visualipcv.editor.EditorCommand;
 import com.visualipcv.editor.EditorWindow;
 import com.visualipcv.view.CustomDataFormats;
 import com.visualipcv.view.FunctionListPopup;
@@ -59,7 +62,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 @EditorWindow(path = "", name = "Graph", dockPos = DockPos.CENTER, prefWidth = 1280.0, prefHeight = 720.0)
-public class GraphController extends Controller<GraphView> {
+public class GraphController extends Controller<GraphView> implements INameable {
     private MouseButton selectionButton = MouseButton.PRIMARY;
     private MouseButton dragButton = MouseButton.SECONDARY;
 
@@ -82,6 +85,17 @@ public class GraphController extends Controller<GraphView> {
 
     private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private Semaphore semaphore = new Semaphore(1);
+
+    @EditorCommand(path = "Editor/New graph")
+    public static void createNewGraphCommand() {
+        Document doc = DocumentManager.getActiveDocument();
+
+        if(doc == null)
+            doc = DocumentManager.createDocument();
+
+        Graph graph = doc.addGraph();
+        Editor.openWindow(new GraphController(graph));
+    }
 
     public GraphController(Graph graph) {
         super(GraphView.class);
@@ -461,6 +475,8 @@ public class GraphController extends Controller<GraphView> {
         for(NodeController node : getSelectedNodes()) {
             removeNode(node);
         }
+
+        clearSelection();
     }
 
     public void clearSelection() {
@@ -591,6 +607,7 @@ public class GraphController extends Controller<GraphView> {
         node.setSelected(true);
     }
 
+    @Override
     public UIProperty nameProperty() {
         return nameProperty;
     }

@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class Graph {
+public class Graph implements IDocumentPart {
     private String name;
     private ArrayList<Node> nodes = new ArrayList<>();
     private Set<Connection> connections = new HashSet<>();
@@ -52,6 +52,7 @@ public class Graph {
         this.name = name;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -219,5 +220,10 @@ public class Graph {
             }
         }
         return null;
+    }
+
+    @Override
+    public Object getSerializableProxy() {
+        return new GraphEntity(this);
     }
 }

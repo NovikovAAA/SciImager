@@ -10,11 +10,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class DocumentManager extends Refreshable {
-    private static HashMap<Document, File> openedDocuments = new HashMap<>();
+    private static Set<Document> openedDocuments = new HashSet<>();
 
     private static DocumentManager instance;
 
@@ -42,10 +44,11 @@ public class DocumentManager extends Refreshable {
     }
 
     public static void loadDocument(File file) {
+        closeDocument(getActiveDocument());
         try (ObjectInputStream stream = new ObjectInputStream(new FileInputStream(file))) {
             DocumentEntity entity = (DocumentEntity)stream.readObject();
             Document document = new Document(entity);
-            openedDocuments.put(document, file);
+            openedDocuments.add(document);
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -62,7 +65,8 @@ public class DocumentManager extends Refreshable {
             try (ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(file))) {
                 DocumentEntity entity = new DocumentEntity(document);
                 stream.writeObject(entity);
-                openedDocuments.put(document, file);
+                document.setFile(file);
+                openedDocuments.add(document);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -72,7 +76,7 @@ public class DocumentManager extends Refreshable {
     }
 
     public static void saveDocument(Document document) {
-        File file = openedDocuments.get(document);
+        File file = document.getFile();
 
         if(file == null) {
             saveDocumentAs(document);
@@ -97,31 +101,28 @@ public class DocumentManager extends Refreshable {
         getInstance().refresh();
     }
 
-    public static void createDocument() {
+    public static Document createDocument() {
+        closeDocument(getActiveDocument());
         Document document = new Document();
-        openedDocuments.put(document, null);
+        document.setName("New document " + (openedDocuments.size() + 1) + "*");
+        openedDocuments.add(document);
         getInstance().refresh();
-    }
-
-    public static String getDocumentName(Document document) {
-        File file = getFile(document);
-
-        if(file != null)
-            return file.getName();
-
-        return "New document*";
+        return document;
     }
 
     public static void closeDocument(Document document) {
+        if(document == null)
+            return;
+
         openedDocuments.remove(document);
         getInstance().refresh();
     }
 
     public static Set<Document> getDocuments() {
-        return openedDocuments.keySet();
+        return openedDocuments;
     }
 
-    public static File getFile(Document document) {
-        return openedDocuments.get(document);
+    public static Document getActiveDocument() {
+        return getDocuments().stream().findAny().orElse(null);
     }
 }

@@ -2,31 +2,33 @@ package com.visualipcv.core.io;
 
 import com.visualipcv.core.Document;
 import com.visualipcv.core.Graph;
+import com.visualipcv.core.IDocumentPart;
 import com.visualipcv.scripts.SciScript;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DocumentEntity implements Serializable {
-    List<GraphEntity> graphList = new ArrayList<>();
-    List<SciScriptEntity> scriptList = new ArrayList<>();
+    private List<Object> entities = new ArrayList<>();
+    private List<String> classes = new ArrayList<>();
 
     public DocumentEntity(Document document) {
-        for(Graph graph : document.getGraphList()) {
-            graphList.add(new GraphEntity(graph));
-        }
-
-        for(SciScript sciScript : document.getScriptList()) {
-            scriptList.add(new SciScriptEntity(sciScript));
+        for(IDocumentPart part : document.getParts()) {
+            Object entity = part.getSerializableProxy();
+            entities.add(entity);
+            classes.add(part.getClass().getTypeName());
         }
     }
 
-    public List<GraphEntity> getGraphList() {
-        return graphList;
+    public List<Object> getEntities() {
+        return entities;
     }
 
-    public List<SciScriptEntity> getScriptList() {
-        return scriptList;
+    public String getClassName(Object entity) {
+        int index = entities.indexOf(entity);
+        return classes.get(index);
     }
 }

@@ -250,6 +250,18 @@ public class NodeController extends Controller<AnchorPane> {
                 return "Cut";
             }
         });
+
+        node.addCommand(new NodeCommand() {
+            @Override
+            public void execute(Node node) {
+                getGraphController().removeSelected();
+            }
+
+            @Override
+            public String getName() {
+                return "Delete";
+            }
+        });
     }
 
     private ContextMenu createContextMenu() {

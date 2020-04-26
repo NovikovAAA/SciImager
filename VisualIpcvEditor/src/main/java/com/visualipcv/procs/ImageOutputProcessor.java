@@ -46,13 +46,13 @@ public class ImageOutputProcessor extends Processor {
         if(stage.isDocked() || stage.isFloating())
             return;
 
-        stage.addTab(window, new Tab("Output", window.getView()));
+        stage.addTab(window);
         stage.dock(Editor.getPrimaryPane(), DockPos.RIGHT);
     }
 
     private DockNode createWindow(DataBundle state) {
         ImageWindow window = new ImageWindow();
-        DockNode demoStage = new DockNode(window, new Tab("Output", window.getView()));
+        DockNode demoStage = new DockNode(window);
         demoStage.setPrefWidth(500.0);
         demoStage.setPrefHeight(500.0);
         demoStage.setLayoutX(10.0);

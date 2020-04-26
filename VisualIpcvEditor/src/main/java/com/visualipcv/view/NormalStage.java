@@ -20,6 +20,12 @@ public class NormalStage extends Stage {
         });
     }
 
+    @Override
+    public void close() {
+        super.close();
+        stages.remove(this);
+    }
+
     public static List<Stage> getStages() {
         return stages;
     }
