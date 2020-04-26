@@ -12,7 +12,11 @@ import java.io.IOException;
 public class Starter {
     static {
         LinkUtils.linkNativeLibraries();
-        SciRunner.load();
+
+        if(System.getProperty("os.name").contains("win")) {
+            SciRunner.load();
+        }
+
         DataTypeLibrary.init();
         ProcessorLibrary.getInstance();
         ReflectedProcessorGenerator.loadReflected();

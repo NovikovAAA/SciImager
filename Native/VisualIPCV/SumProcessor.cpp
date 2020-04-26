@@ -11,8 +11,8 @@
 bool sumLoadResult = ProcessorManager::registerProcessor(new SumProcessor());
 
 SumProcessor::SumProcessor() : Processor("SumC++", "Core", "TEST_C++",
-{ProcessorProperty("a", BaseDataType(NUMBER, {0, 0, 0, 0})), ProcessorProperty("b", BaseDataType(NUMBER, {0, 0, 0, 0}))},
-{ProcessorProperty("result", BaseDataType(NUMBER, {0, 0, 0, 0}))}) {}
+{ProcessorProperty("a", BaseDataType(BaseDataTypeClassifier::DOUBLE, {0, 0, 0, 0})), ProcessorProperty("b", BaseDataType(BaseDataTypeClassifier::DOUBLE, {0, 0, 0, 0}))},
+{ProcessorProperty("result", BaseDataType(BaseDataTypeClassifier::DOUBLE, {0, 0, 0, 0}))}) {}
 
 DataBundle SumProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     double a = dataMap.read<double>("a");

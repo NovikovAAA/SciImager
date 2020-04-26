@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <string>
 #include <array>
+#include <array>
 #include "BaseDataTypeClassifier.hpp"
 #include "DllExport.h"
 

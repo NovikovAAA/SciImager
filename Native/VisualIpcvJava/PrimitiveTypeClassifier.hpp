@@ -10,6 +10,7 @@
 
 enum PrimitiveTypeСlassifier {
     JNI_DOUBLE,
+    JNI_INTEGER,
     JNI_STRING,
     JNI_IMAGE,
     UNKNOWN

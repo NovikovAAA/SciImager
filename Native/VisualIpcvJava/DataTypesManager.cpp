@@ -85,11 +85,13 @@ jmethodID DataTypesManager::dataTypeGetValueMethodForClassifier(JNIEnv* env, jcl
 
 PrimitiveTypeСlassifier DataTypesManager::primitiveTypeClassifier(BaseDataTypeClassifier dataTypeClassifier) {
     switch (dataTypeClassifier) {
-        case NUMBER:
+        case BaseDataTypeClassifier::DOUBLE:
             return JNI_DOUBLE;
-        case STRING:
+        case BaseDataTypeClassifier::INTEGER:
+            return JNI_INTEGER;
+        case BaseDataTypeClassifier::STRING:
             return JNI_STRING;
-        case IMAGE:
+        case BaseDataTypeClassifier::IMAGE:
             return JNI_IMAGE;
         default:
             return UNKNOWN;
