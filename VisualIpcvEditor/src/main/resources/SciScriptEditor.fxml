@@ -13,7 +13,6 @@
             <padding>
                 <Insets topRightBottomLeft="3.0"/>
             </padding>
-            <Button fx:id="saveButton" text="Save"/>
         </FlowPane>
         <SplitPane VBox.vgrow="ALWAYS" dividerPositions="0.2">
             <VBox fx:id="properties"/>

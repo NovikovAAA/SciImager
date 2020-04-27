@@ -7,7 +7,7 @@ import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorCommand;
 import com.visualipcv.core.ProcessorProperty;
 import com.visualipcv.editor.Editor;
-import com.visualipcv.view.ImageWindow;
+import com.visualipcv.controller.ImageWindow;
 import javafx.scene.control.Tab;
 import javafx.scene.image.Image;
 import com.visualipcv.view.docking.DockNode;
@@ -17,7 +17,6 @@ import org.opencv.core.MatOfByte;
 import org.opencv.imgcodecs.Imgcodecs;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
 
 public class ImageOutputProcessor extends Processor {
     public ImageOutputProcessor() {
@@ -47,13 +46,13 @@ public class ImageOutputProcessor extends Processor {
         if(stage.isDocked() || stage.isFloating())
             return;
 
-        stage.addTab(window, new Tab("Output", window.getView()));
+        stage.addTab(window);
         stage.dock(Editor.getPrimaryPane(), DockPos.RIGHT);
     }
 
     private DockNode createWindow(DataBundle state) {
         ImageWindow window = new ImageWindow();
-        DockNode demoStage = new DockNode(window, new Tab("Output", window.getView()));
+        DockNode demoStage = new DockNode(window);
         demoStage.setPrefWidth(500.0);
         demoStage.setPrefHeight(500.0);
         demoStage.setLayoutX(10.0);

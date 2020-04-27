@@ -39,26 +39,7 @@ public class VectorNFieldController extends Controller<Pane> {
             textFields[i].setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
-                    Double[] values = new Double[n];
-
-                    for(int i = 0; i < n; i++) {
-                        try {
-                            values[i] = Double.parseDouble(textFields[i].getText());
-                            textFields[i].setBorder(null);
-                        } catch (Exception e) {
-                            textFields[i].setBorder(BorderUtils.createErrorBorder());
-                        }
-                    }
-
-                    try {
-                        ((InputNodeSlot)getContext()).setValue(values);
-                        for(TextField field : textFields)
-                            field.setBorder(null);
-                        poll(valueProperty);
-                    } catch (ValidationException e) {
-                        for(TextField field : textFields)
-                            field.setBorder(BorderUtils.createErrorBorder());
-                    }
+                    parseValues();
                 }
             });
 
@@ -66,26 +47,7 @@ public class VectorNFieldController extends Controller<Pane> {
                 @Override
                 public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                     if(!newValue) {
-                        Double[] values = new Double[n];
-
-                        for(int i = 0; i < n; i++) {
-                            try {
-                                values[i] = Double.parseDouble(textFields[i].getText());
-                                textFields[i].setBorder(null);
-                            } catch (Exception e) {
-                                textFields[i].setBorder(BorderUtils.createErrorBorder());
-                            }
-                        }
-
-                        try {
-                            ((InputNodeSlot)getContext()).setValue(values);
-                            for(TextField field : textFields)
-                                field.setBorder(null);
-                            poll(valueProperty);
-                        } catch (ValidationException e) {
-                            for(TextField field : textFields)
-                                field.setBorder(BorderUtils.createErrorBorder());
-                        }
+                        parseValues();
                     }
                 }
             });
@@ -116,5 +78,36 @@ public class VectorNFieldController extends Controller<Pane> {
         });
 
         initialize();
+    }
+
+    private void parseValues() {
+        int n = textFields.length;
+
+        Double[] values = new Double[n];
+
+        boolean parsed = true;
+
+        for(int i = 0; i < n; i++) {
+            try {
+                values[i] = Double.parseDouble(textFields[i].getText());
+                textFields[i].setBorder(null);
+            } catch (Exception e) {
+                textFields[i].setBorder(BorderUtils.createErrorBorder());
+                parsed = false;
+            }
+        }
+
+        if(!parsed)
+            return;
+
+        try {
+            ((InputNodeSlot)getContext()).setValue(values);
+            for(TextField field : textFields)
+                field.setBorder(null);
+            poll(valueProperty);
+        } catch (ValidationException e) {
+            for(TextField field : textFields)
+                field.setBorder(BorderUtils.createErrorBorder());
+        }
     }
 }

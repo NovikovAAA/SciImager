@@ -14,7 +14,7 @@ public class DefaultInputFieldFactory extends InputFieldFactory {
             return new EnumFieldController(type);
         }
 
-        if(type == DataType.NUMBER) {
+        if(type == DataType.DOUBLE) {
             return new NumberFieldController();
         } else if(type == DataType.STRING) {
             return new StringFieldController();

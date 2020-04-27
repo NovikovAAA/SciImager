@@ -11,8 +11,8 @@
 bool stringConcatLoadResult = ProcessorManager::registerProcessor(new StringConcatProcessor());
 
 StringConcatProcessor::StringConcatProcessor() : Processor("StringConcat", "Core", "TEST_C++",
-{ProcessorProperty("firstString", BaseDataType(STRING, {0, 0, 0, 0})), ProcessorProperty("secondString", BaseDataType(STRING, {0, 0, 0, 0}))},
-{ProcessorProperty("result", BaseDataType(STRING, {0, 0, 0, 0}))}) {}
+{ProcessorProperty("firstString", BaseDataType(BaseDataTypeClassifier::STRING, {0, 0, 0, 0})), ProcessorProperty("secondString", BaseDataType(BaseDataTypeClassifier::STRING, {0, 0, 0, 0}))},
+{ProcessorProperty("result", BaseDataType(BaseDataTypeClassifier::STRING, {0, 0, 0, 0}))}) {}
 
 DataBundle StringConcatProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     std::string firstString = dataMap.read<std::string>("firstString");

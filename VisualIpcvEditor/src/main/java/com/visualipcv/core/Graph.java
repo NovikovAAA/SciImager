@@ -25,7 +25,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-public class Graph {
+public class Graph implements IDocumentPart {
+    private String name;
     private ArrayList<Node> nodes = new ArrayList<>();
     private Set<Connection> connections = new HashSet<>();
     private Map<NodeSlot, List<Connection>> slotConnectionAssoc = new HashMap<>();
@@ -36,6 +37,8 @@ public class Graph {
     }
 
     public Graph(GraphEntity graphEntity) {
+        name = graphEntity.getName();
+
         for(NodeEntity node : graphEntity.getNodes()) {
             addNode(new Node(this, node));
         }
@@ -45,13 +48,22 @@ public class Graph {
         }
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
     public void addNode(Node node) {
         nodes.add(node);
 
         try {
             node.onCreate();
         } catch (GraphExecutionException e) {
-            Console.output(e.getMessage());
+            Console.write(e.getMessage());
         }
     }
 
@@ -62,7 +74,7 @@ public class Graph {
             try {
                 node.onCreate();
             } catch (GraphExecutionException e) {
-                Console.output(e.getMessage());
+                Console.write(e.getMessage());
             }
         }
     }
@@ -88,7 +100,7 @@ public class Graph {
         try {
             node.onDestroy();
         } catch (GraphExecutionException e) {
-            Console.output(e.getMessage());
+            Console.write(e.getMessage());
         }
     }
 
@@ -208,5 +220,10 @@ public class Graph {
             }
         }
         return null;
+    }
+
+    @Override
+    public Object getSerializableProxy() {
+        return new GraphEntity(this);
     }
 }

@@ -57,7 +57,7 @@ public class PropertyStackController extends Controller<AnchorPane> {
             @Override
             public void handle(ActionEvent event) {
                 List<ProcessorProperty> processorProperties = (List<ProcessorProperty>)getContext();
-                processorProperties.add(new ProcessorProperty("New Property", DataType.NUMBER));
+                processorProperties.add(new ProcessorProperty("New Property", DataType.DOUBLE));
                 poll(properties);
             }
         });

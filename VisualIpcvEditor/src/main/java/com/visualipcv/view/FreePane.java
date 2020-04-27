@@ -6,6 +6,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.css.CssMetaData;
 import javafx.css.SimpleStyleableDoubleProperty;
+import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
@@ -15,6 +16,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+
+import java.awt.event.MouseWheelEvent;
 
 public class FreePane extends AnchorPane {
     private Pane internalPane;
@@ -61,9 +64,16 @@ public class FreePane extends AnchorPane {
             }
         });
 
-        setOnMousePressed(this::onMousePressed);
-        setOnMouseDragged(this::onMouseDragged);
-        setOnScroll(this::onScroll);
+        addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                previousMouseX = event.getScreenX();
+                previousMouseY = event.getScreenY();
+            }
+        });
+
+        addEventHandler(MouseEvent.MOUSE_DRAGGED, this::onMouseDragged);
+        addEventHandler(ScrollEvent.SCROLL, this::onScroll);
 
         getChildren().add(internalPane);
     }
@@ -114,12 +124,6 @@ public class FreePane extends AnchorPane {
 
     public void setZoom(double zoom) {
         this.zoom.set(zoom);
-    }
-
-    public void onMousePressed(MouseEvent event) {
-        previousMouseX = event.getScreenX();
-        previousMouseY = event.getScreenY();
-        event.consume();
     }
 
     public void onMouseDragged(MouseEvent event) {

@@ -8,7 +8,7 @@
 #include "BaseDataType.hpp"
 
 BaseDataType::BaseDataType() {
-    typeClassifier = ANY;
+    typeClassifier = BaseDataTypeClassifier::ANY;
     name = "";
     color = {0, 0, 0, 0};
 }
@@ -57,21 +57,23 @@ std::array<double, COLOR_ARRAY_SIZE> BaseDataType::getColor() {
 
 std::string BaseDataType::typeNameForClassifier(BaseDataTypeClassifier typeClassifier) {
     switch (typeClassifier) {
-        case NUMBER:
-            return "Number";
-        case VECTOR2:
+        case BaseDataTypeClassifier::DOUBLE:
+            return "Double";
+        case BaseDataTypeClassifier::INTEGER:
+            return "Integer";
+        case BaseDataTypeClassifier::VECTOR2:
             return "Vector2";
-        case VECTOR3:
+        case BaseDataTypeClassifier::VECTOR3:
             return "Vector3";
-        case VECTOR4:
+        case BaseDataTypeClassifier::VECTOR4:
             return "Vector4";
-        case IMAGE:
+        case BaseDataTypeClassifier::IMAGE:
             return "Image";
-        case BYTES:
+        case BaseDataTypeClassifier::BYTES:
             return "Bytes";
-        case STRING:
+        case BaseDataTypeClassifier::STRING:
             return "String";
         default:
-            return "Any";;
+            return "Any";
     }
 }

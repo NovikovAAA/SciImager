@@ -250,6 +250,18 @@ public class NodeController extends Controller<AnchorPane> {
                 return "Cut";
             }
         });
+
+        node.addCommand(new NodeCommand() {
+            @Override
+            public void execute(Node node) {
+                getGraphController().removeSelected();
+            }
+
+            @Override
+            public String getName() {
+                return "Delete";
+            }
+        });
     }
 
     private ContextMenu createContextMenu() {
@@ -314,16 +326,17 @@ public class NodeController extends Controller<AnchorPane> {
     public void onMousePressed(MouseEvent event) {
         previousMouseX = event.getScreenX();
         previousMouseY = event.getScreenY();
+
         graphController.select(this, event.isControlDown());
         event.consume();
     }
 
     @FXML
     public void onMouseReleased(MouseEvent event) {
-        if(event.getButton() == MouseButton.SECONDARY)
+        if(event.getButton() == MouseButton.SECONDARY) {
             contextMenu.show(getView(), event.getScreenX(), event.getScreenY());
-
-        event.consume();
+            event.consume();
+        }
     }
 
     @FXML
@@ -343,6 +356,7 @@ public class NodeController extends Controller<AnchorPane> {
     public void onKeyPressed(KeyEvent event) {
         if(event.getCode() == KeyCode.DELETE) {
             getGraphController().removeSelected();
+            event.consume();
         }
     }
 

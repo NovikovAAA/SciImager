@@ -1,19 +1,45 @@
 package com.visualipcv.scripts;
 
 import com.visualipcv.core.DataBundle;
+import com.visualipcv.core.IDocumentPart;
 import com.visualipcv.core.ProcessorProperty;
+import com.visualipcv.core.io.ProcessorPropertyEntity;
+import com.visualipcv.core.io.SciScriptEntity;
 import org.scilab.modules.types.ScilabType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SciScript {
+public class SciScript implements IDocumentPart {
+    private String name;
     private List<ProcessorProperty> inputProperties = new ArrayList<>();
     private List<ProcessorProperty> outputProperties = new ArrayList<>();
     private String code;
 
     public SciScript() {
 
+    }
+
+    public SciScript(SciScriptEntity entity) {
+        for(ProcessorPropertyEntity property : entity.getInputProperties()) {
+            inputProperties.add(new ProcessorProperty(property));
+        }
+
+        for(ProcessorPropertyEntity property : entity.getOutputProperties()) {
+            outputProperties.add(new ProcessorProperty(property));
+        }
+
+        this.code = entity.getCode();
+        this.name = entity.getName();
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 
     public void addInputProperty(ProcessorProperty property) {
@@ -30,6 +56,10 @@ public class SciScript {
 
     public List<ProcessorProperty> getOutputProperties() {
         return outputProperties;
+    }
+
+    public String getCode() {
+        return code;
     }
 
     public ProcessorProperty getInputPropertyByName(String name) {
@@ -71,5 +101,10 @@ public class SciScript {
         }
 
         return result;
+    }
+
+    @Override
+    public SciScriptEntity getSerializableProxy() {
+        return new SciScriptEntity(this);
     }
 }

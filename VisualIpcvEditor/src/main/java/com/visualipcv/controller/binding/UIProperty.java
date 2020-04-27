@@ -25,10 +25,7 @@ public class UIProperty {
     public void setValue(Object value) {
         Object prevValue = this.value;
         this.value = value;
-
-        if(value != prevValue) {
-            onChanged(prevValue, value);
-        }
+        onChanged(prevValue, value);
     }
 
     private void onChanged(Object oldValue, Object newValue) {

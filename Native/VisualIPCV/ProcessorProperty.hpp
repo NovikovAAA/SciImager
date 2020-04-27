@@ -14,9 +14,9 @@
 
 class ProcessorProperty {
 public:
-    ProcessorProperty();
-    ProcessorProperty(const ProcessorProperty & object);
-    ProcessorProperty(std::string name, BaseDataType type);
+    IPCV_API ProcessorProperty();
+    IPCV_API ProcessorProperty(const ProcessorProperty & object);
+    IPCV_API ProcessorProperty(std::string name, BaseDataType type);
     
     std::string name;
     BaseDataType type;

@@ -4,6 +4,7 @@ import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.editor.Editor;
 import com.visualipcv.scripts.SciRunner;
 import com.visualipcv.utils.LinkUtils;
+import com.visualipcv.view.NormalStage;
 import javafx.application.Application;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
@@ -41,5 +42,6 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         Editor.initPrimaryStage(primaryStage);
+        NormalStage.addPrimaryStage(primaryStage);
     }
 }

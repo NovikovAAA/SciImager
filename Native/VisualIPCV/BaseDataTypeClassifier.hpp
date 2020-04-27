@@ -8,8 +8,9 @@
 #ifndef BaseDataTypeClassifier_h
 #define BaseDataTypeClassifier_h
 
-enum BaseDataTypeClassifier {
-    NUMBER,
+enum class BaseDataTypeClassifier {
+    DOUBLE,
+    INTEGER,
     VECTOR2,
     VECTOR3,
     VECTOR4,

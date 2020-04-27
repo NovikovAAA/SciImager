@@ -1,9 +1,8 @@
 package com.visualipcv.controller;
 
 import com.visualipcv.Console;
-import com.visualipcv.controller.Controller;
 import com.visualipcv.editor.EditorWindow;
-import com.visualipcv.events.ConsoleEventListener;
+import com.visualipcv.core.events.ConsoleEventListener;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -28,7 +27,7 @@ public class ConsoleController extends Controller<AnchorPane> {
         clearButton.setOnAction(new EventHandler<javafx.event.ActionEvent>() {
             @Override
             public void handle(javafx.event.ActionEvent event) {
-                output.clear();
+                Console.clear();
             }
         });
 
@@ -36,7 +35,7 @@ public class ConsoleController extends Controller<AnchorPane> {
             @Override
             public void handle(javafx.scene.input.KeyEvent event) {
                 if(event.getCode() == KeyCode.ENTER) {
-                    Console.write(inputField.getText(), true);
+                    Console.execute(inputField.getText(), true);
                     inputField.clear();
                 }
             }
@@ -44,19 +43,13 @@ public class ConsoleController extends Controller<AnchorPane> {
 
         Console.addEventListener(new ConsoleEventListener() {
             @Override
-            public void onRecordAdded(String text) {
-
-            }
-
-            @Override
-            public void onCmdWritten(String cmd) {
-                output.appendText(">> " + cmd + "\n");
-            }
-
-            @Override
-            public void onResponse(String response) {
-                output.appendText(response + "\n");
+            public void onUpdate(String text) {
+                output.setText(text);
+                output.setScrollTop(Double.MAX_VALUE);
             }
         });
+
+        initialize();
+        Console.update();
     }
 }

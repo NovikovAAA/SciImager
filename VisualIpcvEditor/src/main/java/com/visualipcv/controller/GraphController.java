@@ -1,10 +1,14 @@
 package com.visualipcv.controller;
 
 import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
+import com.visualipcv.Console;
+import com.visualipcv.controller.binding.Binder;
 import com.visualipcv.controller.binding.BindingHelper;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
 import com.visualipcv.core.Connection;
+import com.visualipcv.core.Document;
+import com.visualipcv.core.DocumentManager;
 import com.visualipcv.core.Graph;
 import com.visualipcv.core.GraphExecutionException;
 import com.visualipcv.core.Node;
@@ -16,12 +20,19 @@ import com.visualipcv.core.io.GraphClipboard;
 import com.visualipcv.core.io.GraphEntity;
 import com.visualipcv.core.io.NodeEntity;
 import com.visualipcv.editor.Editor;
+import com.visualipcv.editor.EditorCommand;
+import com.visualipcv.editor.EditorWindow;
 import com.visualipcv.view.CustomDataFormats;
 import com.visualipcv.view.FunctionListPopup;
 import com.visualipcv.view.GraphView;
+import com.visualipcv.view.docking.DockPos;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -29,6 +40,7 @@ import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -45,8 +57,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 
-public class GraphController extends Controller<GraphView> {
+@EditorWindow(path = "", name = "Graph", dockPos = DockPos.CENTER, prefWidth = 1280.0, prefHeight = 720.0)
+public class GraphController extends Controller<GraphView> implements INameable {
     private MouseButton selectionButton = MouseButton.PRIMARY;
     private MouseButton dragButton = MouseButton.SECONDARY;
 
@@ -58,7 +74,7 @@ public class GraphController extends Controller<GraphView> {
     private ObservableList<NodeController> nodes = FXCollections.observableArrayList();
     private ObservableList<ConnectionController> connections = FXCollections.observableArrayList();
 
-    private UIProperty filePathProperty = new UIProperty();
+    private UIProperty nameProperty = new UIProperty();
     private UIProperty nodesProperty = new UIProperty();
     private UIProperty connectionsProperty = new UIProperty();
 
@@ -67,10 +83,30 @@ public class GraphController extends Controller<GraphView> {
 
     private boolean wasDragged = false;
 
-    public GraphController() {
+    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private Semaphore semaphore = new Semaphore(1);
+
+    @EditorCommand(path = "Editor/New graph")
+    public static void createNewGraphCommand() {
+        Document doc = DocumentManager.getActiveDocument();
+
+        if(doc == null)
+            doc = DocumentManager.createDocument();
+
+        Graph graph = doc.addGraph();
+        Editor.openWindow(new GraphController(graph));
+    }
+
+    public GraphController(Graph graph) {
         super(GraphView.class);
-        setContext(new Graph());
-        filePathProperty.setValue("New graph");
+        setContext(graph);
+
+        nameProperty.setBinder(new Binder() {
+            @Override
+            public Object update(Object context) {
+                return ((Graph)context).getName();
+            }
+        });
 
         nodes.addListener(new ListChangeListener<NodeController>() {
             @Override
@@ -124,12 +160,12 @@ public class GraphController extends Controller<GraphView> {
             }
         });
 
-        nodesProperty.setBinder((Object graph) -> {
-            return BindingHelper.bindList(nodesProperty, ((Graph) graph).getNodes(), (Node node) -> new NodeController(this));
+        nodesProperty.setBinder((Object g) -> {
+            return BindingHelper.bindList(nodesProperty, ((Graph) g).getNodes(), (Node node) -> new NodeController(this));
         });
 
-        connectionsProperty.setBinder((Object graph) -> {
-            return BindingHelper.bindList(connectionsProperty, ((Graph)graph).getConnections(), (Connection connection) -> new ConnectionController(this));
+        connectionsProperty.setBinder((Object g) -> {
+            return BindingHelper.bindList(connectionsProperty, ((Graph) g).getConnections(), (Connection connection) -> new ConnectionController(this));
         });
 
         initialize();
@@ -210,56 +246,45 @@ public class GraphController extends Controller<GraphView> {
         getView().addEventHandler(DragEvent.DRAG_OVER, this::onDragOver);
         getView().addEventHandler(DragEvent.DRAG_DROPPED, this::onDragDropped);
 
-        execution();
-    }
-
-    private void execution() {
-        /*Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(0.2), new EventHandler<ActionEvent>() {
+        Timeline timer = new Timeline(new KeyFrame(Duration.millis(100), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                for(NodeController node : getNodes())
-                    node.errorProperty().setValue("");
+                if(semaphore.tryAcquire()) {
+                    for (NodeController node : getNodes())
+                        node.poll(node.errorProperty());
 
-                try {
-                    ((Graph)getContext()).execute();
-                } catch (GraphExecutionException e) {
-
+                    execute();
+                    semaphore.release();
                 }
-
-                for(NodeController node : getNodes())
-                    node.poll(node.errorProperty());
             }
         }));
 
-        timeline.setCycleCount(-1);
-        timeline.play();*/
+        timer.setCycleCount(Animation.INDEFINITE);
+        timer.play();
 
-        Thread thread = new Thread(new Runnable() {
+        invalidate();
+    }
+
+    private void execute() {
+        executorService.submit(new Runnable() {
             @Override
             public void run() {
-                while(true) {
-                    for(NodeController node : getNodes())
-                        node.errorProperty().setValue("");
+                try {
+                    semaphore.acquire();
+                } catch (InterruptedException e) {
 
-                    try {
-                        ((Graph)getContext()).execute();
-                    } catch (GraphExecutionException e) {
-
-                    }
-
-                    for(NodeController node : getNodes())
-                        node.poll(node.errorProperty());
-
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-
-                    }
                 }
+
+                try {
+                    ((Graph) getContext()).execute();
+                } catch (GraphExecutionException e) {
+                    Console.write(e.getMessage());
+                    semaphore.release();
+                }
+
+                semaphore.release();
             }
         });
-
-        thread.start();
     }
 
     public NodeSlotController findNodeSlotController(NodeSlot slot) {
@@ -328,10 +353,10 @@ public class GraphController extends Controller<GraphView> {
             selectionPreview.setFill(new Color(1.0, 1.0, 1.0, 0.5));
             selectionPreview.setStroke(new Color(0, 0, 0, 1));
             getView().getInternalPane().getChildren().add(selectionPreview);
-        }
 
-        if(event.getButton() == selectionButton)
             clearSelection();
+            event.consume();
+        }
     }
 
     public void onMouseDragged(MouseEvent event) {
@@ -340,7 +365,7 @@ public class GraphController extends Controller<GraphView> {
         previousMouseX = event.getScreenX();
         previousMouseY = event.getScreenY();
 
-        if(event.getButton() == selectionButton) {
+        if(selectionPreview != null && event.getButton() == selectionButton) {
             Point2D newPos = getView().getInternalPane().parentToLocal(event.getX(), event.getY());
 
             double minX = Math.min(initialMouseX, newPos.getX());
@@ -352,6 +377,8 @@ public class GraphController extends Controller<GraphView> {
             selectionPreview.setHeight(maxY - minY);
             selectionPreview.setX(minX);
             selectionPreview.setY(minY);
+
+            event.consume();
         }
     }
 
@@ -379,6 +406,8 @@ public class GraphController extends Controller<GraphView> {
             FunctionListPopup popup = new FunctionListPopup(this, p.getX(), p.getY(), event.getScreenX(), event.getScreenY());
             popup.show();
         }
+
+        event.consume();
     }
 
     private Processor getProcessorFromDragEvent(DragEvent event) {
@@ -446,6 +475,8 @@ public class GraphController extends Controller<GraphView> {
         for(NodeController node : getSelectedNodes()) {
             removeNode(node);
         }
+
+        clearSelection();
     }
 
     public void clearSelection() {
@@ -576,54 +607,8 @@ public class GraphController extends Controller<GraphView> {
         node.setSelected(true);
     }
 
-    public void save() {
-        File file = new File((String)filePathProperty.getValue());
-
-        if(!file.exists()) {
-            saveAs();
-        } else {
-            try (ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(file))) {
-                stream.writeObject(new GraphEntity((Graph)getContext()));
-                filePathProperty.setValue(file.getAbsolutePath());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void load() {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Open");
-
-        File file = chooser.showOpenDialog(Editor.getPrimaryStage().getScene().getWindow());
-
-        if(file != null) {
-            try (ObjectInputStream stream = new ObjectInputStream(new FileInputStream(file))) {
-                setContext(new Graph((GraphEntity)stream.readObject()));
-                filePathProperty.setValue(file.getAbsolutePath());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void saveAs() {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Save");
-
-        File file = chooser.showSaveDialog(Editor.getPrimaryStage().getScene().getWindow());
-
-        if(file != null) {
-            try (ObjectOutputStream stream = new ObjectOutputStream(new FileOutputStream(file))) {
-                stream.writeObject(new GraphEntity((Graph)getContext()));
-                filePathProperty.setValue(file.getAbsolutePath());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public UIProperty filePathProperty() {
-        return filePathProperty;
+    @Override
+    public UIProperty nameProperty() {
+        return nameProperty;
     }
 }

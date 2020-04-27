@@ -5,6 +5,7 @@
     -fx-secondary-color: darkcyan;
     -fx-dark-color: #aaaaaa;
     -fx-pressed-color: -fx-inactive-color;
+    -fx-input-color: -fx-highlight-color;
 }
 
 .tab-pane .tab-header-background {
@@ -102,4 +103,25 @@
 
 .combo-box {
     -fx-font-size: 14;
+}
+
+.node-title {
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+}
+
+.node-class {
+    -fx-font-size: 14;
+}
+
+.list-view .list-cell:odd {
+    -fx-background-color: -fx-primary-color;
+}
+
+.list-view .list-cell:even {
+    -fx-background-color: -fx-highlight-color;
+}
+
+.list-view .list-cell:selected {
+    -fx-background-color: -fx-secondary-color;
 }

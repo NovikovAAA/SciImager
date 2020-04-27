@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include "jni.h"
-#include "PrimitiveTypeСlassifier.hpp"
+#include "PrimitiveTypeClassifier.hpp"
 
 class DataTypeJNIObject {
 public:

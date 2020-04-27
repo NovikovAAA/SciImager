@@ -18,8 +18,8 @@ public class BlurProcessor extends Processor {
             .setModule("Core")
             .setCategory("Image")
             .addInputProperty(new ProcessorProperty("Image", DataType.IMAGE))
-            .addInputProperty(new ProcessorProperty("SizeX", DataType.NUMBER))
-            .addInputProperty(new ProcessorProperty("SizeY", DataType.NUMBER))
+            .addInputProperty(new ProcessorProperty("SizeX", DataType.DOUBLE))
+            .addInputProperty(new ProcessorProperty("SizeY", DataType.DOUBLE))
             .addOutputProperty(new ProcessorProperty("Output", DataType.IMAGE)));
     }
 

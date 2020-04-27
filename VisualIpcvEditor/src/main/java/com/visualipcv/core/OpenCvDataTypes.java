@@ -1,12 +1,14 @@
 package com.visualipcv.core;
 
+import com.visualipcv.core.annotations.RegisterDataType;
 import com.visualipcv.core.dataconstraints.EnumConstraint;
 import org.opencv.core.CvType;
 
 import java.awt.*;
 
 public class OpenCvDataTypes {
-    public static final DataType CV_IMAGE_TYPE = new DataType("CvType", Color.BLUE, new EnumConstraint(
+    @RegisterDataType
+    public static final DataType CV_IMAGE_TYPE = new DataType("CvType", Color.BLUE, Integer.class, new EnumConstraint(
             new EnumConstraint.Value(CvType.CV_8U, "CV_8U"),
             new EnumConstraint.Value(CvType.CV_8S, "CV_8S"),
             new EnumConstraint.Value(CvType.CV_16U, "CV_16U"),

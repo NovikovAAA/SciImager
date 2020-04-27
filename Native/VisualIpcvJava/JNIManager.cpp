@@ -82,7 +82,7 @@ jobject JNIManager::processorResultForJava(JNIEnv *env, DataBundle result) {
     jobject outputDataBundle = env->NewObject(dataBundleModel.dataBundleClass, dataBundleModel.dataBundleConstructor);
     assert(outputDataBundle != nullptr);
     
-    BaseDataTypeClassifier dataTypeClassifier = ANY;
+    BaseDataTypeClassifier dataTypeClassifier = BaseDataTypeClassifier::ANY;
     if (result.outputPropertiesDataTypes.size() > 0) {
         dataTypeClassifier = result.outputPropertiesDataTypes[0];
     }
@@ -92,11 +92,15 @@ jobject JNIManager::processorResultForJava(JNIEnv *env, DataBundle result) {
         jstring key = env->NewStringUTF(item.first.c_str());
         jobject value = nullptr;
         switch (dataTypeClassifier) {
-            case NUMBER: {
+            case BaseDataTypeClassifier::DOUBLE: {
                 value = env->NewObject(dataTypeJniObject->dataTypeClass, dataTypeJniObject->dataTypeConstructor, result.read<double>(item.first));
                 break;
             }
-            case STRING: {
+            case BaseDataTypeClassifier::INTEGER: {
+                value = env->NewObject(dataTypeJniObject->dataTypeClass, dataTypeJniObject->dataTypeConstructor, result.read<int>(item.first));
+                break;
+            }
+            case BaseDataTypeClassifier::STRING: {
                 std::string resultString = result.read<std::string>(item.first);
                 value = env->NewStringUTF(resultString.c_str());
                 break;

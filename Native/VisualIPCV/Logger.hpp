@@ -10,20 +10,21 @@
 
 #include <stdio.h>
 #include <string>
+#include "DllExport.h"
 
 using namespace std;
 
 class Logger {
 private:
     Logger() {}
-    Logger(const Logger&);
-    Logger& operator=(Logger&);
+    IPCV_API Logger(const Logger&);
+    IPCV_API Logger& operator=(Logger&);
 public:
     static Logger& getInstance() {
         static Logger instance;
         return instance;
     }
-    void log(string info);
+    IPCV_API void log(string info);
 };
 
 #endif /* Logger_hpp */

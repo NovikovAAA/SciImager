@@ -16,7 +16,7 @@ public class SciConverters {
     private static final Map<DataType, SciConverter> converters = new HashMap<>();
 
     public static void load() {
-        converters.put(DataType.NUMBER, new SciConverter() {
+        converters.put(DataType.DOUBLE, new SciConverter() {
             @Override
             public ScilabType fromJavaToScilab(Object value) {
                 return new ScilabDouble((Double)value);

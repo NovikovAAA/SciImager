@@ -15,10 +15,10 @@ public class Vector4BreakProcessor extends Processor {
             .setModule("Core")
             .setCategory("Math")
             .addInputProperty(new ProcessorProperty("Vector4", DataType.VECTOR4))
-            .addOutputProperty(new ProcessorProperty("X", DataType.NUMBER))
-            .addOutputProperty(new ProcessorProperty("Y", DataType.NUMBER))
-            .addOutputProperty(new ProcessorProperty("Z", DataType.NUMBER))
-            .addOutputProperty(new ProcessorProperty("W", DataType.NUMBER)));
+            .addOutputProperty(new ProcessorProperty("X", DataType.DOUBLE))
+            .addOutputProperty(new ProcessorProperty("Y", DataType.DOUBLE))
+            .addOutputProperty(new ProcessorProperty("Z", DataType.DOUBLE))
+            .addOutputProperty(new ProcessorProperty("W", DataType.DOUBLE)));
     }
 
     @Override

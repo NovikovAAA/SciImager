@@ -15,6 +15,7 @@ public class SciProcessor extends Processor {
         this.script = script;
     }
 
+    @Override
     public DataBundle execute(DataBundle inputs, DataBundle state) {
         return script.run(inputs);
     }

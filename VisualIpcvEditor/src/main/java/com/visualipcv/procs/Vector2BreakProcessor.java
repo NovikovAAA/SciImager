@@ -15,8 +15,8 @@ public class Vector2BreakProcessor extends Processor {
             .setModule("Core")
             .setCategory("Math")
             .addInputProperty(new ProcessorProperty("Vector2", DataType.VECTOR2))
-            .addOutputProperty(new ProcessorProperty("X", DataType.NUMBER))
-            .addOutputProperty(new ProcessorProperty("Y", DataType.NUMBER)));
+            .addOutputProperty(new ProcessorProperty("X", DataType.DOUBLE))
+            .addOutputProperty(new ProcessorProperty("Y", DataType.DOUBLE)));
     }
 
     @Override

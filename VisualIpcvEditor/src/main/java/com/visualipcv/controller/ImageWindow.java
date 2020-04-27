@@ -1,17 +1,13 @@
-package com.visualipcv.view;
+package com.visualipcv.controller;
 
-import com.visualipcv.controller.Controller;
 import com.visualipcv.editor.Editor;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import com.visualipcv.editor.EditorWindow;
+import com.visualipcv.view.FreePane;
+import com.visualipcv.view.docking.DockPos;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -22,6 +18,7 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 
+@EditorWindow(path = "", name = "Image output", dockPos = DockPos.LEFT, prefWidth = 600.0, prefHeight = 400.0)
 public class ImageWindow extends Controller<AnchorPane> {
     @FXML
     private FreePane pane;
