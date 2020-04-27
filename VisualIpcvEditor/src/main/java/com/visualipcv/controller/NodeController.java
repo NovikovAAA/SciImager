@@ -32,6 +32,7 @@ import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -56,7 +57,7 @@ public class NodeController extends Controller<AnchorPane> {
     @FXML
     private Pane errorPane;
     @FXML
-    private Pane nodeClass;
+    private StackPane nodeClass;
     @FXML
     private AnchorPane wrapper;
 
@@ -302,8 +303,6 @@ public class NodeController extends Controller<AnchorPane> {
 
     private void setNodeClassLabel(String label) {
         Text text = new Text(label);
-        text.setLayoutY(title.getLayoutY());
-        text.setLayoutX(nodeClass.getWidth() - 10.0);
         nodeClass.getChildren().clear();
         nodeClass.getChildren().add(text);
     }

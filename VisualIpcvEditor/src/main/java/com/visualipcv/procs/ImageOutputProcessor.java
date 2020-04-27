@@ -84,7 +84,7 @@ public class ImageOutputProcessor extends Processor {
         DockNode demoStage = state.read("Stage");
         ImageWindow output = state.read("Image");
 
-        output.getImage().setImage(new Image(new ByteArrayInputStream(buffer.toArray())));
+        output.setImage(new Image(new ByteArrayInputStream(buffer.toArray())));
         return new DataBundle();
     }
 

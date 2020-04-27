@@ -10,19 +10,24 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.StackPane?>
 
 <fx:root onKeyPressed="#onKeyPressed" onMouseReleased="#onMouseReleased" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" type="AnchorPane" xmlns:fx="http://javafx.com/fxml/1">
     <AnchorPane fx:id="wrapper" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="3.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="3.0">
         <VBox style="-fx-border-radius: 10; -fx-background-color: #dddddd; -fx-background-radius: 10; -fx-border-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <HBox prefHeight="34.0" prefWidth="200.0" style="-fx-background-color: #99aaff; -fx-background-radius: 10 10 0 0; -fx-border-color: transparent;">
-                <children>
-                    <Pane minWidth="160.0" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
-                        <children>
-                            <Text fx:id="title" styleClass="node-title" layoutX="15.0" layoutY="21.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
-                        </children>
-                    </Pane>
-                    <Pane fx:id="nodeClass" styleClass="node-class" layoutX="145.0" maxWidth="40.0" minWidth="40.0" prefHeight="34.0" prefWidth="40.0" />
-                </children>
+                <padding>
+                    <Insets topRightBottomLeft="5.0"/>
+                </padding>
+                <Pane>
+                    <StackPane>
+                        <Text fx:id="title" styleClass="node-title" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                    </StackPane>
+                </Pane>
+                <Pane HBox.hgrow="ALWAYS"/>
+                <Pane styleClass="node-class" maxWidth="40.0" minWidth="40.0" prefHeight="34.0" prefWidth="40.0">
+                    <StackPane fx:id="nodeClass"/>
+                </Pane>
             </HBox>
             <GridPane alignment="CENTER" style="-fx-background-color: #00000000;">
                 <columnConstraints>

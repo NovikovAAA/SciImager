@@ -12,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 
 import javax.imageio.ImageIO;
@@ -21,20 +22,14 @@ import java.io.IOException;
 @EditorWindow(path = "", name = "Image output", dockPos = DockPos.LEFT, prefWidth = 600.0, prefHeight = 400.0)
 public class ImageWindow extends Controller<AnchorPane> {
     @FXML
-    private FreePane pane;
-    @FXML
     private Label saveButton;
-
+    @FXML
     private ImageView image;
+    @FXML
+    private Pane imageContainer;
 
     public ImageWindow() {
         super(AnchorPane.class, "ImageWindow.fxml");
-
-        image = new ImageView();
-        image.setLayoutX(0);
-        image.setLayoutY(0);
-
-        pane.getInternalPane().getChildren().add(image);
 
         saveButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -63,7 +58,11 @@ public class ImageWindow extends Controller<AnchorPane> {
         });
     }
 
-    public ImageView getImage() {
-        return image;
+    public void setImage(Image image) {
+        this.image.setImage(image);
+        imageContainer.setPrefWidth(this.image.getFitWidth() + 200.0);
+        imageContainer.setPrefHeight(this.image.getFitHeight() + 200.0);
+        this.image.setLayoutX(100.0);
+        this.image.setLayoutY(100.0);
     }
 }
