@@ -10,13 +10,13 @@ using namespace std;
 
 int main(int argc, const char * argv[]) {
     DataBundle testBundle;
-    testBundle.write("a", 20.0);
-    
+    testBundle.write("a", string("test1"));
+
     DataBundle second = testBundle;
-//    double value = second.read<double>("a");
-//    testBundle.write("a", 30.0);
+    string value = second.read<string>("a");
+    second.write("a", string("privet"));
     testBundle = second;
-//    value = testBundle.read<double>("a");
+    value = testBundle.read<string>("a");
     
     return 0;
 }

@@ -70,6 +70,7 @@ public:
         if (action != nullptr) {
             action(&m_data, (void *)obj.m_data.data(), AccessType::Write);
         }
+        return *this;
     }
     
     template <class T>
