@@ -13,33 +13,82 @@
 #include <cassert>
 #include <functional>
 
+enum class AccessType {
+    Destroy,
+    Read,
+    Write,
+    Move
+};
+
+template <class T>
+struct Accessor {
+    static void action(std::vector<char> *buffer, void *other, AccessType accessType) {
+        switch (accessType) {
+            case AccessType::Destroy:
+                ((T*)(buffer->data()))->~T();
+                break;
+            case AccessType::Read:
+                *(T*)other = *(T*)(buffer->data());
+                break;
+            case AccessType::Write:
+                buffer->resize(sizeof(T));
+                new((void*)buffer->data()) T(*(T*)other);
+                break;
+            case AccessType::Move:
+                buffer->resize(sizeof(T));
+                *(T*)(buffer->data()) = std::move(*(T*)other);
+                break;
+        }
+    }
+};
+
 class DataValue {
     std::vector<char> m_data;
-    std::function<void()> denit;
+    void (*action)(std::vector<char> *buffer, void *other, AccessType accessType) = nullptr;
+    
+    void clearActionIfNeeded() {
+        if (action != nullptr) {
+            action(&m_data, nullptr, AccessType::Destroy);
+            action = nullptr;
+        }
+    }
 public:
+    DataValue() {
+        clearActionIfNeeded();
+    }
+    DataValue(const DataValue &obj) {
+        action = obj.action;
+        if (action != nullptr) {
+            action(&m_data, (void *)obj.m_data.data(), AccessType::Write);
+        }
+    }
+    
+    DataValue& operator=(const DataValue &obj) {
+        clearActionIfNeeded();
+        action = obj.action;
+        
+        if (action != nullptr) {
+            action(&m_data, (void *)obj.m_data.data(), AccessType::Write);
+        }
+        return *this;
+    }
+    
     template <class T>
-    void read(T* data) {
-        assert(sizeof(T) == m_data.size());
-        *data = *((T*)&m_data[0]);
+    void read(T* data) const {
+        if (action != nullptr) {
+            action((std::vector<char> *)&m_data, data, AccessType::Read);
+        }
     }
     
     template <class T>
     void write(T* data) {
-        if (denit != nullptr) {
-            denit();
-        }
-        
-        m_data.resize(sizeof(T));
-        *((typename std::remove_cv<T>::type*)&m_data[0]) = *data;
-        denit = [this](){
-            ((T*)(&m_data[0]))->~T();
-        };
+        clearActionIfNeeded();
+        action = &Accessor<typename std::remove_cv<T>::type>::action;
+        action(&m_data, (void *)data, AccessType::Write);
     }
     
     ~DataValue() {
-       if (denit != nullptr) {
-            denit();
-       }
+        clearActionIfNeeded();
     };
 };
 

@@ -23,7 +23,7 @@ DataBundle StringConcatProcessor::execute(const DataBundle &dataMap, DataBundle 
     DataBundle resultDataBundle;
     resultDataBundle.write("result", result);
     prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    return std::move(resultDataBundle);
 }
 
 std::string StringConcatProcessor::concat(std::string firstString, std::string secondString) {
