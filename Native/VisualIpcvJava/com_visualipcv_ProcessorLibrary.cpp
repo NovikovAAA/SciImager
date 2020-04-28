@@ -1,11 +1,37 @@
 #include "pch.h"
 #include "com_visualipcv_ProcessorLibrary.h"
 #include <VisualIPCV/ProcessorManager.hpp>
+#include <VisualIPCV/Logger.hpp>
+#include <filesystem>
+#include <dlfcn.h>
+#include <iostream>
+
+using namespace std;
+using namespace std::filesystem;
 
 extern "C"
 {
 	JNIEXPORT jobject JNICALL Java_com_visualipcv_core_ProcessorLibrary_getProcessorList(JNIEnv* env, jclass clazz)
 	{
+        path currentPath = current_path();
+        
+        int counter = 0;
+        for(auto& p: directory_iterator("./Plugins")) {
+            path dylibPath = p.path();
+            if (dylibPath.extension() == ".dylib") {
+                void* dylibDiscriptor = dlopen(dylibPath.c_str(), RTLD_NOW | RTLD_GLOBAL);
+                if (!dylibDiscriptor) {
+                    cout << "Loading error: " << dylibPath << endl;
+                    Logger::getInstance().log("ERROR ERROR ERROR!!!!!!!!!!!");
+                    continue;
+                }
+//                auto init = (bool(*)())dlsym(dylibDiscriptor, "init");
+//                assert(init != nullptr);
+//
+//                init();
+            }
+        }
+        
 		jclass arrayClass = env->FindClass("java/util/ArrayList");
 		assert(arrayClass != nullptr);
 
