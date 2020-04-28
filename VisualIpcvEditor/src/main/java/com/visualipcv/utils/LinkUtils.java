@@ -4,10 +4,13 @@ import org.opencv.core.Core;
 
 public class LinkUtils {
     public static void linkNativeLibraries() {
-        if(System.getProperty("os.name").contains("mac")) {
-            System.load("/Users/artemnovikov/Documents/Учеба/Диплом/SciImager/VisualIpcvEditor/ext/libopencv_java420.dylib");
-            System.load("/Users/artemnovikov/Documents/Учеба/Диплом/SciImager/VisualIpcvEditor/ext/libVisualIPCV.dylib");
-            System.load("/Users/artemnovikov/Documents/Учеба/Диплом/SciImager/VisualIpcvEditor/ext/libVisualIpcvJava.dylib");
+        if(!System.getProperty("os.name").contains("win")) {
+            String libsPath = System.getProperty("user.dir") + "/ext/";
+            String libExt = ".dylib";
+
+            System.load(libsPath +"libopencv_java430" + libExt);
+            System.load(libsPath +"libVisualIPCV" + libExt);
+            System.load(libsPath +"libVisualIpcvJava" + libExt);
         } else {
             System.loadLibrary("ext/opencv_world420d");
             System.loadLibrary("ext/opencv_java420");
