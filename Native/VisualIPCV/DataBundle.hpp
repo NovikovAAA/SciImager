@@ -19,9 +19,10 @@ struct DataBundle {
     std::map<std::string, DataValue> dataMap;
     std::vector<BaseDataTypeClassifier> outputPropertiesDataTypes;
     
+    DataBundle() {}
     template <class T>
     T read(std::string name) const {
-        DataValue dataValue = dataMap.find(name)->second;
+        DataValue const &dataValue = dataMap.find(name)->second;
         
         T value;
         dataValue.read(&value);

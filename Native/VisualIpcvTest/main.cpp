@@ -9,17 +9,14 @@ using namespace cv;
 using namespace std;
 
 int main(int argc, const char * argv[]) {
-    Processor *stringProcessor = ProcessorManager::find("Core", "StringConcat");
+    DataBundle testBundle;
+    testBundle.write("a", string("test1"));
 
-    DataBundle input;
-    input.write("firstString", string("test"));
-    input.write("secondString", string("test2"));
-
-    DataBundle nodeState;
-
-    DataBundle result = stringProcessor->execute(input, nodeState);
-
-    cout << result.read<string>("result") << endl;
+    DataBundle second = testBundle;
+    string value = second.read<string>("a");
+    second.write("a", string("privet"));
+    testBundle = second;
+    value = testBundle.read<string>("a");
     
     return 0;
 }
