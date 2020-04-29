@@ -11,6 +11,7 @@ public class LinkUtils {
             System.load(libsPath +"libopencv_java430" + libExt);
             System.load(libsPath +"libVisualIPCV" + libExt);
             System.load(libsPath +"libVisualIpcvJava" + libExt);
+//            System.load("/Users/artemnovikov/Documents/Учеба/Диплом/Scilmager/VisualIpcvEditor/Plugins/libCoreLibrary.dylib");
         } else {
             System.loadLibrary("ext/opencv_world420d");
             System.loadLibrary("ext/opencv_java420");

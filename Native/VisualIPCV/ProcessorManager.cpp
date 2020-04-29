@@ -6,6 +6,7 @@
 //
 
 #include "ProcessorManager.hpp"
+#include "Logger.hpp"
 
 std::map<std::string, std::map<std::string, Processor *>>& ProcessorManager::getModules() {
     static std::map<std::string, std::map<std::string, Processor *>> modules;
@@ -14,6 +15,7 @@ std::map<std::string, std::map<std::string, Processor *>>& ProcessorManager::get
 
 bool ProcessorManager::registerProcessor(Processor *processor) {
     getModules()[processor->module][processor->name] = processor;
+    Logger::getInstance().log("Processor " + processor->name);
     return true;
 }
 

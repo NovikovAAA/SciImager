@@ -1,11 +1,28 @@
 #include "pch.h"
+#include "PluginsLoader.hpp"
 #include "com_visualipcv_ProcessorLibrary.h"
 #include <VisualIPCV/ProcessorManager.hpp>
 
+using namespace std;
+using namespace std::filesystem;
+
 extern "C"
 {
+
+JNIEXPORT void JNICALL Java_com_visualipcv_core_ProcessorLibrary_loadPlugins(JNIEnv* env, jclass clazz, jstring path) {
+       std::string pathStr = env->GetStringUTFChars(path, 0);
+       PluginsLoader::getInstance().loadPlugins(pathStr, false);
+   }
+
+   JNIEXPORT void JNICALL Java_com_visualipcv_core_ProcessorLibrary_loadPluginsWithManualRegister(JNIEnv* env, jclass clazz, jstring path) {
+       std::string pathStr = env->GetStringUTFChars(path, 0);
+       PluginsLoader::getInstance().loadPlugins(pathStr, true);
+   }
+
+
 	JNIEXPORT jobject JNICALL Java_com_visualipcv_core_ProcessorLibrary_getProcessorList(JNIEnv* env, jclass clazz)
 	{
+        
 		jclass arrayClass = env->FindClass("java/util/ArrayList");
 		assert(arrayClass != nullptr);
 

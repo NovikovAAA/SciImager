@@ -14,6 +14,8 @@ import java.util.Set;
 
 public class ProcessorLibrary extends Refreshable {
     private List<Processor> processors = new ArrayList<>();
+    public static native void loadPlugins(String path);
+    public static native void loadPluginsWithManualRegister(String path);
     public static native List<ProcessorUID> getProcessorList();
 
     private static ProcessorLibrary instance;
@@ -26,6 +28,7 @@ public class ProcessorLibrary extends Refreshable {
 
     public ProcessorLibrary() {
         loadProcessorsFromPackage("com.visualipcv.procs");
+        loadPlugins();
         List<ProcessorUID> uids = getProcessorList();
 
         for (ProcessorUID uid: uids) {
@@ -62,5 +65,10 @@ public class ProcessorLibrary extends Refreshable {
     public static void addProcessor(Processor processor) {
         getInstance().processors.add(processor);
         getInstance().refresh();
+    }
+
+    private static void loadPlugins() {
+        String pluginsPath = System.getProperty("user.dir") + "/Plugins";
+        loadPlugins(pluginsPath);
     }
 }
