@@ -378,3 +378,5 @@ MigrationBackup/
 
 VisualIpcvEditor/.gradle/*
 VisualIpcvEditor/build/*
+
+!*/Plugins/*

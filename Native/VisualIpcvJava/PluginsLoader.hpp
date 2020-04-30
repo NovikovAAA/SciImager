@@ -13,17 +13,8 @@
 
 class PluginsLoader {
 public:
-    static PluginsLoader& getInstance() {
-        static PluginsLoader instance;
-        return instance;
-    }
-    
     void loadPlugins(std::string pathString, bool withManualRegister);
 private:
-    PluginsLoader() {}
-    PluginsLoader(const PluginsLoader&);
-    PluginsLoader& operator=(PluginsLoader&);
-    
     void manualRegister(void* dylibDiscriptor);
 };
 
