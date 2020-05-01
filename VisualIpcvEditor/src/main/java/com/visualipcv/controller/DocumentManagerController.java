@@ -96,7 +96,7 @@ public class DocumentManagerController extends Controller<AnchorPane> {
                         public void handle(MouseEvent event) {
                             if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
                                 GraphController controller = new GraphController(document.getGraph());
-                                Editor.openWindow(controller);
+                                Editor.openWindow(controller, StartPageController.class);
                                 event.consume();
                             }
                         }
@@ -107,7 +107,7 @@ public class DocumentManagerController extends Controller<AnchorPane> {
                         public void handle(MouseEvent event) {
                             if(event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
                                 SciScriptEditor editor = new SciScriptEditor(document.getScript());
-                                Editor.openWindow(editor);
+                                Editor.openWindow(editor, StartPageController.class);
                                 event.consume();
                             }
                         }

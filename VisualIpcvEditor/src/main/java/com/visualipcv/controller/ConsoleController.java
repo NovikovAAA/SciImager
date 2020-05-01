@@ -12,7 +12,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import com.visualipcv.view.docking.DockPos;
 
-@EditorWindow(path="View/Console", name="Console", dockPos = DockPos.BOTTOM)
+@EditorWindow(path="View/Console", name="Console", dockPos = DockPos.BOTTOM, prefWidth = 800.0, prefHeight = 300.0)
 public class ConsoleController extends Controller<AnchorPane> {
     @FXML
     private TextField inputField;

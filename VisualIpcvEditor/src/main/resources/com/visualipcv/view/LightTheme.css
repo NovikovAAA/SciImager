@@ -125,3 +125,7 @@
 .list-view .list-cell:selected {
     -fx-background-color: -fx-secondary-color;
 }
+
+.hidden-header .tab-header-area {
+    visibility: hidden;
+}

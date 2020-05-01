@@ -1,11 +1,13 @@
 package com.visualipcv.view.docking;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
 import com.sun.javafx.css.StyleManager;
 
+import com.visualipcv.view.AdaptiveSplitPane;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -230,7 +232,7 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
 
         SplitPane split = (SplitPane) root;
         if (split == null) {
-            split = new SplitPane();
+            split = new AdaptiveSplitPane();
             split.getItems().add(node);
             root = split;
             this.getChildren().add(root);
@@ -265,14 +267,24 @@ public class DockPane extends StackPane implements EventHandler<DockEvent> {
 
         if (split.getOrientation() != requestedOrientation) {
             if (split.getItems().size() > 1) {
-                SplitPane splitPane = new SplitPane();
+                SplitPane splitPane = new AdaptiveSplitPane();
                 if (split == root && sibling == root) {
                     this.getChildren().set(this.getChildren().indexOf(root), splitPane);
                     splitPane.getItems().add(split);
                     root = splitPane;
                 } else {
+                    ArrayList<Double> divs = new ArrayList<>();
+
+                    for(SplitPane.Divider divider : split.getDividers()) {
+                        divs.add(divider.getPosition());
+                    }
+
                     split.getItems().set(split.getItems().indexOf(sibling), splitPane);
                     splitPane.getItems().add(sibling);
+
+                    for(int i = 0; i < divs.size(); i++) {
+                        split.setDividerPosition(i, divs.get(i));
+                    }
                 }
 
                 split = splitPane;
