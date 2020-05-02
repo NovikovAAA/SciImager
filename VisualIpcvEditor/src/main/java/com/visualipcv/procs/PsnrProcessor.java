@@ -2,6 +2,7 @@ package com.visualipcv.procs;
 
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
+import com.visualipcv.core.DataTypes;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
@@ -17,9 +18,9 @@ public class PsnrProcessor extends Processor {
             .setName("PSNR")
             .setModule("Core")
             .setCategory("Image")
-            .addInputProperty(new ProcessorProperty("ImageA", DataType.IMAGE))
-            .addInputProperty(new ProcessorProperty("ImageB", DataType.IMAGE))
-            .addOutputProperty(new ProcessorProperty("Result", DataType.DOUBLE)));
+            .addInputProperty(new ProcessorProperty("ImageA", DataTypes.IMAGE))
+            .addInputProperty(new ProcessorProperty("ImageB", DataTypes.IMAGE))
+            .addOutputProperty(new ProcessorProperty("Result", DataTypes.DOUBLE)));
     }
 
     @Override

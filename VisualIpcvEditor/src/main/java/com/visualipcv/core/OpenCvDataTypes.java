@@ -2,9 +2,8 @@ package com.visualipcv.core;
 
 import com.visualipcv.core.annotations.RegisterDataType;
 import com.visualipcv.core.dataconstraints.EnumConstraint;
+import javafx.scene.paint.Color;
 import org.opencv.core.CvType;
-
-import java.awt.*;
 
 public class OpenCvDataTypes {
     @RegisterDataType

@@ -10,6 +10,8 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.geometry.Insets?>
 
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.effect.DropShadow?>
 <fx:root type="AnchorPane" xmlns:fx="http://javafx.com/fxml/1">
    <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <MenuBar prefHeight="26.0">
@@ -19,10 +21,14 @@
             </graphic>
          </Menu>
       </MenuBar>
-      <ScrollPane VBox.vgrow="ALWAYS">
-         <Pane fx:id="imageContainer">
-            <ImageView fx:id="image"/>
-         </Pane>
+      <ScrollPane fx:id="scroll" VBox.vgrow="ALWAYS">
+         <StackPane fx:id="imageContainer">
+            <ImageView fx:id="image">
+               <effect>
+                  <DropShadow radius="2.0"/>
+               </effect>
+            </ImageView>
+         </StackPane>
       </ScrollPane>
    </VBox>
 </fx:root>

@@ -2,6 +2,7 @@ package com.visualipcv.procs;
 
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
+import com.visualipcv.core.DataTypes;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorCommand;
@@ -24,7 +25,7 @@ public class ImageOutputProcessor extends Processor {
             .setName("ImageOutput")
             .setModule("Core")
             .setCategory("Output")
-            .addInputProperty(new ProcessorProperty("Image", DataType.IMAGE)));
+            .addInputProperty(new ProcessorProperty("Image", DataTypes.IMAGE)));
 
         addCommand(new ProcessorCommand() {
             @Override
@@ -40,34 +41,20 @@ public class ImageOutputProcessor extends Processor {
     }
 
     private void showWindow(DataBundle state) {
-        DockNode stage = state.read("Stage");
         ImageWindow window = state.read("Image");
 
-        if(stage.isDocked() || stage.isFloating())
-            return;
+        if(window == null) {
+            window = new ImageWindow();
+            window.setContext(state);
+            state.write("Image", window);
+        }
 
-        stage.addTab(window);
-        stage.dock(Editor.getPrimaryPane(), DockPos.RIGHT);
-    }
-
-    private DockNode createWindow(DataBundle state) {
-        ImageWindow window = new ImageWindow();
-        DockNode demoStage = new DockNode(window);
-        demoStage.setPrefWidth(500.0);
-        demoStage.setPrefHeight(500.0);
-        demoStage.setLayoutX(10.0);
-        demoStage.setLayoutY(10.0);
-        demoStage.dock(Editor.getPrimaryPane(), DockPos.RIGHT);
-
-        state.write("Stage", demoStage);
-        state.write("Image", window);
-
-        return demoStage;
+        Editor.openWindow(window);
+        window.setImage(state.readPreview());
     }
 
     private void destroyWindow(DataBundle state) {
-        DockNode demoStage = state.read("Stage");
-        demoStage.close();
+        Editor.closeWindow(state.read("Image"));
         state.clear();
     }
 
@@ -75,26 +62,39 @@ public class ImageOutputProcessor extends Processor {
     public DataBundle execute(DataBundle inputs, DataBundle state) {
         Mat image = inputs.read("Image");
 
-        if(image == null)
+        if(image == null) {
+            state.writePreview(null);
+
+            ImageWindow output = state.read("Image");
+
+            if(output != null) {
+                output.setImage(null);
+            }
+
             return new DataBundle();
+        }
 
         MatOfByte buffer = new MatOfByte();
         Imgcodecs.imencode(".png", image, buffer);
 
-        DockNode demoStage = state.read("Stage");
+        state.writePreview(new Image(new ByteArrayInputStream(buffer.toArray())));
         ImageWindow output = state.read("Image");
 
-        output.setImage(new Image(new ByteArrayInputStream(buffer.toArray())));
+        if(output != null) {
+            output.setImage(state.readPreview());
+        }
+
         return new DataBundle();
     }
 
     @Override
-    public void onCreated(DataBundle state) {
-        createWindow(state);
-    }
+    public void onDestroy(DataBundle state) {
+        ImageWindow window = state.read("Image");
 
-    @Override
-    public void onDestroyed(DataBundle state) {
-        destroyWindow(state);
+        if(window != null) {
+            Editor.closeWindow(window);
+        }
+
+        state.clear();
     }
 }

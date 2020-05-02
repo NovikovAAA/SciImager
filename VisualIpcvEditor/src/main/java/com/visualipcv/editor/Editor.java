@@ -376,6 +376,10 @@ public class Editor {
         return false;
     }
 
+    public static void closeWindow(Controller<?> controller) {
+        closeWindow(controller.getClass(), controller.getContext());
+    }
+
     public static void closeWindow(Class<?> controllerClass, Object context) {
         Set<Node> nodes = getAllDockNodes();
 

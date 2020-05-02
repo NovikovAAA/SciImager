@@ -11,8 +11,8 @@ public class NumberSourceProcessor extends Processor {
             .setName("NumberSource")
             .setModule("Core")
             .setCategory("Input")
-            .addInputProperty(new ProcessorProperty("Number", DataType.DOUBLE, true, false))
-            .addOutputProperty(new ProcessorProperty("Number", DataType.DOUBLE)));
+            .addInputProperty(new ProcessorProperty("Number", DataTypes.DOUBLE, true, false))
+            .addOutputProperty(new ProcessorProperty("Number", DataTypes.DOUBLE)));
     }
 
     @Override

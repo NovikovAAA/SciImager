@@ -10,6 +10,7 @@ public class ProcessorBuilder {
     private List<ProcessorProperty> inputProperties = new ArrayList<>();
     private List<ProcessorProperty> outputProperties = new ArrayList<>();
     private List<ProcessorCommand> commands = new ArrayList<>();
+    private boolean isProperty = false;
 
     public ProcessorBuilder setName(String name) {
         this.name = name;
@@ -23,6 +24,11 @@ public class ProcessorBuilder {
 
     public ProcessorBuilder setCategory(String category) {
         this.category = category;
+        return this;
+    }
+
+    public ProcessorBuilder setIsProperty(boolean isProperty) {
+        this.isProperty = isProperty;
         return this;
     }
 
@@ -63,5 +69,9 @@ public class ProcessorBuilder {
 
     public List<ProcessorCommand> getCommands() {
         return commands;
+    }
+
+    public boolean getIsProperty() {
+        return isProperty;
     }
 }

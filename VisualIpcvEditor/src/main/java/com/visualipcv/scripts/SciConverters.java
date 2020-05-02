@@ -1,6 +1,7 @@
 package com.visualipcv.scripts;
 
 import com.visualipcv.core.DataType;
+import com.visualipcv.core.DataTypes;
 import com.visualipcv.core.OpenCvUtils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -16,7 +17,7 @@ public class SciConverters {
     private static final Map<DataType, SciConverter> converters = new HashMap<>();
 
     public static void load() {
-        converters.put(DataType.DOUBLE, new SciConverter() {
+        converters.put(DataTypes.DOUBLE, new SciConverter() {
             @Override
             public ScilabType fromJavaToScilab(Object value) {
                 return new ScilabDouble((Double)value);
@@ -27,7 +28,7 @@ public class SciConverters {
             }
         });
 
-        converters.put(DataType.VECTOR2, new SciConverter() {
+        converters.put(DataTypes.VECTOR2, new SciConverter() {
             @Override
             public ScilabType fromJavaToScilab(Object value) {
                 double[] values = (double[])value;
@@ -39,7 +40,7 @@ public class SciConverters {
             }
         });
 
-        converters.put(DataType.VECTOR3, new SciConverter() {
+        converters.put(DataTypes.VECTOR3, new SciConverter() {
             @Override
             public ScilabType fromJavaToScilab(Object value) {
                 double[] values = (double[])value;
@@ -51,7 +52,7 @@ public class SciConverters {
             }
         });
 
-        converters.put(DataType.VECTOR4, new SciConverter() {
+        converters.put(DataTypes.VECTOR4, new SciConverter() {
             @Override
             public ScilabType fromJavaToScilab(Object value) {
                 double[] values = (double[])value;
@@ -63,7 +64,7 @@ public class SciConverters {
             }
         });
 
-        converters.put(DataType.IMAGE, new SciConverter() {
+        converters.put(DataTypes.IMAGE, new SciConverter() {
             @Override
             public ScilabType fromJavaToScilab(Object value) {
                 Mat image = (Mat)value;

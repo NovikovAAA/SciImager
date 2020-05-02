@@ -2,6 +2,7 @@ package com.visualipcv.procs;
 
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
+import com.visualipcv.core.DataTypes;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
@@ -15,9 +16,9 @@ public class GetSizeProcessor extends Processor {
             .setName("GetSize")
             .setModule("Core")
             .setCategory("Image")
-            .addInputProperty(new ProcessorProperty("Image", DataType.IMAGE))
-            .addOutputProperty(new ProcessorProperty("Width", DataType.INTEGER))
-            .addOutputProperty(new ProcessorProperty("Height", DataType.INTEGER)));
+            .addInputProperty(new ProcessorProperty("Image", DataTypes.IMAGE))
+            .addOutputProperty(new ProcessorProperty("Width", DataTypes.INTEGER))
+            .addOutputProperty(new ProcessorProperty("Height", DataTypes.INTEGER)));
     }
 
     @Override

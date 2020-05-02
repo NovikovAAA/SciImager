@@ -8,11 +8,13 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 
 import javax.imageio.ImageIO;
@@ -26,7 +28,9 @@ public class ImageWindow extends Controller<AnchorPane> {
     @FXML
     private ImageView image;
     @FXML
-    private Pane imageContainer;
+    private StackPane imageContainer;
+    @FXML
+    private ScrollPane scroll;
 
     public ImageWindow() {
         super(AnchorPane.class, "ImageWindow.fxml");
@@ -60,9 +64,13 @@ public class ImageWindow extends Controller<AnchorPane> {
 
     public void setImage(Image image) {
         this.image.setImage(image);
-        imageContainer.setPrefWidth(this.image.getFitWidth() + 200.0);
-        imageContainer.setPrefHeight(this.image.getFitHeight() + 200.0);
-        this.image.setLayoutX(100.0);
-        this.image.setLayoutY(100.0);
+
+        double width = image.getWidth() + 200.0;
+        double height = image.getHeight() + 200.0;
+        width = Math.max(scroll.getWidth(), width);
+        height = Math.max(scroll.getHeight(), height);
+
+        imageContainer.setPrefWidth(width);
+        imageContainer.setPrefHeight(height);
     }
 }

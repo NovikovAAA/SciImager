@@ -22,6 +22,15 @@ public class DataBundle implements Iterable<Object> {
         return (T)values.get(name);
     }
 
+    public <T> void writePreview(T value) {
+        values.put("__Preview", value);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T readPreview() {
+        return (T)values.get("__Preview");
+    }
+
     @Override
     public Iterator<Object> iterator() {
         return values.values().iterator();

@@ -2,6 +2,7 @@ package com.visualipcv.procs;
 
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
+import com.visualipcv.core.DataTypes;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
@@ -14,9 +15,9 @@ public class Vector2BreakProcessor extends Processor {
             .setName("Vector2Break")
             .setModule("Core")
             .setCategory("Math")
-            .addInputProperty(new ProcessorProperty("Vector2", DataType.VECTOR2))
-            .addOutputProperty(new ProcessorProperty("X", DataType.DOUBLE))
-            .addOutputProperty(new ProcessorProperty("Y", DataType.DOUBLE)));
+            .addInputProperty(new ProcessorProperty("Vector2", DataTypes.VECTOR2))
+            .addOutputProperty(new ProcessorProperty("X", DataTypes.DOUBLE))
+            .addOutputProperty(new ProcessorProperty("Y", DataTypes.DOUBLE)));
     }
 
     @Override

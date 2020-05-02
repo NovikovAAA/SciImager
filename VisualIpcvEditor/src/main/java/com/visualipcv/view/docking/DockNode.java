@@ -636,10 +636,10 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
                         newDockNode = floatTabs();
                         dragging = true;
 
-                        /*if(dockPane != null) {
+                        if(dockPane != null) {
                             dockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);
                             dockPane.addEventFilter(MouseEvent.MOUSE_RELEASED, this);
-                        }*/
+                        }
                     } else if(tabPane.getSelectionModel().getSelectedItem() != null) {
                         newDockNode = floatTab(tabPane.getSelectionModel().getSelectedItem());
                         dragging = true;

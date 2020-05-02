@@ -3,6 +3,7 @@ package com.visualipcv.procs;
 import com.visualipcv.core.CommonException;
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
+import com.visualipcv.core.DataTypes;
 import com.visualipcv.core.GraphExecutionException;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
@@ -22,9 +23,9 @@ public class AbsDiffProcessor extends Processor {
                 .setName("AbsDiff")
                 .setModule("Core")
                 .setCategory("Math")
-                .addInputProperty(new ProcessorProperty("A", DataType.ANY))
-                .addInputProperty(new ProcessorProperty("B", DataType.ANY))
-                .addOutputProperty(new ProcessorProperty("Result", DataType.ANY)));
+                .addInputProperty(new ProcessorProperty("A", DataTypes.ANY))
+                .addInputProperty(new ProcessorProperty("B", DataTypes.ANY))
+                .addOutputProperty(new ProcessorProperty("Result", DataTypes.ANY)));
     }
 
     @Override

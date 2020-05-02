@@ -2,6 +2,7 @@ package com.visualipcv.procs;
 
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
+import com.visualipcv.core.DataTypes;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
@@ -15,8 +16,8 @@ public class ToStringProcessor extends Processor {
             .setName("ToString")
             .setModule("Core")
             .setCategory("Image")
-            .addInputProperty(new ProcessorProperty("Data", DataType.ANY))
-            .addOutputProperty(new ProcessorProperty("String", DataType.STRING)));
+            .addInputProperty(new ProcessorProperty("Data", DataTypes.ANY))
+            .addOutputProperty(new ProcessorProperty("String", DataTypes.STRING)));
     }
 
     @Override
