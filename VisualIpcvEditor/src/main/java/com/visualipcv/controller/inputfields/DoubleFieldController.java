@@ -15,11 +15,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
 
-public class NumberFieldController extends Controller<Pane> {
+public class DoubleFieldController extends Controller<Pane> {
     private TextField valueField;
     private UIProperty valueProperty = new UIProperty();
 
-    public NumberFieldController() {
+    public DoubleFieldController() {
         super(Pane.class);
 
         valueField = new TextField();

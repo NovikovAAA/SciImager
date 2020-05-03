@@ -7,6 +7,7 @@ import com.visualipcv.controller.binding.BindingHelper;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
 import com.visualipcv.core.Connection;
+import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.Document;
 import com.visualipcv.core.DocumentManager;
 import com.visualipcv.core.Graph;
@@ -36,6 +37,7 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
+import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -252,6 +254,19 @@ public class GraphController extends Controller<GraphView> implements INameable 
                 if(semaphore.tryAcquire()) {
                     for (NodeController node : getNodes())
                         node.poll(node.errorProperty());
+
+                    for(NodeController node : getNodes()) {
+                        DataBundle state = ((Node)node.getContext()).getState();
+                        Object preview = state.readPreview();
+
+                        if(preview != null) {
+                            if(preview instanceof Image) {
+                                node.setContent((Image)preview);
+                            }
+                        } else {
+                            node.setContent(null);
+                        }
+                    }
 
                     execute();
                     semaphore.release();

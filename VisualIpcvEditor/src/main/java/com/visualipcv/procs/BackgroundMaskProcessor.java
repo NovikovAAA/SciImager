@@ -2,6 +2,7 @@ package com.visualipcv.procs;
 
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
+import com.visualipcv.core.DataTypes;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
@@ -17,10 +18,10 @@ public class BackgroundMaskProcessor extends Processor {
             .setName("BackgroundMask")
             .setModule("Core")
             .setCategory("Image")
-            .addInputProperty(new ProcessorProperty("Image", DataType.IMAGE))
-            .addInputProperty(new ProcessorProperty("Threshold", DataType.DOUBLE))
-            .addInputProperty(new ProcessorProperty("History", DataType.DOUBLE))
-            .addOutputProperty(new ProcessorProperty("Output", DataType.IMAGE)));
+            .addInputProperty(new ProcessorProperty("Image", DataTypes.IMAGE))
+            .addInputProperty(new ProcessorProperty("Threshold", DataTypes.DOUBLE))
+            .addInputProperty(new ProcessorProperty("History", DataTypes.DOUBLE))
+            .addOutputProperty(new ProcessorProperty("Output", DataTypes.IMAGE)));
     }
 
     @Override

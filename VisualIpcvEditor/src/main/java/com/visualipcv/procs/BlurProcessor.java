@@ -2,6 +2,7 @@ package com.visualipcv.procs;
 
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
+import com.visualipcv.core.DataTypes;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
@@ -17,10 +18,10 @@ public class BlurProcessor extends Processor {
             .setName("Blur")
             .setModule("Core")
             .setCategory("Image")
-            .addInputProperty(new ProcessorProperty("Image", DataType.IMAGE))
-            .addInputProperty(new ProcessorProperty("SizeX", DataType.DOUBLE))
-            .addInputProperty(new ProcessorProperty("SizeY", DataType.DOUBLE))
-            .addOutputProperty(new ProcessorProperty("Output", DataType.IMAGE)));
+            .addInputProperty(new ProcessorProperty("Image", DataTypes.IMAGE))
+            .addInputProperty(new ProcessorProperty("SizeX", DataTypes.DOUBLE))
+            .addInputProperty(new ProcessorProperty("SizeY", DataTypes.DOUBLE))
+            .addOutputProperty(new ProcessorProperty("Output", DataTypes.IMAGE)));
     }
 
     @Override

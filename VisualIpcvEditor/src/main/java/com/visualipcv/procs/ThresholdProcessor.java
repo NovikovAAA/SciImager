@@ -2,6 +2,7 @@ package com.visualipcv.procs;
 
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
+import com.visualipcv.core.DataTypes;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
@@ -14,10 +15,10 @@ public class ThresholdProcessor extends Processor {
             .setName("Threshold")
             .setModule("Core")
             .setCategory("Image")
-            .addInputProperty(new ProcessorProperty("Image", DataType.IMAGE))
-            .addInputProperty(new ProcessorProperty("Value", DataType.DOUBLE))
-            .addInputProperty(new ProcessorProperty("Max", DataType.DOUBLE))
-            .addOutputProperty(new ProcessorProperty("Result", DataType.IMAGE)));
+            .addInputProperty(new ProcessorProperty("Image", DataTypes.IMAGE))
+            .addInputProperty(new ProcessorProperty("Value", DataTypes.DOUBLE))
+            .addInputProperty(new ProcessorProperty("Max", DataTypes.DOUBLE))
+            .addOutputProperty(new ProcessorProperty("Result", DataTypes.IMAGE)));
     }
 
     @Override

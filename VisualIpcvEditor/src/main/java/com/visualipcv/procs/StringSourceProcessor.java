@@ -11,8 +11,8 @@ public class StringSourceProcessor extends Processor {
             .setName("StringSource")
             .setModule("Core")
             .setCategory("Input")
-            .addInputProperty(new ProcessorProperty("String", DataType.STRING, true, false))
-            .addOutputProperty(new ProcessorProperty("String", DataType.STRING)));
+            .addInputProperty(new ProcessorProperty("String", DataTypes.STRING, true, false))
+            .addOutputProperty(new ProcessorProperty("String", DataTypes.STRING)));
     }
 
     @Override

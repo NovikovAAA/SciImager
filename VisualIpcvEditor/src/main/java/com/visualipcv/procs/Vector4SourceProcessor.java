@@ -2,6 +2,7 @@ package com.visualipcv.procs;
 
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
+import com.visualipcv.core.DataTypes;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
@@ -14,8 +15,8 @@ public class Vector4SourceProcessor extends Processor {
             .setName("Vector4Source")
             .setModule("Core")
             .setCategory("Math")
-            .addInputProperty(new ProcessorProperty("Vector4", DataType.VECTOR4, true, false))
-            .addOutputProperty(new ProcessorProperty("Result", DataType.VECTOR4, true, true)));
+            .addInputProperty(new ProcessorProperty("Vector4", DataTypes.VECTOR4, true, false))
+            .addOutputProperty(new ProcessorProperty("Result", DataTypes.VECTOR4, true, true)));
     }
 
     @Override

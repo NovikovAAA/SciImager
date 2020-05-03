@@ -11,9 +11,9 @@ public class SumProcessor extends Processor {
             .setName("Sum")
             .setModule("Core")
             .setCategory("Math")
-            .addInputProperty(new ProcessorProperty("A", DataType.DOUBLE))
-            .addInputProperty(new ProcessorProperty("B", DataType.DOUBLE))
-            .addOutputProperty(new ProcessorProperty("Result", DataType.DOUBLE)));
+            .addInputProperty(new ProcessorProperty("A", DataTypes.DOUBLE))
+            .addInputProperty(new ProcessorProperty("B", DataTypes.DOUBLE))
+            .addOutputProperty(new ProcessorProperty("Result", DataTypes.DOUBLE)));
     }
 
     @Override

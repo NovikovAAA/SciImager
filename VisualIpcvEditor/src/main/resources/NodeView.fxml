@@ -10,24 +10,29 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.StackPane?>
+<?import com.visualipcv.view.EditableLabel?>
 
-<fx:root onKeyPressed="#onKeyPressed" onMouseReleased="#onMouseReleased" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" type="AnchorPane" xmlns:fx="http://javafx.com/fxml/1">
+<?import javafx.scene.layout.BorderPane?>
+<fx:root styleClass="node" onKeyPressed="#onKeyPressed" onMouseReleased="#onMouseReleased" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" type="AnchorPane" xmlns:fx="http://javafx.com/fxml/1">
     <AnchorPane fx:id="wrapper" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="3.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="3.0">
         <VBox style="-fx-border-radius: 10; -fx-background-color: #dddddd; -fx-background-radius: 10; -fx-border-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <HBox prefHeight="34.0" prefWidth="200.0" style="-fx-background-color: #99aaff; -fx-background-radius: 10 10 0 0; -fx-border-color: transparent;">
-                <children>
-                    <Pane minWidth="160.0" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
-                        <children>
-                            <Text fx:id="title" styleClass="node-title" layoutX="15.0" layoutY="21.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
-                        </children>
-                    </Pane>
-                    <Pane fx:id="nodeClass" styleClass="node-class" layoutX="145.0" maxWidth="40.0" minWidth="40.0" prefHeight="34.0" prefWidth="40.0" />
-                </children>
+            <HBox styleClass="node-header" prefHeight="34.0" prefWidth="200.0">
+                <padding>
+                    <Insets topRightBottomLeft="5.0"/>
+                </padding>
+                <AnchorPane HBox.hgrow="ALWAYS">
+                    <StackPane AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+                        <EditableLabel fx:id="title" styleClass="node-title" text="Text" />
+                    </StackPane>
+                </AnchorPane>
+                <Pane styleClass="node-class" maxWidth="40.0" minWidth="40.0" prefHeight="34.0" prefWidth="40.0">
+                    <StackPane fx:id="nodeClass"/>
+                </Pane>
             </HBox>
             <GridPane alignment="CENTER" style="-fx-background-color: #00000000;">
                 <columnConstraints>
                     <ColumnConstraints hgrow="ALWAYS" maxWidth="500.20001220703125" minWidth="30.0" />
-                    <ColumnConstraints hgrow="ALWAYS" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
                     <ColumnConstraints hgrow="SOMETIMES" maxWidth="30" minWidth="30.0" prefWidth="30" />
                 </columnConstraints>
                 <rowConstraints>
@@ -35,10 +40,10 @@
                 </rowConstraints>
                 <children>
                     <VBox fx:id="inputContainer" alignment="CENTER_LEFT" style="-fx-background-color: #00000000" />
-                    <VBox fx:id="content" GridPane.columnIndex="1" />
                     <VBox fx:id="outputContainer" alignment="CENTER_RIGHT" style="-fx-background-color: #00000000" GridPane.columnIndex="2" />
                 </children>
             </GridPane>
+            <StackPane fx:id="content"/>
             <Pane fx:id="errorPane" prefHeight="34.0" prefWidth="200.0" style="-fx-background-color: #aa0000; -fx-background-radius: 0 0 10 10; -fx-border-color: transparent;">
                 <children>
                     <Text fx:id="error" layoutX="20.0" layoutY="20.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Text" wrappingWidth="160.0" />

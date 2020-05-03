@@ -1,6 +1,7 @@
 package com.visualipcv.controller.scriptconstruction;
 
 import com.visualipcv.core.DataType;
+import com.visualipcv.core.DataTypes;
 import com.visualipcv.core.ProcessorProperty;
 import com.visualipcv.controller.Controller;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
@@ -57,7 +58,7 @@ public class PropertyStackController extends Controller<AnchorPane> {
             @Override
             public void handle(ActionEvent event) {
                 List<ProcessorProperty> processorProperties = (List<ProcessorProperty>)getContext();
-                processorProperties.add(new ProcessorProperty("New Property", DataType.DOUBLE));
+                processorProperties.add(new ProcessorProperty("New Property", DataTypes.DOUBLE));
                 poll(properties);
             }
         });

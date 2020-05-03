@@ -11,6 +11,7 @@
 #include <string>
 
 #ifdef __APPLE__
+#include <dlfcn.h>
 #else
 #include <Windows.h>
 #endif
@@ -20,5 +21,6 @@
 
 #include "opencv2/opencv.hpp"
 #include <functional>
+#include <filesystem>
 
 #endif //PCH_H

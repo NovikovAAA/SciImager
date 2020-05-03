@@ -178,6 +178,13 @@ public class Graph implements IDocumentPart {
         return cache.get(node).get(name);
     }
 
+    public DataType getTypeOfCalculatedSlot(Node node, String name) {
+        if(!cache.containsKey(node))
+            return null;
+
+        return node.getOutputNodeSlot(name).getActualType();
+    }
+
     private void updateProperties(Node node, Set<Node> updatedNodes) {
         if(updatedNodes.contains(node))
             return;

@@ -9,6 +9,7 @@ public abstract class Processor {
     private List<ProcessorProperty> inputProperties;
     private List<ProcessorProperty> outputProperties;
     private List<ProcessorCommand> commands;
+    private boolean isProperty = false;
 
     public Processor(ProcessorBuilder builder) {
         this.name = builder.getName();
@@ -17,6 +18,7 @@ public abstract class Processor {
         this.inputProperties = builder.getInputProperties();
         this.outputProperties = builder.getOutputProperties();
         this.commands = builder.getCommands();
+        this.isProperty = builder.getIsProperty();
     }
 
     public String getName() {
@@ -64,6 +66,10 @@ public abstract class Processor {
         return commands;
     }
 
+    public boolean isProperty() {
+        return isProperty;
+    }
+
     @Override
     public String toString() {
         return name;
@@ -76,6 +82,6 @@ public abstract class Processor {
     public abstract DataBundle execute(DataBundle inputs, DataBundle nodeState) throws CommonException;
     public void preExecute(DataBundle nodeState) throws CommonException {}
     public void postExecute(DataBundle nodeState) throws CommonException {}
-    public void onCreated(DataBundle nodeState) throws CommonException {}
-    public void onDestroyed(DataBundle nodeState) throws CommonException {}
+    public void onCreate(DataBundle nodeState) throws CommonException {}
+    public void onDestroy(DataBundle nodeState) throws CommonException {}
 }

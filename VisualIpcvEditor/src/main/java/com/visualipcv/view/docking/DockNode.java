@@ -23,6 +23,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -59,11 +60,11 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
     private TabPane tabPane;
     private DockPane dockPane;
+    private Controller<?> showOnClose;
+
     private static final PseudoClass FLOATING_PSEUDO_CLASS = PseudoClass.getPseudoClass("floating");
     private static final PseudoClass DOCKED_PSEUDO_CLASS = PseudoClass.getPseudoClass("docked");
     private static final PseudoClass MAXIMIZED_PSEUDO_CLASS = PseudoClass.getPseudoClass("maximized");
-
-    private BooleanProperty staticProperty = new SimpleBooleanProperty(false);
 
     private BooleanProperty maximizedProperty = new SimpleBooleanProperty(false) {
 
@@ -119,8 +120,13 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
             public void onChanged(Change<? extends Tab> c) {
                 while(c.next()) {
                     if(c.wasRemoved()) {
-                        if(tabPane.getTabs().isEmpty() && !isStatic())
-                            DockNode.this.close();
+                        if(tabPane.getTabs().isEmpty()) {
+                            if(showOnClose != null) {
+                                addTab(showOnClose);
+                            } else {
+                                DockNode.this.close();
+                            }
+                        }
                     }
                 }
             }
@@ -130,6 +136,33 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     public DockNode(Controller<?> controller) {
         this();
         addTab(controller);
+        setPrefWidth(((Region)controller.getView()).getPrefWidth());
+        setPrefHeight(((Region)controller.getView()).getPrefHeight());
+    }
+
+    public void showOnClose(Controller<?> controller) {
+        showOnClose = controller;
+
+        if(tabPane.getTabs().isEmpty())
+            addTab(showOnClose);
+
+        updateHeaderVisibility();
+    }
+
+    public Controller<?> getShowOnClose() {
+        return showOnClose;
+    }
+
+    private void updateHeaderVisibility() {
+        if(showOnClose == null)
+            return;
+
+        if(tabPane.getTabs().size() == 1 && tabPane.getTabs().get(0).getContent() == showOnClose.getView()) {
+            if(!tabPane.getStyleClass().contains("hidden-header"))
+                tabPane.getStyleClass().add("hidden-header");
+        } else {
+            tabPane.getStyleClass().remove("hidden-header");
+        }
     }
 
     public void setStageStyle(StageStyle stageStyle) {
@@ -209,10 +242,6 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
     }
 
     public void setFloating(boolean floating, Point2D translation) {
-        if(isStatic()) {
-            return;
-        }
-
         if (floating && !this.isFloating()) {
             if(dockPane != null && dockPane.isLastDockNode(this))
                 return;
@@ -264,18 +293,6 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
     public final TabPane getTabPane() {
         return tabPane;
-    }
-
-    public final BooleanProperty staticProperty() {
-        return staticProperty;
-    }
-
-    public boolean isStatic() {
-        return staticProperty.get();
-    }
-
-    public void setStatic(boolean isStatic) {
-        staticProperty.set(isStatic);
     }
 
     public final BooleanProperty floatingProperty() {
@@ -403,18 +420,28 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
             throw new RuntimeException("Cannot add dock node without controller");
 
         tabPane.getTabs().add(new EditorWindowTab(controller));
+
+        if(showOnClose != null && tabPane.getTabs().size() > 1) {
+            for(Tab tab : getTabPane().getTabs()) {
+                if(tab.getContent() == showOnClose.getView()) {
+                    tabPane.getTabs().remove(tab);
+                    break;
+                }
+            }
+        }
+
+        updateHeaderVisibility();
     }
 
     public void closeTab(Tab tab) {
         tabPane.getTabs().remove(tab);
     }
 
-    public DockNode floatTab(Tab tab) {
+    private DockNode createFloatDockNode() {
         NormalStage stage = createStage(null);
-        DockNode newDockNode = new DockNode(getController(tab));
-        closeTab(tab);
-        newDockNode.floatingProperty.set(true);
+        DockNode newDockNode = new DockNode();
 
+        newDockNode.floatingProperty.set(true);
         newDockNode.stage = stage;
         ((BorderPane)stage.getScene().getRoot()).setCenter(newDockNode);
 
@@ -424,6 +451,24 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
             stage.addEventFilter(MouseEvent.MOUSE_DRAGGED, newDockNode);
         }
 
+        return newDockNode;
+    }
+
+    public DockNode floatTabs() {
+        DockNode newDockNode = createFloatDockNode();
+
+        for(Tab tab : tabPane.getTabs()) {
+            newDockNode.addTab(((EditorWindowTab)tab).getController());
+        }
+
+        tabPane.getTabs().clear();
+        return newDockNode;
+    }
+
+    public DockNode floatTab(Tab tab) {
+        DockNode newDockNode = createFloatDockNode();
+        newDockNode.addTab(((EditorWindowTab)tab).getController());
+        closeTab(tab);
         return newDockNode;
     }
 
@@ -577,9 +622,6 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
         @Override
         public void handle(MouseEvent event) {
-            if(isStatic())
-                return;
-
             if(event.getEventType() == MouseEvent.MOUSE_PRESSED) {
                 dragStart = new Point2D(event.getX(), event.getY());
             } else if(event.getEventType() == MouseEvent.DRAG_DETECTED) {
@@ -591,7 +633,8 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
                 if(!isFloating()) {
                     if(clickOnHeader || tabPane.getTabs().size() == 1) {
-                        setFloating(true);
+                        newDockNode = floatTabs();
+                        dragging = true;
 
                         if(dockPane != null) {
                             dockPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, this);

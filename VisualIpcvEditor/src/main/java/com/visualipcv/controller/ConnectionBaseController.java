@@ -114,13 +114,17 @@ public class ConnectionBaseController extends Controller<CubicCurve> {
     }
 
     private void updatePoints() {
+        double dist = Math.abs((double)sourceXProperty.getValue() - (double)targetXProperty.getValue()) * 0.8;
+        double min = BEZIER_OFFSET * 0.3;
+        double offset = Math.max(min, Math.min(dist, BEZIER_OFFSET));
+
         getView().setStartX((Double)sourceXProperty.getValue());
         getView().setStartY((Double)sourceYProperty.getValue());
         getView().setEndX((Double)targetXProperty.getValue());
         getView().setEndY((Double)targetYProperty.getValue());
-        getView().setControlX1((Double)sourceXProperty.getValue() + BEZIER_OFFSET);
+        getView().setControlX1((Double)sourceXProperty.getValue() + offset);
         getView().setControlY1((Double)sourceYProperty.getValue());
-        getView().setControlX2((Double)targetXProperty.getValue() - BEZIER_OFFSET);
+        getView().setControlX2((Double)targetXProperty.getValue() - offset);
         getView().setControlY2((Double)targetYProperty.getValue());
     }
 }

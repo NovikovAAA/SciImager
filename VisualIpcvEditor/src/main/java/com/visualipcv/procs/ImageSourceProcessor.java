@@ -3,6 +3,7 @@ package com.visualipcv.procs;
 import com.visualipcv.core.CommonException;
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
+import com.visualipcv.core.DataTypes;
 import com.visualipcv.core.GraphExecutionException;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorBuilder;
@@ -18,8 +19,8 @@ public class ImageSourceProcessor extends Processor {
             .setName("ImageSource")
             .setModule("Core")
             .setCategory("Input")
-            .addInputProperty(new ProcessorProperty("Path", DataType.STRING))
-            .addOutputProperty(new ProcessorProperty("Image", DataType.IMAGE)));
+            .addInputProperty(new ProcessorProperty("Path", DataTypes.STRING))
+            .addOutputProperty(new ProcessorProperty("Image", DataTypes.IMAGE)));
     }
 
     @Override

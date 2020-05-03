@@ -24,56 +24,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class GraphView extends FreePane {
-    private static List<CssMetaData<? extends Styleable, ?>> CSS_META_DATA;
-
-    private static final CssMetaData<GraphView, Number> CELL_SIZE = new CssMetaData<GraphView, Number>("-fx-grid-cell-size", StyleConverter.getSizeConverter()) {
-        @Override
-        public boolean isSettable(GraphView styleable) {
-            return !styleable.cellSizeProperty.isBound();
-        }
-
-        @Override
-        public StyleableProperty<Number> getStyleableProperty(GraphView styleable) {
-            return styleable.cellSizeProperty;
-        }
-    };
-
-    private static final CssMetaData<GraphView, Color> BACKGROUND_COLOR = new CssMetaData<GraphView, Color>("-fx-grid-background-color", StyleConverter.getColorConverter()) {
-        @Override
-        public boolean isSettable(GraphView styleable) {
-            return !styleable.backgroundColorProperty.isBound();
-        }
-
-        @Override
-        public StyleableProperty<Color> getStyleableProperty(GraphView styleable) {
-            return styleable.backgroundColorProperty;
-        }
-    };
-
-    private static final CssMetaData<GraphView, Color> LINE_COLOR = new CssMetaData<GraphView, Color>("-fx-grid-line-color", StyleConverter.getColorConverter()) {
-        @Override
-        public boolean isSettable(GraphView styleable) {
-            return !styleable.lineColorProperty.isBound();
-        }
-
-        @Override
-        public StyleableProperty<Color> getStyleableProperty(GraphView styleable) {
-            return styleable.lineColorProperty;
-        }
-    };
-
-    static {
-        final List<CssMetaData<? extends Styleable, ?>> metaData = new ArrayList<>(FreePane.getClassCssMetaData());
-        Collections.addAll(metaData, CELL_SIZE, BACKGROUND_COLOR, LINE_COLOR);
-        CSS_META_DATA = Collections.unmodifiableList(metaData);
-    }
-
-    private StyleableDoubleProperty cellSizeProperty = new SimpleStyleableDoubleProperty(CELL_SIZE, 40.0);
-    private StyleableObjectProperty<Color> backgroundColorProperty = new SimpleStyleableObjectProperty<>(BACKGROUND_COLOR, new Color(0.8, 0.8, 0.8, 1.0));
-    private StyleableObjectProperty<Color> lineColorProperty = new SimpleStyleableObjectProperty<>(LINE_COLOR, new Color(0.6, 0.6, 0.6, 1.0));
-
-    private Canvas canvas;
-
     public GraphView() {
         super();
         getStyleClass().setAll("graph");
@@ -84,12 +34,6 @@ public class GraphView extends FreePane {
     private void init() {
         setPrefWidth(1280.0);
         setPrefHeight(720.0);
-
-        canvas = new Canvas();
-        canvas.setManaged(false);
-        canvas.setMouseTransparent(true);
-        getChildren().add(canvas);
-        getInternalPane().toFront();
 
         setDragButton(MouseButton.SECONDARY);
         setFocusTraversable(true);
@@ -109,39 +53,6 @@ public class GraphView extends FreePane {
                 requestFocus();
             }
         });
-    }
-
-    public void repaintGrid() {
-        GraphicsContext gc = canvas.getGraphicsContext2D();
-        gc.setLineWidth(1.0f);
-        gc.setStroke(lineColorProperty.get());
-        gc.setFill(backgroundColorProperty.get());
-        gc.fillRect(0.0, 0.0, canvas.getWidth(), canvas.getHeight());
-
-        double cell = cellSizeProperty.get() * getInternalPane().getScaleX();
-
-        double startX = getOffsetX() % cell;
-        double startY = getOffsetY() % cell;
-
-        while(startX < getWidth()) {
-            gc.strokeLine(startX, 0.0, startX, getHeight());
-            startX += cell;
-        }
-
-        while(startY < getHeight()) {
-            gc.strokeLine(0.0, startY, getWidth(), startY);
-            startY += cell;
-        }
-
-        gc.stroke();
-    }
-
-    @Override
-    public void layoutChildren() {
-        super.layoutChildren();
-        canvas.setWidth(getWidth());
-        canvas.setHeight(getHeight());
-        repaintGrid();
     }
 
     public void updateOrder() {
@@ -199,50 +110,5 @@ public class GraphView extends FreePane {
 
         viewModel.setZoom(Math.min(zoomX, zoomY));
         viewModel.setOffset(rx - cx * getZoom(), ry - cy * getZoom());*/
-    }
-
-    public static List<CssMetaData<? extends Styleable, ?>> getClassCssMetaData() {
-        return CSS_META_DATA;
-    }
-
-    @Override
-    public List<CssMetaData<? extends Styleable, ?>> getCssMetaData() {
-        return getClassCssMetaData();
-    }
-
-    public DoubleProperty cellSizeProperty() {
-        return cellSizeProperty;
-    }
-
-    public double getCellSize() {
-        return cellSizeProperty.get();
-    }
-
-    public void setCellSize(double cellSize) {
-        this.cellSizeProperty.set(cellSize);
-    }
-
-    public ObjectProperty<Color> backgroundColorProperty() {
-        return backgroundColorProperty;
-    }
-
-    public Color getBackgroundColor() {
-        return backgroundColorProperty.get();
-    }
-
-    public void setBackgroundColor(Color color) {
-        backgroundColorProperty.set(color);
-    }
-
-    public ObjectProperty<Color> lineColorProperty() {
-        return lineColorProperty;
-    }
-
-    public Color getLineColor() {
-        return lineColorProperty.get();
-    }
-
-    public void setLineColor(Color color) {
-        lineColorProperty.set(color);
     }
 }

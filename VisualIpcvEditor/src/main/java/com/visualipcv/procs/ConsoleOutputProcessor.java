@@ -16,7 +16,7 @@ public class ConsoleOutputProcessor extends Processor {
             .setName("ConsoleOutput")
             .setModule("Core")
             .setCategory("Output")
-            .addInputProperty(new ProcessorProperty("Text", DataType.STRING, true, true)));
+            .addInputProperty(new ProcessorProperty("Text", DataTypes.STRING, true, true)));
     }
 
     @Override
