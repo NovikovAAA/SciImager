@@ -53,11 +53,6 @@ public class ImageOutputProcessor extends Processor {
         window.setImage(state.readPreview());
     }
 
-    private void destroyWindow(DataBundle state) {
-        Editor.closeWindow(state.read("Image"));
-        state.clear();
-    }
-
     @Override
     public DataBundle execute(DataBundle inputs, DataBundle state) {
         Mat image = inputs.read("Image");
