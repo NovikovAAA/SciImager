@@ -70,6 +70,6 @@ public class ProcessorLibrary extends Refreshable {
 
     private static void loadPlugins() {
         String pluginsPath = System.getProperty("user.dir") + "/Plugins";
-        //loadPlugins(pluginsPath);
+        loadPlugins(pluginsPath);
     }
 }
