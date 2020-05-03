@@ -2,6 +2,7 @@ package com.visualipcv.procs;
 
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
+import com.visualipcv.core.DataTypes;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
@@ -17,8 +18,8 @@ public class CameraSource extends Processor {
             .setName("CameraSource")
             .setModule("Core")
             .setCategory("Input")
-            .addInputProperty(new ProcessorProperty("Index", DataType.INTEGER))
-            .addOutputProperty(new ProcessorProperty("Output", DataType.IMAGE)));
+            .addInputProperty(new ProcessorProperty("Index", DataTypes.INTEGER))
+            .addOutputProperty(new ProcessorProperty("Output", DataTypes.IMAGE)));
     }
 
     @Override
@@ -44,13 +45,13 @@ public class CameraSource extends Processor {
     }
 
     @Override
-    public void onCreated(DataBundle state) {
+    public void onCreate(DataBundle state) {
         state.write("Capture", new VideoCapture());
         state.write("Index", -1);
     }
 
     @Override
-    public void onDestroyed(DataBundle state) {
+    public void onDestroy(DataBundle state) {
         state.<VideoCapture>read("Capture").release();
     }
 }

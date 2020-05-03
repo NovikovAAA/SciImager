@@ -105,13 +105,24 @@
     -fx-font-size: 14;
 }
 
-.node-title {
+.node-title * {
     -fx-font-size: 14;
     -fx-font-weight: bold;
 }
 
 .node-class {
     -fx-font-size: 14;
+}
+
+.node-header {
+    -fx-background-color: lightskyblue;
+    -fx-border-color: transparent;
+    -fx-border-radius: 10 10 0 0;
+    -fx-background-radius: 10 10 0 0;
+}
+
+.node:property .node-header {
+    -fx-background-color: darkorange;
 }
 
 .list-view .list-cell:odd {
@@ -124,4 +135,12 @@
 
 .list-view .list-cell:selected {
     -fx-background-color: -fx-secondary-color;
+}
+
+.hidden-header .tab-header-area {
+    visibility: hidden;
+}
+
+.editable-label {
+
 }

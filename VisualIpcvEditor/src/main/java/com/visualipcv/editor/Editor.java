@@ -2,6 +2,7 @@ package com.visualipcv.editor;
 
 import com.visualipcv.Console;
 import com.visualipcv.controller.DocumentManagerController;
+import com.visualipcv.controller.StartPageController;
 import com.visualipcv.core.DocumentManager;
 import com.visualipcv.view.AppScene;
 import com.visualipcv.controller.ConsoleController;
@@ -223,6 +224,12 @@ public class Editor {
         VBox.setVgrow(dockPane, Priority.ALWAYS);
         root.getChildren().add(dockPane);
 
+        DockNode startPagePanel = new DockNode();
+        StartPageController startPageController = new StartPageController();
+        startPagePanel.showOnClose(startPageController);
+        startPagePanel.setPrefWidth(startPageController.getView().getPrefWidth());
+        startPagePanel.setPrefHeight(startPageController.getView().getPrefHeight());
+
         FunctionListController functionListController = new FunctionListController();
         DockNode functionListPanel = new DockNode(functionListController);
 
@@ -232,12 +239,13 @@ public class Editor {
         ConsoleController consoleController = new ConsoleController();
         DockNode consolePanel = new DockNode(consoleController);
 
+        startPagePanel.dock(dockPane, DockPos.CENTER);
+        consolePanel.dock(dockPane, DockPos.BOTTOM);
         functionListPanel.dock(dockPane, DockPos.LEFT);
-        documentManagerPanel.dock(dockPane, DockPos.BOTTOM);
-        consolePanel.dock(dockPane, DockPos.RIGHT);
+        documentManagerPanel.dock(dockPane, DockPos.BOTTOM, functionListPanel);
 
-        primaryStage.setScene(new AppScene(root, 1280, 720));
-        primaryStage.sizeToScene();
+        primaryStage.setScene(new AppScene(root, 1600, 900));
+        primaryStage.setMaximized(true);
         primaryStage.show();
 
         DockPane.initializeDefaultUserAgentStylesheet();
@@ -280,10 +288,14 @@ public class Editor {
     }
 
     public static void openWindow(Controller<?> controller) {
+        openWindow(controller, controller.getClass());
+    }
+
+    public static void openWindow(Controller<?> controller, Class<?> target) {
         if(activateIfExists(controller.getClass(), controller.getContext()))
             return;
 
-        DockNode node = findDockNodeWithController(controller.getClass());
+        DockNode node = findDockNodeWithController(target);
 
         if(node != null) {
             node.addTab(controller);
@@ -312,6 +324,8 @@ public class Editor {
 
             for(Tab tab : dockNode.getTabPane().getTabs()) {
                 if(dockNode.getController(tab).getClass() == controllerClass)
+                    return dockNode;
+                if(dockNode.getShowOnClose() != null && dockNode.getShowOnClose().getClass() == controllerClass)
                     return dockNode;
             }
         }
@@ -360,6 +374,10 @@ public class Editor {
         }
 
         return false;
+    }
+
+    public static void closeWindow(Controller<?> controller) {
+        closeWindow(controller.getClass(), controller.getContext());
     }
 
     public static void closeWindow(Class<?> controllerClass, Object context) {

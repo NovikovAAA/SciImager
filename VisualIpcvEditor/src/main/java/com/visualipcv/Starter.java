@@ -1,6 +1,7 @@
 package com.visualipcv;
 
 import com.sun.javafx.runtime.VersionInfo;
+import com.visualipcv.core.Converter;
 import com.visualipcv.core.DataTypeLibrary;
 import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.core.ReflectedProcessorGenerator;
@@ -20,6 +21,7 @@ public class Starter {
         DataTypeLibrary.init();
         ProcessorLibrary.getInstance();
         ReflectedProcessorGenerator.loadReflected();
+        Converter.registerDefaultConverters();
     }
 
     public static void main(String[] args) throws IOException {

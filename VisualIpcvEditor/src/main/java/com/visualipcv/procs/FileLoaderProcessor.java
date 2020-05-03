@@ -11,8 +11,8 @@ public class FileLoaderProcessor extends Processor {
             .setName("FileLoader")
             .setModule("Core")
             .setCategory("Input")
-            .addInputProperty(new ProcessorProperty("Path", DataType.STRING))
-            .addOutputProperty(new ProcessorProperty("File", DataType.BYTES)));
+            .addInputProperty(new ProcessorProperty("Path", DataTypes.STRING))
+            .addOutputProperty(new ProcessorProperty("File", DataTypes.BYTES)));
     }
 
     @Override

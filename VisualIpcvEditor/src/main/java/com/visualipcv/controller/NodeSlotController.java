@@ -68,13 +68,12 @@ public class NodeSlotController extends Controller<NodeSlotView> {
         });
 
         backgroundColorProperty.setBinder((Object slot) -> {
-            java.awt.Color color = ((NodeSlot)slot).getActualType().getColor();
-            return new Color(color.getRed() / 2550.0, color.getGreen() / 2550.0, color.getBlue() / 2550.0, 1.0);
+            Color color = ((NodeSlot)slot).getActualType().getColor();
+            return new Color(color.getRed() * 0.2, color.getGreen() * 0.2, color.getBlue() * 0.2, 1.0);
         });
 
         foregroundColorProperty.setBinder((Object slot) -> {
-            java.awt.Color color = ((NodeSlot)slot).getActualType().getColor();
-            return new Color(color.getRed() / 255.0, color.getGreen() / 255.0, color.getBlue() / 255.0, 1.0);
+            return ((NodeSlot)slot).getActualType().getColor();
         });
 
         isOutputProperty.setBinder((Object slot) -> {

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Text?>
+
+<fx:root type="AnchorPane" xmlns:fx="http://javafx.com/fxml/1">
+    <StackPane alignment="BASELINE_CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <VBox spacing="40.0" alignment="CENTER">
+            <Text style="-fx-font-size: 40.0; -fx-fill: darkgray;">Welcome to VisualIPCV</Text>
+            <Button fx:id="createButton">Create new graph</Button>
+        </VBox>
+    </StackPane>
+</fx:root>

@@ -23,8 +23,7 @@ public class ConnectionPreviewController extends ConnectionBaseController {
         });
 
         paintProperty.setBinder((Object slot) -> {
-            java.awt.Color color = ((NodeSlot)slot).getActualType().getColor();
-            return new Color(color.getRed() / 255.0, color.getGreen() / 255.0, color.getBlue() / 255.0, 1.0);
+            return ((NodeSlot)slot).getActualType().getColor();
         });
 
         initialize();

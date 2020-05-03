@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@EditorWindow(path = "View/Function list", name = "Function list", dockPos = DockPos.LEFT)
+@EditorWindow(path = "View/Function list", name = "Function list", dockPos = DockPos.LEFT, prefWidth = 200.0, prefHeight = 600.0)
 public class FunctionListController extends Controller<AnchorPane> {
     @FXML
     private SearchListView<FunctionRecord> treeView;

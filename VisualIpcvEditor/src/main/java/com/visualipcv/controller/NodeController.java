@@ -12,14 +12,20 @@ import com.visualipcv.core.OutputNodeSlot;
 import com.visualipcv.core.ProcessorCommand;
 import com.visualipcv.core.SciProcessor;
 import com.visualipcv.editor.Editor;
+import com.visualipcv.view.EditableLabel;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.BooleanPropertyBase;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.Mnemonic;
@@ -32,6 +38,7 @@ import javafx.scene.layout.BorderStrokeStyle;
 import javafx.scene.layout.BorderWidths;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -46,28 +53,30 @@ public class NodeController extends Controller<AnchorPane> {
     private double previousMouseY;
 
     @FXML
-    private Text title;
+    private EditableLabel title;
     @FXML
     private VBox inputContainer;
     @FXML
     private VBox outputContainer;
     @FXML
+    private StackPane content;
+    @FXML
     private Text error;
     @FXML
     private Pane errorPane;
     @FXML
-    private Pane nodeClass;
+    private StackPane nodeClass;
     @FXML
     private AnchorPane wrapper;
 
-    private UIProperty selectedProperty = new UIProperty(false);
-    private UIProperty titleProperty = new UIProperty();
-    private UIProperty inputSlotsProperty = new UIProperty();
-    private UIProperty outputSlotsProperty = new UIProperty();
-    private UIProperty nodeClassProperty = new UIProperty();
-    private UIProperty errorProperty = new UIProperty();
-    private UIProperty xOffsetProperty = new UIProperty();
-    private UIProperty yOffsetProperty = new UIProperty();
+    private final UIProperty selectedProperty = new UIProperty(false);
+    private final UIProperty titleProperty = new UIProperty();
+    private final UIProperty inputSlotsProperty = new UIProperty();
+    private final UIProperty outputSlotsProperty = new UIProperty();
+    private final UIProperty nodeClassProperty = new UIProperty();
+    private final UIProperty errorProperty = new UIProperty();
+    private final UIProperty xOffsetProperty = new UIProperty();
+    private final UIProperty yOffsetProperty = new UIProperty();
 
     private ContextMenu contextMenu;
 
@@ -175,7 +184,7 @@ public class NodeController extends Controller<AnchorPane> {
         });
 
         titleProperty.setBinder((Object node) -> {
-            return ((Node)node).getProcessor().getName();
+            return ((Node)node).getName();
         });
 
         inputSlotsProperty.setBinder((Object node) -> {
@@ -218,6 +227,14 @@ public class NodeController extends Controller<AnchorPane> {
             @Override
             public void handle(MouseEvent event) {
                 contextMenu.hide();
+            }
+        });
+
+        title.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if(((Node)getContext()).getProcessor().isProperty())
+                    ((Node)getContext()).setName(newValue);
             }
         });
 
@@ -302,8 +319,6 @@ public class NodeController extends Controller<AnchorPane> {
 
     private void setNodeClassLabel(String label) {
         Text text = new Text(label);
-        text.setLayoutY(title.getLayoutY());
-        text.setLayoutX(nodeClass.getWidth() - 10.0);
         nodeClass.getChildren().clear();
         nodeClass.getChildren().add(text);
     }
@@ -373,5 +388,34 @@ public class NodeController extends Controller<AnchorPane> {
         super.setContext(context);
         addDefaultCommands();
         contextMenu = createContextMenu();
+
+        Node node = (Node)context;
+
+        if(node.getProcessor().isProperty()) {
+            title.setEditable(true);
+            getView().pseudoClassStateChanged(PseudoClass.getPseudoClass("property"), true);
+        }
+        else {
+            title.setEditable(false);
+            getView().pseudoClassStateChanged(PseudoClass.getPseudoClass("property"),  false);
+        }
+    }
+
+    public void setContent(Image image) {
+        if(image == null) {
+            content.getChildren().clear();
+            return;
+        }
+
+        ImageView view = new ImageView(image);
+        double scale = image.getWidth() / (content.getWidth() * 0.9);
+        scale = Math.min(scale, 2.0);
+
+        view.setFitWidth(image.getWidth() / scale);
+        view.setFitHeight(image.getHeight() / scale);
+        content.setPrefHeight(view.getFitHeight() / 0.9);
+        content.setPrefWidth(view.getFitWidth() / 0.9);
+        content.getChildren().clear();
+        content.getChildren().add(view);
     }
 }

@@ -2,6 +2,7 @@ package com.visualipcv.procs;
 
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
+import com.visualipcv.core.DataTypes;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
@@ -16,9 +17,9 @@ public class BlendProcessor extends Processor {
             .setName("Blend")
             .setModule("Core")
             .setCategory("Image")
-            .addInputProperty(new ProcessorProperty("A", DataType.IMAGE))
-            .addInputProperty(new ProcessorProperty("B", DataType.IMAGE))
-            .addOutputProperty(new ProcessorProperty("Result", DataType.IMAGE)));
+            .addInputProperty(new ProcessorProperty("A", DataTypes.IMAGE))
+            .addInputProperty(new ProcessorProperty("B", DataTypes.IMAGE))
+            .addOutputProperty(new ProcessorProperty("Result", DataTypes.IMAGE)));
     }
 
     @Override

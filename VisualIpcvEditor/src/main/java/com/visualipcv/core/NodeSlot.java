@@ -21,7 +21,7 @@ public abstract class NodeSlot {
     }
 
     public DataType getActualType() {
-        if(getProperty().getType() != DataType.ANY)
+        if(getProperty().getType() != DataTypes.ANY)
             return getProperty().getType();
 
         if(getTypeOverride() != null)
@@ -48,7 +48,7 @@ public abstract class NodeSlot {
     }
 
     public void overrideType(DataType type) {
-        if(getProperty().getType() != DataType.ANY)
+        if(getProperty().getType() != DataTypes.ANY)
             throw new RuntimeException("Cannot override concrete type");
 
         this.typeOverride = type;
@@ -56,9 +56,9 @@ public abstract class NodeSlot {
 
     public DataType getConnectedType() {
         for(Connection connection : getNode().getGraph().getConnections(this)) {
-            if(connection.getSource() != this && connection.getTarget().getActualType() != DataType.ANY)
+            if(connection.getSource() != this && connection.getTarget().getActualType() != DataTypes.ANY)
                 return connection.getTarget().getActualType();
-            if(connection.getTarget() != this && connection.getSource().getActualType() != DataType.ANY)
+            if(connection.getTarget() != this && connection.getSource().getActualType() != DataTypes.ANY)
                 return connection.getSource().getActualType();
         }
         return null;
@@ -80,10 +80,14 @@ public abstract class NodeSlot {
         DataType realType1 = overridden1 == null ? originType1 : overridden1;
         DataType realType2 = overridden2 == null ? originType2 : overridden2;
 
-        if(realType1 == realType2 || realType1 == DataType.ANY || realType2 == DataType.ANY)
+        if(realType1 == realType2 || realType1 == DataTypes.ANY || realType2 == DataTypes.ANY)
             return true;
 
-        return false;
+        if(slot1 instanceof OutputNodeSlot) {
+            return Converter.isConvertible(realType1, realType2);
+        } else {
+            return Converter.isConvertible(realType2, realType1);
+        }
     }
 
     public abstract void connect(NodeSlot other);

@@ -2,8 +2,10 @@ package com.visualipcv.controller;
 
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
+import com.visualipcv.editor.EditorWindow;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.layout.Region;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -16,12 +18,23 @@ public class Controller<T extends Node> {
     private List<UIProperty> properties = new ArrayList<>();
     private List<PropertyChangedEventListener> callbacks = new ArrayList<>();
 
+    private void setDefaultSize() {
+        EditorWindow windowData = getClass().getAnnotation(EditorWindow.class);
+
+        if(windowData != null) {
+            ((Region)getView()).setPrefWidth(windowData.prefWidth());
+            ((Region)getView()).setPrefHeight(windowData.prefHeight());
+        }
+    }
+
     public Controller(Class<T> clazz) {
         try {
             view = clazz.newInstance();
         } catch (IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
         }
+
+        setDefaultSize();
     }
 
     public Controller(Class<T> clazz, String fxmlPath) {
@@ -36,6 +49,8 @@ public class Controller<T extends Node> {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        setDefaultSize();
     }
 
     private void addProperties(Class<?> clazz) {

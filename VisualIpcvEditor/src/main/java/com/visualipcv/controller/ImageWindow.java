@@ -8,10 +8,13 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 
 import javax.imageio.ImageIO;
@@ -21,20 +24,16 @@ import java.io.IOException;
 @EditorWindow(path = "", name = "Image output", dockPos = DockPos.LEFT, prefWidth = 600.0, prefHeight = 400.0)
 public class ImageWindow extends Controller<AnchorPane> {
     @FXML
-    private FreePane pane;
-    @FXML
     private Label saveButton;
-
+    @FXML
     private ImageView image;
+    @FXML
+    private StackPane imageContainer;
+    @FXML
+    private ScrollPane scroll;
 
     public ImageWindow() {
         super(AnchorPane.class, "ImageWindow.fxml");
-
-        image = new ImageView();
-        image.setLayoutX(0);
-        image.setLayoutY(0);
-
-        pane.getInternalPane().getChildren().add(image);
 
         saveButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -63,7 +62,15 @@ public class ImageWindow extends Controller<AnchorPane> {
         });
     }
 
-    public ImageView getImage() {
-        return image;
+    public void setImage(Image image) {
+        this.image.setImage(image);
+
+        double width = image.getWidth() + 200.0;
+        double height = image.getHeight() + 200.0;
+        width = Math.max(scroll.getWidth(), width);
+        height = Math.max(scroll.getHeight(), height);
+
+        imageContainer.setPrefWidth(width);
+        imageContainer.setPrefHeight(height);
     }
 }

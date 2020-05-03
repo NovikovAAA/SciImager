@@ -2,7 +2,6 @@ package com.visualipcv.core;
 
 import com.visualipcv.Console;
 import com.visualipcv.core.io.NodeEntity;
-import org.opencv.core.CvException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +11,7 @@ public class Node {
     private final UUID id;
     private Graph graph;
     private Processor processor;
+    private String name = "Property";
     private List<InputNodeSlot> inputSlots;
     private List<OutputNodeSlot> outputSlots;
     private DataBundle state = new DataBundle();
@@ -28,6 +28,7 @@ public class Node {
 
     public Node(Graph graph, NodeEntity nodeEntity) {
         id = nodeEntity.getId();
+        name = nodeEntity.getName();
         Processor processor = ProcessorLibrary.findProcessor(nodeEntity.getProcessorUID().getModule(), nodeEntity.getProcessorUID().getName());
         initNode(graph, processor, nodeEntity.getX(), nodeEntity.getY());
 
@@ -134,7 +135,23 @@ public class Node {
                 slot.getConnectedSlot().getNode().execute();
             }
 
-            return graph.readCache(slot.getConnectedSlot().getNode(), slot.getConnectedSlot().getProperty().getName());
+            fromCache = graph.readCache(slot.getConnectedSlot().getNode(), slot.getConnectedSlot().getProperty().getName());
+            DataType dataType = graph.getTypeOfCalculatedSlot(slot.getConnectedSlot().getNode(), slot.getConnectedSlot().getProperty().getName());
+
+            if(fromCache == null) {
+                return null;
+            }
+
+            if(dataType != slot.getActualType()) {
+                if(Converter.isConvertible(dataType, slot.getActualType())) {
+                    fromCache = Converter.convert(dataType, slot.getActualType(), fromCache);
+                } else {
+                    lastError = new GraphExecutionException(this, "Type mismatch: " + dataType.getName() + "/" + slot.getActualType().getName());
+                    throw lastError;
+                }
+            }
+
+            return fromCache;
         }
 
         return slot.getValue();
@@ -142,6 +159,14 @@ public class Node {
 
     public GraphExecutionException getLastError() {
         return lastError;
+    }
+
+    public String getName() {
+        return getProcessor().isProperty() ? name : getProcessor().getName();
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void execute() throws GraphExecutionException {
@@ -152,7 +177,7 @@ public class Node {
             inputs.write(slot.getProperty().getName(), getValueFromInput(slot));
         }
 
-        DataBundle res = null;
+        DataBundle res;
 
         try {
             processor.preExecute(state);
@@ -174,7 +199,7 @@ public class Node {
 
     public void onCreate() throws GraphExecutionException {
         try {
-            processor.onCreated(state);
+            processor.onCreate(state);
         } catch (CommonException e) {
             throw new GraphExecutionException(null, e.getMessage());
         }
@@ -182,7 +207,7 @@ public class Node {
 
     public void onDestroy() throws GraphExecutionException {
         try {
-            processor.onDestroyed(state);
+            processor.onDestroy(state);
         } catch (CommonException e) {
             throw new GraphExecutionException(null, e.getMessage());
         }
