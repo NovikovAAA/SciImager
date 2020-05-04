@@ -8,10 +8,10 @@ extern "C"
 		jclass dataType = env->FindClass("com/visualipcv/core/DataType");
 		assert(dataType != nullptr);
 
-		jclass colorType = env->FindClass("java/awt/Color");
+		jclass colorType = env->FindClass("javafx/scene/paint/Color");
 		assert(colorType != nullptr);
 
-		jmethodID dataTypeConstructor = env->GetMethodID(dataType, "<init>", "(Ljava/lang/String;Ljava/awt/Color;)V");
+		jmethodID dataTypeConstructor = env->GetMethodID(dataType, "<init>", "(Ljava/lang/String;Ljavafx/scene/paint/Color;)V");
 		assert(dataTypeConstructor != nullptr);
 
 		jmethodID colorConstructor = env->GetMethodID(colorType, "<init>", "(IIII)V");
