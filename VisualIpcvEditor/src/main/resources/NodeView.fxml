@@ -43,7 +43,7 @@
                     <VBox fx:id="outputContainer" alignment="CENTER_RIGHT" style="-fx-background-color: #00000000" GridPane.columnIndex="2" />
                 </children>
             </GridPane>
-            <StackPane fx:id="content"/>
+            <StackPane maxWidth="500.0" fx:id="content"/>
             <Pane fx:id="errorPane" prefHeight="34.0" prefWidth="200.0" style="-fx-background-color: #aa0000; -fx-background-radius: 0 0 10 10; -fx-border-color: transparent;">
                 <children>
                     <Text fx:id="error" layoutX="20.0" layoutY="20.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Text" wrappingWidth="160.0" />

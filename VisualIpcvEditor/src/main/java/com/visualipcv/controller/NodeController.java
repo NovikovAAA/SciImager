@@ -408,8 +408,7 @@ public class NodeController extends Controller<AnchorPane> {
         }
 
         ImageView view = new ImageView(image);
-        double scale = image.getWidth() / (content.getWidth() * 0.9);
-        scale = Math.min(scale, 2.0);
+        double scale = image.getWidth() / (content.getMaxWidth() * 0.9);
 
         view.setFitWidth(image.getWidth() / scale);
         view.setFitHeight(image.getHeight() / scale);
