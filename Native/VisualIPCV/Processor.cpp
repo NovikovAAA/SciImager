@@ -25,7 +25,7 @@ Processor::Processor(std::string name, std::string module, std::string category,
 }
 
 void Processor::prepareResult(DataBundle *resultDataBundle) {
-    for (int i = 0; i < outputProperties.size(); i++) {
-        resultDataBundle->outputPropertiesDataTypes.push_back(outputProperties[i].type.getTypeClassifier());
+    for (auto& processor : outputProperties) {
+        resultDataBundle->outputPropertiesDataTypes.insert(std::pair<std::string, BaseDataTypeClassifier>(processor.name, processor.type.getTypeClassifier()));
     }
 }

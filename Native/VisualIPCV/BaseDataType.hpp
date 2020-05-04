@@ -21,6 +21,7 @@ class BaseDataType {
 public:
     IPCV_API BaseDataType();
     IPCV_API BaseDataType(const BaseDataType & object);
+    IPCV_API BaseDataType(BaseDataTypeClassifier typeClassifier);
     IPCV_API BaseDataType(BaseDataTypeClassifier typeClassifier, std::array<double, COLOR_ARRAY_SIZE> color);
     
     IPCV_API void setTypeClassifier(BaseDataTypeClassifier typeClassifier);

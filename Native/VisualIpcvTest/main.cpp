@@ -12,51 +12,17 @@ using namespace cv;
 using namespace std;
 
 int main(int argc, const char * argv[]) {
-//    DataBundle testBundle;
-//    testBundle.write("a", string("test1"));
-//
-//    DataBundle second = testBundle;
-//    string value = second.read<string>("a");
-//    second.write("a", string("privet"));
-//    testBundle = second;
-//    value = testBundle.read<string>("a");
+    Mat *src = new Mat(imread("/Users/artemnovikov/Documents/Учеба/Диплом/Scilmager/VisualIpcvEditor/test2.png"));
+    string path = "/Users/artemnovikov/Documents/Учеба/Диплом/Scilmager/Native/VisualIpcvTest/haarcascade_frontalface_alt2.xml";
     
-//    Mat src1;
-//    src1 = imread("/Users/artemnovikov/Documents/Учеба/Диплом/Scilmager/Native/VisualIpcvTest/me.jpeg");
-//    namedWindow("Original image");
-//    imshow("Original image", src1);
-//
-//    Mat gray, edge, draw;
-//    cvtColor(src1, gray, COLOR_BGR2GRAY);
-//
-//    Canny(gray, edge, 50, 150, 3);
-//
-//    edge.convertTo(draw, CV_8U);
-//    namedWindow("image");
-//    imshow("image", draw);
-//
-//    waitKey(0);
+    DataBundle input;
+    input.write("image", src);
+    input.write("cascadePath", path);
     
-    
-    /// Захват лица
-    
-    Mat image;
-    image = imread("/Users/artemnovikov/Documents/Учеба/Диплом/Scilmager/Native/VisualIpcvTest/me.jpeg");
-    string cascadePath = "/Users/artemnovikov/Documents/Учеба/Диплом/Scilmager/Native/VisualIpcvTest/haarcascade_frontalface_alt2.xml";
-    namedWindow("window1", 1);
-    imshow("window1", image);
-
-    FaceDetectProcessor processor;
-
-    DataBundle inputDataBundle;
     DataBundle nodeState;
-    inputDataBundle.write("image", image);
-    inputDataBundle.write("cascadePath", cascadePath);
-    DataBundle outputDataBundle = processor.execute(inputDataBundle, nodeState);
     
-    Mat resultImage = outputDataBundle.read<Mat>("result");
-    imshow("Detected Face", resultImage);
-    waitKey(0);
+    FaceDetectProcessor processor;
+    processor.execute(input, nodeState);
     
     return 0;
 }

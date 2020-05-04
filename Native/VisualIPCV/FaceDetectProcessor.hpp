@@ -9,15 +9,13 @@
 #define FaceDetectProcessor_hpp
 
 #include <stdio.h>
-
 #include "Processor.hpp"
+#include <opencv2/core.hpp>
 
 class IPCV_API FaceDetectProcessor : public Processor {
 public:
     FaceDetectProcessor();
     DataBundle execute(const DataBundle &dataMap, DataBundle &nodeSate) override;
-private:
-//    std::string detect(std::string firstString, std::string secondString);
 };
 
 #endif /* FaceDetectProcessor_hpp */
