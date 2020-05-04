@@ -1,5 +1,6 @@
 package com.visualipcv.core;
 
+import com.visualipcv.Console;
 import com.visualipcv.core.io.DocumentEntity;
 import com.visualipcv.editor.Editor;
 import javafx.stage.FileChooser;
@@ -45,12 +46,14 @@ public class DocumentManager extends Refreshable {
 
     public static void loadDocument(File file) {
         closeDocument(getActiveDocument());
+
         try (ObjectInputStream stream = new ObjectInputStream(new FileInputStream(file))) {
             DocumentEntity entity = (DocumentEntity)stream.readObject();
-            Document document = new Document(entity);
+            Document document = new Document(null, entity);
+            document.setFile(file);
             openedDocuments.add(document);
         } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
+            Console.error(e);
         }
 
         getInstance().refresh();
@@ -68,7 +71,7 @@ public class DocumentManager extends Refreshable {
                 document.setFile(file);
                 openedDocuments.add(document);
             } catch (IOException e) {
-                e.printStackTrace();
+                Console.error(e);
             }
         }
 
@@ -87,7 +90,7 @@ public class DocumentManager extends Refreshable {
             DocumentEntity entity = new DocumentEntity(document);
             stream.writeObject(entity);
         } catch (IOException e) {
-            e.printStackTrace();
+            Console.error(e);
         }
 
         getInstance().refresh();
@@ -103,7 +106,7 @@ public class DocumentManager extends Refreshable {
 
     public static Document createDocument() {
         closeDocument(getActiveDocument());
-        Document document = new Document();
+        Document document = new Document(null);
         document.setName("New document " + (openedDocuments.size() + 1) + "*");
         openedDocuments.add(document);
         getInstance().refresh();
@@ -115,6 +118,7 @@ public class DocumentManager extends Refreshable {
             return;
 
         openedDocuments.remove(document);
+        document.onClose();
         getInstance().refresh();
     }
 

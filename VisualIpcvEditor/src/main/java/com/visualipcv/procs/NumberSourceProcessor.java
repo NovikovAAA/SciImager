@@ -12,13 +12,13 @@ public class NumberSourceProcessor extends Processor {
             .setModule("Core")
             .setCategory("Input")
             .addInputProperty(new ProcessorProperty("Number", DataTypes.DOUBLE, true, false))
-            .addOutputProperty(new ProcessorProperty("Number", DataTypes.DOUBLE)));
+            .addOutputProperty(new ProcessorProperty("Result", DataTypes.DOUBLE)));
     }
 
     @Override
     public DataBundle execute(DataBundle inputs, DataBundle state) {
         DataBundle res = new DataBundle();
-        res.write("Number", inputs.read("Number"));
+        res.write("Result", inputs.read("Number"));
         return res;
     }
 }

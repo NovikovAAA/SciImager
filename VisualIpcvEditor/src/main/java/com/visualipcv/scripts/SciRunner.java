@@ -12,13 +12,13 @@ public class SciRunner {
         try {
             scilab = new Scilab(true);
         } catch(JavasciException.InitializationException e) {
-            e.printStackTrace();
+            Console.error(e);
         }
 
         try {
             scilab.open();
         } catch(JavasciException e) {
-            e.printStackTrace();
+            Console.error(e);
         }
 
         SciConverters.load();
@@ -28,7 +28,7 @@ public class SciRunner {
         try {
             scilab.put(name, value);
         } catch(JavasciException e) {
-            e.printStackTrace();
+            Console.error(e);
         }
     }
 
@@ -36,7 +36,7 @@ public class SciRunner {
         try {
             return scilab.get(name);
         } catch(JavasciException e) {
-            e.printStackTrace();
+            Console.error(e);
         }
 
         return null;

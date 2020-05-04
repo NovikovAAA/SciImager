@@ -1,5 +1,6 @@
 package com.visualipcv.controller.binding;
 
+import com.visualipcv.Console;
 import com.visualipcv.controller.Controller;
 import com.visualipcv.controller.NodeController;
 import com.visualipcv.core.Graph;
@@ -33,7 +34,7 @@ public class BindingHelper {
                     nodeControllers.add(nodeController);
                     nodeController.setContext(node);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Console.error(e);
                 }
             }
         }

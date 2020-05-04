@@ -214,7 +214,7 @@ public class FreePane extends AnchorPane {
         double delta = event.getDeltaY() * 0.003;
         double value = zoom.get() + delta;
 
-        value = Math.min(20.0, Math.max(value, 0.1));
+        value = Math.min(2.0, Math.max(value, 0.25));
         double deltaScale = value - zoom.get();
         double deltaX = -event.getX() * deltaScale;
         double deltaY = -event.getY() * deltaScale;

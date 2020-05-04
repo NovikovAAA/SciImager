@@ -1,6 +1,9 @@
 package com.visualipcv.core;
 
+import com.visualipcv.core.io.NodeSlotEntity;
+
 import java.util.ArrayList;
+import java.util.Properties;
 
 public abstract class NodeSlot {
     private ProcessorProperty property;
@@ -12,8 +15,21 @@ public abstract class NodeSlot {
         this.node = node;
     }
 
+    public NodeSlot(Node node, NodeSlotEntity entity) {
+        this.node = node;
+        property = new ProcessorProperty(
+                entity.getName(),
+                DataTypeLibrary.getByName(entity.getDataTypeName()),
+                entity.showControl(),
+                entity.showConnector());
+    }
+
     public ProcessorProperty getProperty() {
         return property;
+    }
+
+    void setProperty(ProcessorProperty property) {
+        this.property = property;
     }
 
     public Node getNode() {
@@ -30,11 +46,11 @@ public abstract class NodeSlot {
         DataType type = null;
 
         for(Connection connection : getNode().getGraph().getConnections(this)) {
-            if(connection.getSource() != this) {
+            if(connection.getTarget() == this) {
                 DataType conType = connection.getSource().getTypeOverride();
                 return conType == null ? connection.getSource().getProperty().getType() : conType;
             }
-            else if(connection.getTarget() != null) {
+            else if(connection.getSource() == null) {
                 DataType conType = connection.getTarget().getTypeOverride();
                 return conType == null ? connection.getTarget().getProperty().getType() : conType;
             }
@@ -56,15 +72,19 @@ public abstract class NodeSlot {
 
     public DataType getConnectedType() {
         for(Connection connection : getNode().getGraph().getConnections(this)) {
-            if(connection.getSource() != this && connection.getTarget().getActualType() != DataTypes.ANY)
-                return connection.getTarget().getActualType();
-            if(connection.getTarget() != this && connection.getSource().getActualType() != DataTypes.ANY)
+            if(connection.getTarget() == this && connection.getSource().getActualType() != DataTypes.ANY)
                 return connection.getSource().getActualType();
+            if(connection.getSource() == this && connection.getTarget().getActualType() != DataTypes.ANY)
+                return connection.getTarget().getActualType();
         }
         return null;
     }
 
     public static boolean isConnectionAvailable(NodeSlot slot1, NodeSlot slot2) {
+        if(slot1.getNode().isProxy() || slot2.getNode().isProxy()) {
+            return false;
+        }
+
         if(slot1.getClass() == slot2.getClass())
             return false;
 

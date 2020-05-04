@@ -7,9 +7,11 @@ import com.visualipcv.core.Node;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class GraphEntity implements Serializable {
     private String name;
+    private UUID id;
     private List<NodeEntity> nodes;
     private List<ConnectionEntity> connections;
 
@@ -17,6 +19,7 @@ public class GraphEntity implements Serializable {
         name = graph.getName();
         nodes = new ArrayList<>();
         connections = new ArrayList<>();
+        id = graph.getId();
 
         for(Node node : graph.getNodes()) {
             nodes.add(new NodeEntity(node));
@@ -42,6 +45,10 @@ public class GraphEntity implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public List<NodeEntity> getNodes() {

@@ -14,13 +14,13 @@ public class PropertyProcessor extends Processor {
             .setModule("Core")
             .setIsProperty(true)
             .addInputProperty(new ProcessorProperty("Value", dataType, true, false))
-            .addOutputProperty(new ProcessorProperty("Value", dataType)));
+            .addOutputProperty(new ProcessorProperty("Result", dataType)));
     }
 
     @Override
     public DataBundle execute(DataBundle inputs, DataBundle state) {
         DataBundle outputs = new DataBundle();
-        outputs.write("Value", inputs.read("Value"));
+        outputs.write("Result", inputs.read("Value"));
         return outputs;
     }
 }

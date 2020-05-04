@@ -1,6 +1,5 @@
 package com.visualipcv.controller;
 
-import com.sun.org.apache.bcel.internal.generic.ACONST_NULL;
 import com.visualipcv.Console;
 import com.visualipcv.controller.binding.Binder;
 import com.visualipcv.controller.binding.BindingHelper;
@@ -11,11 +10,13 @@ import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.Document;
 import com.visualipcv.core.DocumentManager;
 import com.visualipcv.core.Graph;
-import com.visualipcv.core.GraphExecutionException;
+import com.visualipcv.core.GraphExecutionContext;
+import com.visualipcv.core.GraphExecutionData;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorLibrary;
+import com.visualipcv.core.ProcessorVersionMismatchException;
 import com.visualipcv.core.io.ConnectionEntity;
 import com.visualipcv.core.io.GraphClipboard;
 import com.visualipcv.core.io.GraphEntity;
@@ -34,21 +35,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -85,8 +81,10 @@ public class GraphController extends Controller<GraphView> implements INameable 
 
     private boolean wasDragged = false;
 
-    private ExecutorService executorService = Executors.newSingleThreadExecutor();
     private Semaphore semaphore = new Semaphore(1);
+    private GraphExecutionContext context = new GraphExecutionContext();
+
+    private Timeline timer = null;
 
     @EditorCommand(path = "Editor/New graph")
     public static void createNewGraphCommand() {
@@ -248,16 +246,19 @@ public class GraphController extends Controller<GraphView> implements INameable 
         getView().addEventHandler(DragEvent.DRAG_OVER, this::onDragOver);
         getView().addEventHandler(DragEvent.DRAG_DROPPED, this::onDragDropped);
 
-        Timeline timer = new Timeline(new KeyFrame(Duration.millis(100), new EventHandler<ActionEvent>() {
+        timer = new Timeline(new KeyFrame(Duration.millis(100), new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                if(getView().getScene() == null) {
+                    timer.stop();
+                }
+
                 if(semaphore.tryAcquire()) {
                     for (NodeController node : getNodes())
                         node.poll(node.errorProperty());
 
                     for(NodeController node : getNodes()) {
-                        DataBundle state = ((Node)node.getContext()).getState();
-                        Object preview = state.readPreview();
+                        Object preview = getExecutionContext().load(node.getContext(), "Preview");
 
                         if(preview != null) {
                             if(preview instanceof Image) {
@@ -268,8 +269,13 @@ public class GraphController extends Controller<GraphView> implements INameable 
                         }
                     }
 
-                    execute();
-                    semaphore.release();
+                    try {
+                        ((Graph)getContext()).executeAsync(context, semaphore);
+                    } catch (ProcessorVersionMismatchException e) {
+                        invalidate();
+                    } finally {
+                        semaphore.release();
+                    }
                 }
             }
         }));
@@ -277,29 +283,8 @@ public class GraphController extends Controller<GraphView> implements INameable 
         timer.setCycleCount(Animation.INDEFINITE);
         timer.play();
 
+        getView().setZoom(0.75);
         invalidate();
-    }
-
-    private void execute() {
-        executorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    semaphore.acquire();
-                } catch (InterruptedException e) {
-
-                }
-
-                try {
-                    ((Graph) getContext()).execute();
-                } catch (GraphExecutionException e) {
-                    Console.write(e.getMessage());
-                    semaphore.release();
-                }
-
-                semaphore.release();
-            }
-        });
     }
 
     public NodeSlotController findNodeSlotController(NodeSlot slot) {
@@ -310,9 +295,9 @@ public class GraphController extends Controller<GraphView> implements INameable 
                         return slotController.getSlot();
                     }
                 }
-                for(NodeSlotController slotController : controller.getOutputSlots()) {
+                for(AdvancedNodeSlotController slotController : controller.getOutputSlots()) {
                     if(slotController.getContext() == slot) {
-                        return slotController;
+                        return slotController.getSlot();
                     }
                 }
             }
@@ -338,6 +323,10 @@ public class GraphController extends Controller<GraphView> implements INameable 
         }
 
         return selectedNodes;
+    }
+
+    public GraphExecutionContext getExecutionContext() {
+        return context;
     }
 
     public void startConnectionDrag(NodeSlotController source) {
@@ -466,7 +455,7 @@ public class GraphController extends Controller<GraphView> implements INameable 
 
             event.setDropCompleted(true);
         } catch(Exception e) {
-            e.printStackTrace();
+            Console.error(e);
             event.setDropCompleted(false);
         }
     }

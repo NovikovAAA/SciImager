@@ -3,6 +3,7 @@ package com.visualipcv.procs;
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
 import com.visualipcv.core.DataTypes;
+import com.visualipcv.core.GraphExecutionData;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorCommand;
@@ -50,7 +51,7 @@ public class ImageOutputProcessor extends Processor {
         }
 
         Editor.openWindow(window);
-        window.setImage(state.readPreview());
+        window.setImage(state.read("Preview"));
     }
 
     @Override
@@ -58,7 +59,7 @@ public class ImageOutputProcessor extends Processor {
         Mat image = inputs.read("Image");
 
         if(image == null) {
-            state.writePreview(null);
+            state.write("Preview", null);
 
             ImageWindow output = state.read("Image");
 
@@ -72,24 +73,13 @@ public class ImageOutputProcessor extends Processor {
         MatOfByte buffer = new MatOfByte();
         Imgcodecs.imencode(".png", image, buffer);
 
-        state.writePreview(new Image(new ByteArrayInputStream(buffer.toArray())));
+        state.write("Preview", new Image(new ByteArrayInputStream(buffer.toArray())));
         ImageWindow output = state.read("Image");
 
         if(output != null) {
-            output.setImage(state.readPreview());
+            output.setImage(state.read("Preview"));
         }
 
         return new DataBundle();
-    }
-
-    @Override
-    public void onDestroy(DataBundle state) {
-        ImageWindow window = state.read("Image");
-
-        if(window != null) {
-            Editor.closeWindow(window);
-        }
-
-        state.clear();
     }
 }

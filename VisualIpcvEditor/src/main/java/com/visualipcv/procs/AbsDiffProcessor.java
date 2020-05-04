@@ -16,6 +16,7 @@ import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class AbsDiffProcessor extends Processor {
     public AbsDiffProcessor() {
@@ -29,7 +30,7 @@ public class AbsDiffProcessor extends Processor {
     }
 
     @Override
-    public DataBundle execute(DataBundle inputs, DataBundle state) throws CommonException {
+    public DataBundle execute(DataBundle inputs, DataBundle props) throws CommonException {
         Object a = inputs.read("A");
         Object b = inputs.read("B");
 

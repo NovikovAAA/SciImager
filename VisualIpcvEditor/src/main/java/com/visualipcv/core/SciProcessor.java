@@ -2,6 +2,8 @@ package com.visualipcv.core;
 
 import com.visualipcv.scripts.SciScript;
 
+import java.util.HashMap;
+
 public class SciProcessor extends Processor {
     SciScript script;
 
@@ -16,7 +18,7 @@ public class SciProcessor extends Processor {
     }
 
     @Override
-    public DataBundle execute(DataBundle inputs, DataBundle state) {
+    public DataBundle execute(DataBundle inputs, DataBundle props) {
         return script.run(inputs);
     }
 

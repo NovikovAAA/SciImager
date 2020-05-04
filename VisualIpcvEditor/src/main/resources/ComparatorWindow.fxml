@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.effect.DropShadow?>
+
+<fx:root type="AnchorPane" xmlns:fx="http://javafx.com/fxml/1">
+    <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <ScrollPane fx:id="scroll" VBox.vgrow="ALWAYS">
+            <StackPane fx:id="imageContainer">
+                <ImageView fx:id="image">
+                    <effect>
+                        <DropShadow radius="2.0"/>
+                    </effect>
+                </ImageView>
+            </StackPane>
+        </ScrollPane>
+    </VBox>
+</fx:root>
