@@ -4,6 +4,7 @@ import com.visualipcv.controller.binding.BindingHelper;
 import com.visualipcv.controller.binding.FactoryFunction;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
+import com.visualipcv.core.GraphElement;
 import com.visualipcv.core.InputNodeSlot;
 import com.visualipcv.core.NativeProcessor;
 import com.visualipcv.core.Node;
@@ -49,14 +50,9 @@ import javafx.scene.text.Text;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NodeController extends Controller<AnchorPane> {
+public class NodeController extends GraphElementController<AnchorPane> {
     private GraphController graphController;
 
-    private double previousMouseX;
-    private double previousMouseY;
-
-    @FXML
-    private EditableLabel title;
     @FXML
     private VBox inputContainer;
     @FXML
@@ -69,31 +65,18 @@ public class NodeController extends Controller<AnchorPane> {
     private Pane errorPane;
     @FXML
     private StackPane nodeClass;
-    @FXML
-    private AnchorPane wrapper;
 
-    private final UIProperty selectedProperty = new UIProperty(false);
-    private final UIProperty titleProperty = new UIProperty();
     private final UIProperty inputSlotsProperty = new UIProperty();
     private final UIProperty outputSlotsProperty = new UIProperty();
     private final UIProperty nodeClassProperty = new UIProperty();
     private final UIProperty errorProperty = new UIProperty();
-    private final UIProperty xOffsetProperty = new UIProperty();
-    private final UIProperty yOffsetProperty = new UIProperty();
     private final UIProperty isProxyProperty = new UIProperty();
 
     private ContextMenu contextMenu;
 
     public NodeController(GraphController controller) {
-        super(AnchorPane.class, "NodeView.fxml");
+        super(controller, AnchorPane.class, "NodeView.fxml");
         this.graphController = controller;
-
-        titleProperty.addEventListener(new PropertyChangedEventListener() {
-            @Override
-            public void onChanged(Object oldValue, Object newValue) {
-                title.setText((String)newValue);
-            }
-        });
 
         isProxyProperty.addEventListener(new PropertyChangedEventListener() {
             @Override
@@ -109,26 +92,6 @@ public class NodeController extends Controller<AnchorPane> {
 
                 for(AdvancedNodeSlotController slot : (List<AdvancedNodeSlotController>)newValue) {
                     inputContainer.getChildren().add(slot.getView());
-                }
-            }
-        });
-
-        selectedProperty.addEventListener(new PropertyChangedEventListener() {
-            @Override
-            public void onChanged(Object oldValue, Object newValue) {
-                if((Boolean)newValue) {
-                    wrapper.setBorder(BorderUtils.createHighlightBorder());
-                    AnchorPane.setBottomAnchor(wrapper, 0.0);
-                    AnchorPane.setTopAnchor(wrapper, 0.0);
-                    AnchorPane.setLeftAnchor(wrapper, 0.0);
-                    AnchorPane.setRightAnchor(wrapper, 0.0);
-                }
-                else {
-                    wrapper.setBorder(null);
-                    AnchorPane.setBottomAnchor(wrapper, 3.0);
-                    AnchorPane.setTopAnchor(wrapper, 3.0);
-                    AnchorPane.setLeftAnchor(wrapper, 3.0);
-                    AnchorPane.setRightAnchor(wrapper, 3.0);
                 }
             }
         });
@@ -168,7 +131,7 @@ public class NodeController extends Controller<AnchorPane> {
             }
         });
 
-        xOffsetProperty.addEventListener(new PropertyChangedEventListener() {
+        xOffsetProperty().addEventListener(new PropertyChangedEventListener() {
             @Override
             public void onChanged(Object oldValue, Object newValue) {
                 getView().setLayoutX((Double)newValue);
@@ -187,15 +150,11 @@ public class NodeController extends Controller<AnchorPane> {
             }
         });
 
-        yOffsetProperty.addEventListener(new PropertyChangedEventListener() {
+        yOffsetProperty().addEventListener(new PropertyChangedEventListener() {
             @Override
             public void onChanged(Object oldValue, Object newValue) {
                 getView().setLayoutY((Double)newValue);
             }
-        });
-
-        titleProperty.setBinder((Object node) -> {
-            return ((Node)node).getName();
         });
 
         isProxyProperty.setBinder((Object node) -> {
@@ -234,29 +193,10 @@ public class NodeController extends Controller<AnchorPane> {
                 return n.getLastError().getMessage();
         });
 
-        xOffsetProperty.setBinder((Object node) -> {
-            return ((Node)node).getX();
-        });
-
-        yOffsetProperty.setBinder((Object node) -> {
-            return ((Node)node).getY();
-        });
-
         getView().addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 NodeController.this.contextMenu.hide();
-            }
-        });
-
-        title.textProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if(((Node)getContext()).isProxy())
-                    return;
-
-                if(((Node)getContext()).findProcessor().isProperty())
-                    ((Node)getContext()).setName(newValue);
             }
         });
 
@@ -299,6 +239,18 @@ public class NodeController extends Controller<AnchorPane> {
             @Override
             public String getName() {
                 return "Delete";
+            }
+        });
+
+        node.addCommand(new NodeCommand() {
+            @Override
+            public void execute(Node node) {
+                getGraphController().groupSelected();
+            }
+
+            @Override
+            public String getName() {
+                return "Create group";
             }
         });
     }
@@ -366,29 +318,6 @@ public class NodeController extends Controller<AnchorPane> {
         nodeClass.getChildren().add(text);
     }
 
-    public void setSelected(boolean selected) {
-        this.selectedProperty.setValue(selected);
-    }
-
-    public boolean isSelected() {
-        return (Boolean)selectedProperty.getValue();
-    }
-
-    public void moveTo(double x, double y) {
-        ((Node)getContext()).setLocation(x, y);
-        poll(xOffsetProperty);
-        poll(yOffsetProperty);
-    }
-
-    @FXML
-    public void onMousePressed(MouseEvent event) {
-        previousMouseX = event.getScreenX();
-        previousMouseY = event.getScreenY();
-
-        graphController.select(this, event.isControlDown());
-        event.consume();
-    }
-
     @FXML
     public void onMouseReleased(MouseEvent event) {
         if(event.getButton() == MouseButton.SECONDARY) {
@@ -397,33 +326,8 @@ public class NodeController extends Controller<AnchorPane> {
         }
     }
 
-    @FXML
-    public void onMouseDragged(MouseEvent event) {
-        double deltaX = event.getScreenX() - previousMouseX;
-        double deltaY = event.getScreenY() - previousMouseY;
-        previousMouseX = event.getScreenX();
-        previousMouseY = event.getScreenY();
-
-        if(event.getButton() == MouseButton.PRIMARY) {
-            getGraphController().moveSelected(deltaX, deltaY);
-            event.consume();
-        }
-    }
-
-    @FXML
-    public void onKeyPressed(KeyEvent event) {
-        if(event.getCode() == KeyCode.DELETE) {
-            getGraphController().removeSelected();
-            event.consume();
-        }
-    }
-
     public UIProperty errorProperty() {
         return errorProperty;
-    }
-
-    public GraphController getGraphController() {
-        return graphController;
     }
 
     @Override
@@ -436,11 +340,11 @@ public class NodeController extends Controller<AnchorPane> {
 
         if(node.findProcessor() != null) {
             if(node.findProcessor().isProperty()) {
-                title.setEditable(true);
+                getTitle().setEditable(true);
                 getView().pseudoClassStateChanged(PseudoClass.getPseudoClass("property"), true);
             }
             else {
-                title.setEditable(false);
+                getTitle().setEditable(false);
                 getView().pseudoClassStateChanged(PseudoClass.getPseudoClass("property"),  false);
             }
         }
