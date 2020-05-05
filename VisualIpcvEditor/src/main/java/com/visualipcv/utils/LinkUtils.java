@@ -4,7 +4,7 @@ import org.opencv.core.Core;
 
 public class LinkUtils {
     public static void linkNativeLibraries() {
-        if(System.getProperty("os.name").contains("win")) {
+        if(!System.getProperty("os.name").contains("win")) {
             String libsPath = System.getProperty("user.dir") + "/ext/";
             String libExt = ".dylib";
 
