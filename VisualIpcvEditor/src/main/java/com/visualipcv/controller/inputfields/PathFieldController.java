@@ -3,11 +3,10 @@ package com.visualipcv.controller.inputfields;
 import com.visualipcv.controller.BorderUtils;
 import com.visualipcv.controller.Controller;
 import com.visualipcv.controller.InputFieldController;
-import com.visualipcv.controller.binding.Binder;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
-import com.visualipcv.core.DataType;
 import com.visualipcv.core.InputNodeSlot;
+import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.ValidationException;
 import com.visualipcv.editor.Editor;
 import javafx.beans.value.ChangeListener;
@@ -23,8 +22,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class PathFieldController extends Controller<Pane> {
     private TextField pathField;
@@ -59,7 +56,7 @@ public class PathFieldController extends Controller<Pane> {
             }
         });
 
-        pathProperty.setBinder(context -> ((InputNodeSlot)context).getValue());
+        pathProperty.setBinder(context -> InputFieldController.getValueFromSlot((NodeSlot)context));
 
         pathField.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -91,7 +88,7 @@ public class PathFieldController extends Controller<Pane> {
                 if(event.getDragboard().hasFiles()) {
                     try {
                         String path = event.getDragboard().getFiles().get(0).getPath();
-                        ((InputNodeSlot)getContext()).setValue(Paths.get(path));
+                        ((InputNodeSlot)getContext()).setValue(path);
                         pathField.setBorder(null);
                         poll(pathProperty);
                     } catch (ValidationException e) {
@@ -111,7 +108,7 @@ public class PathFieldController extends Controller<Pane> {
 
                 if(file != null) {
                     try {
-                        ((InputNodeSlot)getContext()).setValue(file.toPath());
+                        ((InputNodeSlot)getContext()).setValue(file.getAbsolutePath());
                         pathField.setBorder(null);
                         poll(pathProperty);
                     } catch (ValidationException e) {
@@ -120,11 +117,13 @@ public class PathFieldController extends Controller<Pane> {
                 }
             }
         });
+
+        initialize();
     }
 
     private void onAction() {
         try {
-            ((InputNodeSlot)getContext()).setValue(Paths.get(pathField.getText()));
+            ((InputNodeSlot)getContext()).setValue(pathField.getText());
             pathField.setBorder(null);
         } catch(ValidationException e) {
             pathField.setBorder(BorderUtils.createErrorBorder());

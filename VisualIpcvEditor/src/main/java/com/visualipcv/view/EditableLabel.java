@@ -178,18 +178,26 @@ public class EditableLabel extends Pane {
         }
     }
 
-    private void enterEditableMode() {
+    public void enterEditableMode() {
         if(!getEditable())
             return;
 
-        textField.setVisible(true);
-        label.setVisible(false);
+        if(editableState)
+            return;
+
+        getChildren().remove(label);
+        getChildren().add(textField);
         pseudoClassStateChanged(PseudoClass.getPseudoClass("editable"), true);
+        requestLayout();
     }
 
     private void exitEditableMode() {
-        textField.setVisible(false);
-        label.setVisible(true);
+        if(!editableState)
+            return;
+
+        getChildren().remove(textField);
+        getChildren().add(label);
         pseudoClassStateChanged(PseudoClass.getPseudoClass("editable"), false);
+        requestLayout();
     }
 }

@@ -1,6 +1,11 @@
 package com.visualipcv.core;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public abstract class Processor {
     private String name;
@@ -11,7 +16,12 @@ public abstract class Processor {
     private List<ProcessorCommand> commands;
     private boolean isProperty = false;
 
-    public Processor(ProcessorBuilder builder) {
+    public Processor(ProcessorBuilder builder) throws CommonException {
+        rebuild(builder);
+    }
+
+    protected void rebuild(ProcessorBuilder builder) throws CommonException {
+        validate(builder);
         this.name = builder.getName();
         this.module = builder.getModule();
         this.category = builder.getCategory();
@@ -27,6 +37,10 @@ public abstract class Processor {
 
     public String getModule() {
         return module;
+    }
+
+    public ProcessorUID getUID() {
+        return new ProcessorUID(getName(), getModule());
     }
 
     public String getCategory() {
@@ -55,11 +69,11 @@ public abstract class Processor {
     }
 
     public List<ProcessorProperty> getInputProperties() {
-        return inputProperties;
+        return Collections.unmodifiableList(inputProperties);
     }
 
     public List<ProcessorProperty> getOutputProperties() {
-        return outputProperties;
+        return Collections.unmodifiableList(outputProperties);
     }
 
     public List<ProcessorCommand> getCommands() {
@@ -68,6 +82,14 @@ public abstract class Processor {
 
     public boolean isProperty() {
         return isProperty;
+    }
+
+    protected void setName(String name) {
+        this.name = name;
+    }
+
+    protected void setCategory(String category) {
+        this.category = category;
     }
 
     @Override
@@ -79,9 +101,24 @@ public abstract class Processor {
         this.commands.add(command);
     }
 
-    public abstract DataBundle execute(DataBundle inputs, DataBundle nodeState) throws CommonException;
-    public void preExecute(DataBundle nodeState) throws CommonException {}
-    public void postExecute(DataBundle nodeState) throws CommonException {}
-    public void onCreate(DataBundle nodeState) throws CommonException {}
-    public void onDestroy(DataBundle nodeState) throws CommonException {}
+    public abstract DataBundle execute(DataBundle inputs, DataBundle state) throws CommonException;
+    public void preExecute(DataBundle state) throws CommonException {}
+    public void postExecute(DataBundle state) throws CommonException {}
+    public void onCreate() throws CommonException {}
+    public void onDestroy() throws CommonException {}
+
+    private void validate(ProcessorBuilder builder) throws CommonException {
+        Set<String> propertyNames = new HashSet<>();
+
+        List<ProcessorProperty> properties = new ArrayList<>(builder.getInputProperties());
+        properties.addAll(builder.getOutputProperties());
+
+        for(ProcessorProperty property : properties) {
+            if(propertyNames.contains(property.getName())) {
+                throw new CommonException(getClass().getName() + ": Names of properties must be unique inside one Processor");
+            }
+
+            propertyNames.add(property.getName());
+        }
+    }
 }

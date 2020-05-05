@@ -23,7 +23,7 @@ public class BlendProcessor extends Processor {
     }
 
     @Override
-    public DataBundle execute(DataBundle inputs, DataBundle state) {
+    public DataBundle execute(DataBundle inputs, DataBundle props) {
         Mat a = inputs.read("A");
         Mat b = inputs.read("B");
         Mat dst = new Mat();

@@ -3,7 +3,6 @@ package com.visualipcv.controller;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
 import com.visualipcv.core.DataType;
-import com.visualipcv.core.InputNodeSlot;
 import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.OutputNodeSlot;
 import javafx.geometry.Insets;
@@ -42,8 +41,9 @@ public class AdvancedNodeSlotController extends Controller<HBox> {
         showControlProperty.addEventListener(new PropertyChangedEventListener() {
             @Override
             public void onChanged(Object oldValue, Object newValue) {
-                fieldController.getView().setVisible((Boolean)newValue);
-                fieldController.getView().setManaged((Boolean)newValue);
+                boolean output = getContext() instanceof OutputNodeSlot;
+                fieldController.getView().setVisible((Boolean)newValue && !output);
+                fieldController.getView().setManaged((Boolean)newValue && !output);
             }
         });
 
@@ -58,10 +58,14 @@ public class AdvancedNodeSlotController extends Controller<HBox> {
         slotController.isOutputProperty().addEventListener(new PropertyChangedEventListener() {
             @Override
             public void onChanged(Object oldValue, Object newValue) {
+                getView().getChildren().clear();
+
                 if((Boolean)newValue) {
-                    getView().setAlignment(Pos.CENTER_RIGHT);
+                    getView().getChildren().add(vbox);
+                    getView().getChildren().add(slotController.getView());
                 } else {
-                    getView().setAlignment(Pos.CENTER_LEFT);
+                    getView().getChildren().add(slotController.getView());
+                    getView().getChildren().add(vbox);
                 }
             }
         });
@@ -74,11 +78,11 @@ public class AdvancedNodeSlotController extends Controller<HBox> {
         });
 
         showConnectorProperty.setBinder((Object slot) -> {
-            return ((InputNodeSlot)slot).getProperty().showConnector();
+            return ((NodeSlot)slot).getProperty().showConnector();
         });
 
         showControlProperty.setBinder((Object slot) -> {
-            return ((InputNodeSlot)slot).getProperty().showControl();
+            return ((NodeSlot)slot).getProperty().showControl();
         });
 
         titleProperty.setBinder((Object slot) -> {
@@ -89,6 +93,9 @@ public class AdvancedNodeSlotController extends Controller<HBox> {
             slotController.connectedProperty().addEventListener(new PropertyChangedEventListener() {
                 @Override
                 public void onChanged(Object oldValue, Object newValue) {
+                    if(getContext() instanceof OutputNodeSlot)
+                        return;
+
                     if((boolean)newValue) {
                         fieldController.getView().setVisible(false);
                     } else if((boolean)showControlProperty.getValue()) {

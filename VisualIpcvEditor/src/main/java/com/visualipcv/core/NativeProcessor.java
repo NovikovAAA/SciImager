@@ -1,5 +1,6 @@
 package com.visualipcv.core;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class NativeProcessor extends Processor {
@@ -17,7 +18,7 @@ public class NativeProcessor extends Processor {
         getOutputProperties().addAll(getOutputPropertyList(uid));
     }
 
-    public DataBundle execute(DataBundle inputs, DataBundle state) {
+    public DataBundle execute(DataBundle inputs, DataBundle props) {
         return execute(new ProcessorUID(getName(), getModule()), inputs);
     }
 }

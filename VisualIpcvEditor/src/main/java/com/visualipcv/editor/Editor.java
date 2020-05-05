@@ -141,7 +141,7 @@ public class Editor {
                     try {
                         openDockedWindow((Controller<?>)clazz.newInstance());
                     } catch(Exception e) {
-                        e.printStackTrace();
+                        Console.error(e);
                     }
                 }
             }, null);
@@ -161,7 +161,7 @@ public class Editor {
                     try {
                         method.invoke(null);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Console.error(e);
                     }
                 }
             }, null);

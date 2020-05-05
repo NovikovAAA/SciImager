@@ -12,13 +12,13 @@ public class StringSourceProcessor extends Processor {
             .setModule("Core")
             .setCategory("Input")
             .addInputProperty(new ProcessorProperty("String", DataTypes.STRING, true, false))
-            .addOutputProperty(new ProcessorProperty("String", DataTypes.STRING)));
+            .addOutputProperty(new ProcessorProperty("Result", DataTypes.STRING)));
     }
 
     @Override
     public DataBundle execute(DataBundle inputs, DataBundle state) {
         DataBundle res = new DataBundle();
-        res.write("String", inputs.read("String"));
+        res.write("Result", inputs.read("String"));
         return res;
     }
 }

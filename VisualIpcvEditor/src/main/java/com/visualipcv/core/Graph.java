@@ -6,6 +6,8 @@ import com.visualipcv.core.io.ConnectionEntity;
 import com.visualipcv.core.io.GraphClipboard;
 import com.visualipcv.core.io.GraphEntity;
 import com.visualipcv.core.io.NodeEntity;
+import com.visualipcv.editor.Editor;
+import com.visualipcv.procs.GraphProcessor;
 import com.visualipcv.utils.ProcUtils;
 import com.visualipcv.view.CustomDataFormats;
 import javafx.scene.input.Clipboard;
@@ -24,32 +26,50 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 
 public class Graph implements IDocumentPart {
+    private Document document;
+    private UUID id;
     private String name;
     private ArrayList<Node> nodes = new ArrayList<>();
     private Set<Connection> connections = new HashSet<>();
     private Map<NodeSlot, List<Connection>> slotConnectionAssoc = new HashMap<>();
-    private Map<Node, Map<String, Object>> cache = new HashMap<>();
 
-    public Graph() {
-
+    public Graph(Document document) {
+        this.document = document;
+        this.id = UUID.randomUUID();
     }
 
-    public Graph(GraphEntity graphEntity) {
+    public Graph(Document document, GraphEntity graphEntity) {
+        this(document);
         name = graphEntity.getName();
+        id = graphEntity.getId();
 
         for(NodeEntity node : graphEntity.getNodes()) {
-            addNode(new Node(this, node));
+            try {
+                addNode(new Node(this, node));
+            } catch (CommonException e) {
+                Console.error(e.getMessage());
+                // TODO: exchange node with proxy
+            }
         }
 
         for(ConnectionEntity connection : graphEntity.getConnections()) {
-            addConnection(new Connection(this, connection));
+            try {
+                addConnection(new Connection(this, connection));
+            } catch (CommonException e) {
+                Console.error(e.getMessage());
+            }
         }
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
+        onChanged();
     }
 
     @Override
@@ -65,6 +85,7 @@ public class Graph implements IDocumentPart {
         } catch (GraphExecutionException e) {
             Console.write(e.getMessage());
         }
+        onChanged();
     }
 
     public void addNodes(Collection<Node> nodes) {
@@ -77,6 +98,7 @@ public class Graph implements IDocumentPart {
                 Console.write(e.getMessage());
             }
         }
+        onChanged();
     }
 
     public void removeNode(Node node) {
@@ -102,6 +124,7 @@ public class Graph implements IDocumentPart {
         } catch (GraphExecutionException e) {
             Console.write(e.getMessage());
         }
+        onChanged();
     }
 
     public void addConnection(Connection connection) {
@@ -111,6 +134,8 @@ public class Graph implements IDocumentPart {
         slotConnectionAssoc.get(connection.getSource()).add(connection);
         slotConnectionAssoc.get(connection.getTarget()).add(connection);
         updateProperties(connection.getSource().getNode(), new HashSet<>());
+
+        onChanged();
     }
 
     public void removeConnections(NodeSlot slot) {
@@ -132,6 +157,8 @@ public class Graph implements IDocumentPart {
         }
 
         connections.removeAll(connectionsToRemove);
+
+        onChanged();
     }
 
     public List<Node> getNodes() {
@@ -151,7 +178,10 @@ public class Graph implements IDocumentPart {
         List<Node> outputs = new ArrayList<>();
 
         for(Node node : nodes) {
-            if(node.getProcessor().isOutput()) {
+            if(node.isProxy())
+                continue;
+
+            if(node.findProcessor().isOutput()) {
                 outputs.add(node);
             }
         }
@@ -159,30 +189,16 @@ public class Graph implements IDocumentPart {
         return outputs;
     }
 
-    public void writeCache(Node node, String name, Object value) {
-        Map<String, Object> values;
+    public List<Node> getProxyNodes() {
+        List<Node> proxy = new ArrayList<>();
 
-        if(cache.containsKey(node))
-            values = cache.get(node);
-        else
-            values = new HashMap<>();
+        for(Node node : nodes) {
+            if(node.isProxy()) {
+                proxy.add(node);
+            }
+        }
 
-        values.put(name, value);
-        cache.put(node, values);
-    }
-
-    public Object readCache(Node node, String name) {
-        if(!cache.containsKey(node))
-            return null;
-
-        return cache.get(node).get(name);
-    }
-
-    public DataType getTypeOfCalculatedSlot(Node node, String name) {
-        if(!cache.containsKey(node))
-            return null;
-
-        return node.getOutputNodeSlot(name).getActualType();
+        return proxy;
     }
 
     private void updateProperties(Node node, Set<Node> updatedNodes) {
@@ -211,12 +227,17 @@ public class Graph implements IDocumentPart {
         }
     }
 
-    public void execute() throws GraphExecutionException {
-        cache.clear();
+    public void execute(GraphExecutionContext context, boolean cleanProperties) throws GraphExecutionException {
+        GraphExecutionData.clear(this, cleanProperties);
+
+        for(Node node : this.nodes) {
+            node.checkProcessorCompatibility();
+        }
+
         List<Node> nodes = getOutputNodes();
 
         for (Node node : nodes) {
-            node.execute();
+            node.execute(context);
         }
     }
 
@@ -229,8 +250,123 @@ public class Graph implements IDocumentPart {
         return null;
     }
 
+    public Node findProperty(String name) {
+        for(Node node : getNodes()) {
+            if(node.isProxy())
+                continue;
+
+            if(node.findProcessor().isProperty() && node.getName().equals(name)) {
+                return node;
+            }
+        }
+
+        return null;
+    }
+
+    public void onChanged() {
+        if(getDocument() == null)
+            return;
+
+        Processor processor = ProcessorLibrary.findProcessor(getId());
+
+        if(processor == null) {
+            try {
+                ProcessorLibrary.addProcessor(new GraphProcessor(this));
+            } catch (CommonException e) {
+                Console.error(e.getMessage());
+            }
+
+            return;
+        }
+
+        if(processor instanceof GraphProcessor) {
+            try {
+                ((GraphProcessor)processor).rebuild();
+            } catch (CommonException e) {
+                Console.write(e.getMessage());
+            }
+        }
+    }
+
     @Override
     public Object getSerializableProxy() {
         return new GraphEntity(this);
+    }
+
+    @Override
+    public Document getDocument() {
+        return document;
+    }
+
+    @Override
+    public Document getRoot() {
+        return document;
+    }
+
+    @Override
+    public UUID getId() {
+        return id;
+    }
+
+    @Override
+    public void onOpen() {
+        onChanged();
+    }
+
+    @Override
+    public void onClose() {
+        Processor processor = ProcessorLibrary.findProcessor(getId());
+
+        if(processor != null) {
+            ProcessorLibrary.removeProcessor(processor);
+        }
+
+        Editor.closeWindow(null, this);
+    }
+
+    public void executeAsync(GraphExecutionContext context, Semaphore semaphore) {
+        for(Node node : this.nodes) {
+            if(!node.isProxy())
+                node.checkProcessorCompatibility();
+        }
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(semaphore != null) {
+                    try {
+                        semaphore.acquire();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                try {
+                    execute(context,  true);
+                } catch (GraphExecutionException e) {
+                    throw new RuntimeException(e);
+                } finally {
+                    if(semaphore != null) {
+                        semaphore.release();
+                    }
+                }
+            }
+        });
+
+        thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            @Override
+            public void uncaughtException(Thread t, Throwable e) {
+                //Console.error(e);
+            }
+        });
+
+        thread.start();
+    }
+
+    public Node replaceWithUpdatedProcessor(Node node, Processor processor) {
+        Node newNode = new Node(this, processor, node.getX(), node.getY());
+        removeNode(node);
+        addNode(newNode);
+        return newNode;
     }
 }

@@ -1,26 +1,34 @@
 package com.visualipcv.scripts;
 
 import com.visualipcv.core.DataBundle;
+import com.visualipcv.core.Document;
 import com.visualipcv.core.IDocumentPart;
 import com.visualipcv.core.ProcessorProperty;
 import com.visualipcv.core.io.ProcessorPropertyEntity;
 import com.visualipcv.core.io.SciScriptEntity;
+import com.visualipcv.editor.Editor;
 import org.scilab.modules.types.ScilabType;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class SciScript implements IDocumentPart {
+    private Document document;
+    private UUID id;
     private String name;
     private List<ProcessorProperty> inputProperties = new ArrayList<>();
     private List<ProcessorProperty> outputProperties = new ArrayList<>();
     private String code;
 
-    public SciScript() {
-
+    public SciScript(Document document) {
+        this.document = document;
+        this.id = UUID.randomUUID();
     }
 
-    public SciScript(SciScriptEntity entity) {
+    public SciScript(Document document, SciScriptEntity entity) {
+        this(document);
+
         for(ProcessorPropertyEntity property : entity.getInputProperties()) {
             inputProperties.add(new ProcessorProperty(property));
         }
@@ -29,10 +37,12 @@ public class SciScript implements IDocumentPart {
             outputProperties.add(new ProcessorProperty(property));
         }
 
+        this.id = entity.getId();
         this.code = entity.getCode();
         this.name = entity.getName();
     }
 
+    @Override
     public void setName(String name) {
         this.name = name;
     }
@@ -106,5 +116,20 @@ public class SciScript implements IDocumentPart {
     @Override
     public SciScriptEntity getSerializableProxy() {
         return new SciScriptEntity(this);
+    }
+
+    @Override
+    public Document getDocument() {
+        return document;
+    }
+
+    @Override
+    public Document getRoot() {
+        return document;
+    }
+
+    @Override
+    public UUID getId() {
+        return id;
     }
 }

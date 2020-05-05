@@ -1,5 +1,6 @@
 package com.visualipcv.controller;
 
+import com.visualipcv.Console;
 import com.visualipcv.editor.Editor;
 import com.visualipcv.editor.EditorWindow;
 import com.visualipcv.view.FreePane;
@@ -56,7 +57,7 @@ public class ImageWindow extends Controller<AnchorPane> {
                 try {
                     ImageIO.write(SwingFXUtils.fromFXImage(image, null), ext, file);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    Console.error(e);
                 }
             }
         });

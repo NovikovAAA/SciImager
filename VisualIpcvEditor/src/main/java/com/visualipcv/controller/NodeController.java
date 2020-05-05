@@ -1,6 +1,7 @@
 package com.visualipcv.controller;
 
 import com.visualipcv.controller.binding.BindingHelper;
+import com.visualipcv.controller.binding.FactoryFunction;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
 import com.visualipcv.core.InputNodeSlot;
@@ -9,7 +10,9 @@ import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeCommand;
 import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.OutputNodeSlot;
+import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorCommand;
+import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.core.SciProcessor;
 import com.visualipcv.editor.Editor;
 import com.visualipcv.view.EditableLabel;
@@ -77,6 +80,7 @@ public class NodeController extends Controller<AnchorPane> {
     private final UIProperty errorProperty = new UIProperty();
     private final UIProperty xOffsetProperty = new UIProperty();
     private final UIProperty yOffsetProperty = new UIProperty();
+    private final UIProperty isProxyProperty = new UIProperty();
 
     private ContextMenu contextMenu;
 
@@ -88,6 +92,13 @@ public class NodeController extends Controller<AnchorPane> {
             @Override
             public void onChanged(Object oldValue, Object newValue) {
                 title.setText((String)newValue);
+            }
+        });
+
+        isProxyProperty.addEventListener(new PropertyChangedEventListener() {
+            @Override
+            public void onChanged(Object oldValue, Object newValue) {
+                getView().pseudoClassStateChanged(PseudoClass.getPseudoClass("proxy"), (Boolean)newValue);
             }
         });
 
@@ -127,7 +138,7 @@ public class NodeController extends Controller<AnchorPane> {
             public void onChanged(Object oldValue, Object newValue) {
                 outputContainer.getChildren().clear();
 
-                for(NodeSlotController slot : (List<NodeSlotController>)newValue) {
+                for(AdvancedNodeSlotController slot : (List<AdvancedNodeSlotController>)newValue) {
                     outputContainer.getChildren().add(slot.getView());
                 }
             }
@@ -168,8 +179,8 @@ public class NodeController extends Controller<AnchorPane> {
                     }
                 }
 
-                for(NodeSlotController slot : getOutputSlots()) {
-                    for(ConnectionController connection : slot.getConnections()) {
+                for(AdvancedNodeSlotController slot : getOutputSlots()) {
+                    for(ConnectionController connection : slot.getSlot().getConnections()) {
                         connection.invalidate();
                     }
                 }
@@ -187,19 +198,27 @@ public class NodeController extends Controller<AnchorPane> {
             return ((Node)node).getName();
         });
 
+        isProxyProperty.setBinder((Object node) -> {
+            return ((Node)node).isProxy();
+        });
+
         inputSlotsProperty.setBinder((Object node) -> {
             return BindingHelper.bindList(inputSlotsProperty, ((Node)node).getInputSlots(), (InputNodeSlot slot) -> new AdvancedNodeSlotController(NodeController.this, slot.getProperty().getType()));
         });
 
         outputSlotsProperty.setBinder((Object node) -> {
-            return BindingHelper.bindList(outputSlotsProperty, ((Node)node).getOutputSlots(), (OutputNodeSlot slot) -> new NodeSlotController(this));
+            return BindingHelper.bindList(outputSlotsProperty, ((Node) node).getOutputSlots(), (OutputNodeSlot slot) -> new AdvancedNodeSlotController(NodeController.this, slot.getProperty().getType()));
         });
 
         nodeClassProperty.setBinder((Object node) -> {
             Node n = (Node)node;
-            if(n.getProcessor() instanceof SciProcessor) {
+
+            if(n.isProxy())
+                return "";
+
+            if(n.findProcessor() instanceof SciProcessor) {
                 return "SciLab";
-            } else if(n.getProcessor() instanceof NativeProcessor) {
+            } else if(n.findProcessor() instanceof NativeProcessor) {
                 return "C++";
             } else {
                 return "Java";
@@ -226,14 +245,17 @@ public class NodeController extends Controller<AnchorPane> {
         getView().addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                contextMenu.hide();
+                NodeController.this.contextMenu.hide();
             }
         });
 
         title.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                if(((Node)getContext()).getProcessor().isProperty())
+                if(((Node)getContext()).isProxy())
+                    return;
+
+                if(((Node)getContext()).findProcessor().isProperty())
                     ((Node)getContext()).setName(newValue);
             }
         });
@@ -283,6 +305,25 @@ public class NodeController extends Controller<AnchorPane> {
 
     private ContextMenu createContextMenu() {
         ContextMenu menu = new ContextMenu();
+        Node node = (Node)getContext();
+
+        if(node.isProxy()) {
+            MenuItem refresh = new MenuItem("Refresh");
+            refresh.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    Processor processor = node.findProcessor();
+
+                    if(processor == null)
+                        return;
+
+                    node.getGraph().replaceWithUpdatedProcessor(node, processor);
+                    getGraphController().invalidate();
+                }
+            });
+
+            menu.getItems().add(refresh);
+        }
 
         for(NodeCommand command : ((Node)getContext()).getCommands()) {
             MenuItem item = new MenuItem(command.getName());
@@ -295,15 +336,17 @@ public class NodeController extends Controller<AnchorPane> {
             menu.getItems().add(item);
         }
 
-        for(ProcessorCommand command : ((Node)getContext()).getProcessor().getCommands()) {
-            MenuItem item = new MenuItem(command.getName());
-            item.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    command.execute(((Node)getContext()).getState());
-                }
-            });
-            menu.getItems().add(item);
+        if(!node.isProxy()) {
+            for(ProcessorCommand command : ((Node)getContext()).findProcessor().getCommands()) {
+                MenuItem item = new MenuItem(command.getName());
+                item.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        command.execute(getGraphController().getExecutionContext().load(node));
+                    }
+                });
+                menu.getItems().add(item);
+            }
         }
 
         return menu;
@@ -313,8 +356,8 @@ public class NodeController extends Controller<AnchorPane> {
         return (List<AdvancedNodeSlotController>)inputSlotsProperty.getValue();
     }
 
-    public List<NodeSlotController> getOutputSlots() {
-        return (List<NodeSlotController>)outputSlotsProperty.getValue();
+    public List<AdvancedNodeSlotController> getOutputSlots() {
+        return (List<AdvancedNodeSlotController>)outputSlotsProperty.getValue();
     }
 
     private void setNodeClassLabel(String label) {
@@ -386,19 +429,23 @@ public class NodeController extends Controller<AnchorPane> {
     @Override
     public void setContext(Object context) {
         super.setContext(context);
-        addDefaultCommands();
-        contextMenu = createContextMenu();
 
         Node node = (Node)context;
+        node.getCommands().clear();
+        addDefaultCommands();
 
-        if(node.getProcessor().isProperty()) {
-            title.setEditable(true);
-            getView().pseudoClassStateChanged(PseudoClass.getPseudoClass("property"), true);
+        if(node.findProcessor() != null) {
+            if(node.findProcessor().isProperty()) {
+                title.setEditable(true);
+                getView().pseudoClassStateChanged(PseudoClass.getPseudoClass("property"), true);
+            }
+            else {
+                title.setEditable(false);
+                getView().pseudoClassStateChanged(PseudoClass.getPseudoClass("property"),  false);
+            }
         }
-        else {
-            title.setEditable(false);
-            getView().pseudoClassStateChanged(PseudoClass.getPseudoClass("property"),  false);
-        }
+
+        invalidate();
     }
 
     public void setContent(Image image) {
@@ -416,5 +463,12 @@ public class NodeController extends Controller<AnchorPane> {
         content.setPrefWidth(view.getFitWidth() / 0.9);
         content.getChildren().clear();
         content.getChildren().add(view);
+    }
+
+    @Override
+    public void invalidate() {
+        super.invalidate();
+        contextMenu = createContextMenu();
+        getView().requestLayout();
     }
 }

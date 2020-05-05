@@ -125,6 +125,11 @@
     -fx-background-color: darkorange;
 }
 
+.node:proxy {
+    -fx-background-color: #888888;
+    -fx-opacity: 0.3;
+}
+
 .list-view .list-cell:odd {
     -fx-background-color: -fx-primary-color;
 }

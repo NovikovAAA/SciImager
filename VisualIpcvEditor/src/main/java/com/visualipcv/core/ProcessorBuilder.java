@@ -42,6 +42,16 @@ public class ProcessorBuilder {
         return this;
     }
 
+    public ProcessorBuilder setInputProperties(List<ProcessorProperty> properties) {
+        inputProperties = properties;
+        return this;
+    }
+
+    public ProcessorBuilder setOutputProperties(List<ProcessorProperty> properties) {
+        outputProperties = properties;
+        return this;
+    }
+
     public ProcessorBuilder addCommand(ProcessorCommand command) {
         commands.add(command);
         return this;

@@ -1,11 +1,18 @@
 package com.visualipcv.core;
 
+import com.visualipcv.core.io.NodeEntity;
+import com.visualipcv.core.io.NodeSlotEntity;
+
 public class InputNodeSlot extends NodeSlot {
     private Object value;
 
     public InputNodeSlot(Node node, ProcessorProperty property) {
         super(node, property);
         value = property.getType().getDefaultValue();
+    }
+
+    public InputNodeSlot(Node node, NodeSlotEntity entity) {
+        super(node, entity);
     }
 
     public void connect(NodeSlot slot) {

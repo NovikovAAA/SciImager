@@ -1,11 +1,6 @@
 package com.visualipcv.controller;
 
-import com.visualipcv.controller.ConnectionBaseController;
-import com.visualipcv.controller.NodeSlotController;
 import com.visualipcv.core.NodeSlot;
-import javafx.geometry.Point2D;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
 
 public class ConnectionPreviewController extends ConnectionBaseController {
     private NodeSlotController source;

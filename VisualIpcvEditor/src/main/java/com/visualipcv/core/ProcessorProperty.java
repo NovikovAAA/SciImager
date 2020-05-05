@@ -2,6 +2,8 @@ package com.visualipcv.core;
 
 import com.visualipcv.core.io.ProcessorPropertyEntity;
 
+import java.util.Objects;
+
 public class ProcessorProperty {
     private String name;
     private DataType type;
@@ -55,5 +57,21 @@ public class ProcessorProperty {
 
     public boolean showConnector() {
         return showConnector;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProcessorProperty property = (ProcessorProperty) o;
+        return showControl == property.showControl &&
+                showConnector == property.showConnector &&
+                Objects.equals(name, property.name) &&
+                Objects.equals(type, property.type);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, type, showControl, showConnector);
     }
 }

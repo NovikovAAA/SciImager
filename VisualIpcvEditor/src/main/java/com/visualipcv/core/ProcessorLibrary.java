@@ -1,5 +1,6 @@
 package com.visualipcv.core;
 
+import com.visualipcv.Console;
 import com.visualipcv.procs.*;
 import org.opencv.core.Mat;
 import org.reflections.Reflections;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class ProcessorLibrary extends Refreshable {
     private List<Processor> processors = new ArrayList<>();
@@ -44,6 +46,8 @@ public class ProcessorLibrary extends Refreshable {
         for(Class<? extends Processor> proc : types) {
             try {
                 processors.add(proc.newInstance());
+            } catch (CommonException e) {
+                Console.error(e);
             } catch(Exception e) {
 
             }
@@ -52,6 +56,10 @@ public class ProcessorLibrary extends Refreshable {
 
     public static List<Processor> getProcessors() {
         return getInstance().processors;
+    }
+
+    public static Processor findProcessor(ProcessorUID uid) {
+        return findProcessor(uid.getModule(), uid.getName());
     }
 
     public static Processor findProcessor(String module, String name) {
@@ -63,8 +71,22 @@ public class ProcessorLibrary extends Refreshable {
         return null;
     }
 
+    public static Processor findProcessor(UUID moduleId) {
+        for(Processor processor : getProcessors()) {
+            if(processor.getModule().equals(moduleId.toString())) {
+                return processor;
+            }
+        }
+        return null;
+    }
+
     public static void addProcessor(Processor processor) {
         getInstance().processors.add(processor);
+        getInstance().refresh();
+    }
+
+    public static void removeProcessor(Processor processor) {
+        getInstance().processors.remove(processor);
         getInstance().refresh();
     }
 
