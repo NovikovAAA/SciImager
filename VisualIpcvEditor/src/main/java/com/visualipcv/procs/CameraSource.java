@@ -3,6 +3,7 @@ package com.visualipcv.procs;
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.DataType;
 import com.visualipcv.core.DataTypes;
+import com.visualipcv.core.GraphExecutionData;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorBuilder;
 import com.visualipcv.core.ProcessorProperty;
@@ -23,15 +24,9 @@ public class CameraSource extends Processor {
     }
 
     @Override
-    public DataBundle execute(DataBundle inputs, DataBundle state) {
-        VideoCapture capture = state.read("Capture");
-        int lastIndex = state.read("Index");
-        int newIndex = inputs.<Double>read("Index").intValue();
-
-        if(lastIndex != newIndex) {
-            state.write("Index", newIndex);
-            capture.open(newIndex);
-        }
+    public DataBundle execute(DataBundle inputs, DataBundle props) {
+        int index = inputs.read("Index");
+        VideoCapture capture = CameraCaptureHelper.get(index);
 
         if(!capture.isOpened())
             return new DataBundle();
@@ -42,16 +37,5 @@ public class CameraSource extends Processor {
 
         res.write("Output", image);
         return res;
-    }
-
-    @Override
-    public void onCreate(DataBundle state) {
-        state.write("Capture", new VideoCapture());
-        state.write("Index", -1);
-    }
-
-    @Override
-    public void onDestroy(DataBundle state) {
-        state.<VideoCapture>read("Capture").release();
     }
 }

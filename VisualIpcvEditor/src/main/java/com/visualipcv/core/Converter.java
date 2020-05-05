@@ -1,6 +1,5 @@
 package com.visualipcv.core;
 
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -55,7 +54,7 @@ public class Converter {
     public static void registerDefaultConverters() {
         register(DataTypes.INTEGER, DataTypes.DOUBLE, (Object source) -> ((Integer)source).doubleValue());
         register(DataTypes.DOUBLE, DataTypes.INTEGER, (Object source) -> ((Double)source).intValue());
-        register(DataTypes.PATH, DataTypes.STRING, Object::toString);
-        register(DataTypes.STRING, DataTypes.PATH, (Object source) -> Paths.get((String)source));
+        register(DataTypes.PATH, DataTypes.STRING, (Object source) -> source);
+        register(DataTypes.STRING, DataTypes.PATH, (Object source) -> source);
     }
 }

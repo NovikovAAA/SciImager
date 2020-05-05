@@ -11,6 +11,7 @@ import org.opencv.video.BackgroundSubtractorMOG2;
 import org.opencv.video.Video;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class BackgroundMaskProcessor extends Processor {
     public BackgroundMaskProcessor() {
@@ -25,7 +26,7 @@ public class BackgroundMaskProcessor extends Processor {
     }
 
     @Override
-    public DataBundle execute(DataBundle inputs, DataBundle state) {
+    public DataBundle execute(DataBundle inputs, DataBundle props) {
         Mat image = inputs.read("Image");
         double threshold = inputs.read("Threshold");
         int history = inputs.<Double>read("History").intValue();

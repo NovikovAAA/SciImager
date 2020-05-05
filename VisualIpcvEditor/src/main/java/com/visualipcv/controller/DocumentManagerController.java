@@ -25,8 +25,8 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -57,6 +57,10 @@ public class DocumentManagerController extends Controller<AnchorPane> {
             return (Document)object;
         }
 
+        public IDocumentPart getDocumentPart() {
+            return (IDocumentPart)object;
+        }
+
         public boolean isGraph() {
             return object instanceof Graph;
         }
@@ -76,6 +80,22 @@ public class DocumentManagerController extends Controller<AnchorPane> {
     }
 
     private static class DocumentCell extends TextFieldTreeCell<DocumentElement> {
+        public DocumentCell() {
+            setConverter(new StringConverter<DocumentElement>() {
+                @Override
+                public String toString(DocumentElement object) {
+                    return object.toString();
+                }
+
+                @Override
+                public DocumentElement fromString(String string) {
+                    getItem().getDocumentPart().setName(string);
+                    getTreeView().setEditable(false);
+                    return new DocumentElement(getItem().getDocumentPart());
+                }
+            });
+        }
+
         @Override
         public void updateItem(DocumentElement document, boolean empty) {
             super.updateItem(document, empty);
@@ -115,13 +135,41 @@ public class DocumentManagerController extends Controller<AnchorPane> {
                 }
 
                 if (document.isDocument()) {
-                    setContextMenu(createContextMenu(document));
+                    setContextMenu(createDocumentContextMenu(document));
+                } else {
+                    setContextMenu(createDocumentPartContextMenu(this, document));
                 }
             }
         }
     }
 
-    private static ContextMenu createContextMenu(DocumentElement document) {
+    private static ContextMenu createDocumentPartContextMenu(DocumentCell cell, DocumentElement document) {
+        ContextMenu menu = new ContextMenu();
+
+        MenuItem deleteItem = new MenuItem("Delete");
+        deleteItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                IDocumentPart part = document.getDocumentPart();
+                part.getDocument().remove(part);
+            }
+        });
+
+        MenuItem renameItem = new MenuItem("Rename");
+        renameItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                cell.getTreeView().setEditable(true);
+                cell.startEdit();
+            }
+        });
+
+        menu.getItems().add(renameItem);
+        menu.getItems().add(deleteItem);
+        return menu;
+    }
+
+    private static ContextMenu createDocumentContextMenu(DocumentElement document) {
         ContextMenu menu = new ContextMenu();
 
         MenuItem newGraphItem = new MenuItem("New graph");
@@ -167,7 +215,16 @@ public class DocumentManagerController extends Controller<AnchorPane> {
         treeView.setCellFactory(new Callback<TreeView<DocumentElement>, TreeCell<DocumentElement>>() {
             @Override
             public TreeCell<DocumentElement> call(TreeView<DocumentElement> param) {
-                return new DocumentCell();
+                DocumentCell cell =  new DocumentCell();
+
+                cell.setOnDragDetected(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+
+                    }
+                });
+
+                return cell;
             }
         });
 
@@ -205,16 +262,6 @@ public class DocumentManagerController extends Controller<AnchorPane> {
 
     private void rebuildTree(Set<Document> oldList, Set<Document> documents) {
         TreeItem<DocumentElement> root = new TreeItem<>();
-
-        if(oldList != null) {
-            for(Document document : oldList) {
-                if(!documents.contains(document)) {
-                    for(IDocumentPart part : document.getParts()) {
-                        Editor.closeWindow(null, part);
-                    }
-                }
-            }
-        }
 
         for(Document document : documents) {
             TreeItem<DocumentElement> documentItem = new TreeItem<>(new DocumentElement(document));

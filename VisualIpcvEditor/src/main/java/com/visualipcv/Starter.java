@@ -25,8 +25,8 @@ public class Starter {
     }
 
     public static void main(String[] args) throws IOException {
-        System.out.println("Java version: " + System.getProperty("java.version"));
-        System.out.println("JavaFX version: " + VersionInfo.getRuntimeVersion());
+        Console.write("Java version: " + System.getProperty("java.version"));
+        Console.write("JavaFX version: " + VersionInfo.getRuntimeVersion());
         Main.start(args);
     }
 }

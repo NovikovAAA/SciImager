@@ -5,9 +5,6 @@ import com.visualipcv.core.annotations.RegisterDataType;
 import javafx.scene.paint.Color;
 import org.opencv.core.Mat;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
 public class DataTypes {
     @PrimaryDataType
     @RegisterDataType
@@ -89,10 +86,10 @@ public class DataTypes {
 
     @PrimaryDataType
     @RegisterDataType
-    public static final DataType PATH = new DataType("Path", Color.DARKMAGENTA, Path.class) {
+    public static final DataType PATH = new DataType("Path", Color.DARKMAGENTA, String.class) {
         @Override
         public Object getDefaultValue() {
-            return Paths.get("").toAbsolutePath();
+            return "";
         }
     };
 }

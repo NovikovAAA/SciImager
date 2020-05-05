@@ -2,6 +2,7 @@ package com.visualipcv.core;
 
 import com.visualipcv.Console;
 import com.visualipcv.core.io.NodeEntity;
+import com.visualipcv.core.io.NodeSlotEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,27 +11,57 @@ import java.util.UUID;
 public class Node {
     private final UUID id;
     private Graph graph;
-    private Processor processor;
+    private ProcessorUID processorUID;
     private String name = "Property";
     private List<InputNodeSlot> inputSlots;
     private List<OutputNodeSlot> outputSlots;
-    private DataBundle state = new DataBundle();
     private double x;
     private double y;
     private List<NodeCommand> commands = new ArrayList<>();
+    private boolean isProxy = false;
 
     private GraphExecutionException lastError;
 
     public Node(Graph graph, Processor processor, double x, double y) {
-        id = java.util.UUID.randomUUID();
-        initNode(graph, processor, x, y);
+        this.id = java.util.UUID.randomUUID();
+        this.name = processor.getName();
+        this.processorUID = processor.getUID();
+        this.graph = graph;
+
+        this.x = x;
+        this.y = y;
+
+        this.inputSlots = new ArrayList<>();
+        this.outputSlots = new ArrayList<>();
+
+        for(int i = 0; i < processor.getInputProperties().size(); i++) {
+            inputSlots.add(new InputNodeSlot(this, processor.getInputProperties().get(i)));
+        }
+
+        for(int i = 0; i < processor.getOutputProperties().size(); i++) {
+            outputSlots.add(new OutputNodeSlot(this, processor.getOutputProperties().get(i)));
+        }
     }
 
     public Node(Graph graph, NodeEntity nodeEntity) {
-        id = nodeEntity.getId();
-        name = nodeEntity.getName();
-        Processor processor = ProcessorLibrary.findProcessor(nodeEntity.getProcessorUID().getModule(), nodeEntity.getProcessorUID().getName());
-        initNode(graph, processor, nodeEntity.getX(), nodeEntity.getY());
+        this.id = nodeEntity.getId();
+        this.name = nodeEntity.getName();
+        this.processorUID = nodeEntity.getProcessorUID();
+        this.graph = graph;
+
+        this.x = nodeEntity.getX();
+        this.y = nodeEntity.getY();
+
+        this.inputSlots = new ArrayList<>();
+        this.outputSlots = new ArrayList<>();
+
+        for(NodeSlotEntity entity : nodeEntity.getInputSlots()) {
+            inputSlots.add(new InputNodeSlot(this, entity));
+        }
+
+        for(NodeSlotEntity entity : nodeEntity.getOutputSlots()) {
+            outputSlots.add(new OutputNodeSlot(this, entity));
+        }
 
         for(InputNodeSlot slot : inputSlots) {
             if(nodeEntity.getInputValues().containsKey(slot.getProperty().getName())) {
@@ -43,34 +74,57 @@ public class Node {
         }
     }
 
-    private void initNode(Graph graph, Processor processor, double x, double y) {
-        this.graph = graph;
-        this.processor = processor;
-        inputSlots = new ArrayList<>();
-        outputSlots = new ArrayList<>();
+    private void checkProcessorCompatibilityHelper() {
+        if(isProxy)
+            return;
 
-        for(int i = 0; i < this.processor.getInputProperties().size(); i++) {
-            inputSlots.add(new InputNodeSlot(this, this.processor.getInputProperties().get(i)));
+        Processor processor = ProcessorLibrary.findProcessor(processorUID);
+
+        if(processor == null) {
+            isProxy = true;
+            throw new ProcessorVersionMismatchException(this, processorUID);
         }
 
-        for(int i = 0; i < this.processor.getOutputProperties().size(); i++) {
-            outputSlots.add(new OutputNodeSlot(this, this.processor.getOutputProperties().get(i)));
+        if(processor.getInputProperties().size() != inputSlots.size())
+            throw new ProcessorVersionMismatchException(this, processorUID);
+
+        if(processor.getOutputProperties().size() != outputSlots.size())
+            throw new ProcessorVersionMismatchException(this, processorUID);
+
+        for(int i = 0; i < processor.getInputProperties().size(); i++) {
+            if(!inputSlots.get(i).getProperty().equals(processor.getInputProperties().get(i)))
+                throw new ProcessorVersionMismatchException(this, processorUID);
         }
 
-        this.x = x;
-        this.y = y;
+        for(int i = 0; i < processor.getOutputProperties().size(); i++) {
+            if(!outputSlots.get(i).getProperty().equals(processor.getOutputProperties().get(i)))
+                throw new ProcessorVersionMismatchException(this, processorUID);
+        }
+    }
+
+    public void checkProcessorCompatibility() {
+        try {
+            checkProcessorCompatibilityHelper();
+        } catch (ProcessorVersionMismatchException e) {
+            isProxy = true;
+            throw e;
+        }
     }
 
     public UUID getId() {
         return id;
     }
 
+    public boolean isProxy() {
+        return isProxy;
+    }
+
     public Graph getGraph() {
         return graph;
     }
 
-    public Processor getProcessor() {
-        return processor;
+    public Processor findProcessor() {
+        return ProcessorLibrary.findProcessor(processorUID);
     }
 
     public List<InputNodeSlot> getInputSlots() {
@@ -110,10 +164,6 @@ public class Node {
         return getOutputNodeSlot(name);
     }
 
-    public DataBundle getState() {
-        return state;
-    }
-
     public void setLocation(double x, double y) {
         this.x = x;
         this.y = y;
@@ -127,16 +177,16 @@ public class Node {
         return y;
     }
 
-    private Object getValueFromInput(InputNodeSlot slot) throws GraphExecutionException {
+    private Object getValueFromInput(GraphExecutionContext context, InputNodeSlot slot) throws GraphExecutionException {
         if(slot.getConnectedSlot() != null) {
-            Object fromCache = graph.readCache(slot.getConnectedSlot().getNode(), slot.getConnectedSlot().getProperty().getName());
+            Object fromCache = GraphExecutionData.load(slot.getConnectedSlot());
 
             if(fromCache == null) {
-                slot.getConnectedSlot().getNode().execute();
+                slot.getConnectedSlot().getNode().execute(context);
+                fromCache = GraphExecutionData.load(slot.getConnectedSlot());
             }
 
-            fromCache = graph.readCache(slot.getConnectedSlot().getNode(), slot.getConnectedSlot().getProperty().getName());
-            DataType dataType = graph.getTypeOfCalculatedSlot(slot.getConnectedSlot().getNode(), slot.getConnectedSlot().getProperty().getName());
+            DataType dataType = slot.getConnectedType();
 
             if(fromCache == null) {
                 return null;
@@ -151,6 +201,7 @@ public class Node {
                 }
             }
 
+            GraphExecutionData.store(slot, fromCache);
             return fromCache;
         }
 
@@ -162,34 +213,40 @@ public class Node {
     }
 
     public String getName() {
-        return getProcessor().isProperty() ? name : getProcessor().getName();
+        return name;
     }
 
     public void setName(String name) {
         this.name = name;
+        getGraph().onChanged();
     }
 
-    public void execute() throws GraphExecutionException {
+    public void execute(GraphExecutionContext context) throws GraphExecutionException {
+        Processor processor = ProcessorLibrary.findProcessor(processorUID);
+
+        if(processor == null)
+            return;
+
         lastError = null;
         DataBundle inputs = new DataBundle();
 
         for(InputNodeSlot slot : inputSlots) {
-            inputs.write(slot.getProperty().getName(), getValueFromInput(slot));
+            inputs.write(slot.getProperty().getName(), getValueFromInput(context, slot));
         }
 
         DataBundle res;
 
         try {
-            processor.preExecute(state);
-            res = processor.execute(inputs, state);
-            processor.postExecute(state);
+            processor.preExecute(context.load(this));
+            res = processor.execute(inputs, context.load(this));
+            processor.postExecute(context.load(this));
         } catch (Exception e) {
             lastError = new GraphExecutionException(this, e.getMessage());
             throw lastError;
         }
 
         for (OutputNodeSlot outputSlot : outputSlots) {
-            graph.writeCache(this, outputSlot.getProperty().getName(), res.read(outputSlot.getProperty().getName()));
+            GraphExecutionData.store(outputSlot, res.read(outputSlot.getProperty().getName()));
         }
     }
 
@@ -199,7 +256,8 @@ public class Node {
 
     public void onCreate() throws GraphExecutionException {
         try {
-            processor.onCreate(state);
+            if(findProcessor() != null)
+                findProcessor().onCreate();
         } catch (CommonException e) {
             throw new GraphExecutionException(null, e.getMessage());
         }
@@ -207,9 +265,14 @@ public class Node {
 
     public void onDestroy() throws GraphExecutionException {
         try {
-            processor.onDestroy(state);
+            if(findProcessor() != null)
+                findProcessor().onCreate();
         } catch (CommonException e) {
             throw new GraphExecutionException(null, e.getMessage());
         }
+    }
+
+    public ProcessorUID getProcessorUID() {
+        return processorUID;
     }
 }

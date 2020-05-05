@@ -1,5 +1,6 @@
 package com.visualipcv.controller;
 
+import com.visualipcv.Console;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
 import com.visualipcv.editor.EditorWindow;
@@ -31,7 +32,7 @@ public class Controller<T extends Node> {
         try {
             view = clazz.newInstance();
         } catch (IllegalAccessException | InstantiationException e) {
-            e.printStackTrace();
+            Console.error(e);
         }
 
         setDefaultSize();
@@ -47,7 +48,7 @@ public class Controller<T extends Node> {
         try {
             loader.load();
         } catch (Exception e) {
-            e.printStackTrace();
+            Console.error(e);
         }
 
         setDefaultSize();
@@ -65,7 +66,7 @@ public class Controller<T extends Node> {
                 try {
                     properties.add((UIProperty)field.get(this));
                 } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+                    Console.error(e);
                 }
             }
         }

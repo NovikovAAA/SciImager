@@ -22,7 +22,7 @@ public class GetSizeProcessor extends Processor {
     }
 
     @Override
-    public DataBundle execute(DataBundle inputs, DataBundle state) {
+    public DataBundle execute(DataBundle inputs, DataBundle props) {
         Mat image = inputs.read("Image");
         DataBundle outputs = new DataBundle();
         outputs.write("Width", image.width());

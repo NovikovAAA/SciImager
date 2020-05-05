@@ -6,8 +6,10 @@ import com.visualipcv.scripts.SciScript;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class SciScriptEntity implements Serializable {
+    private UUID id;
     private String name;
     private List<ProcessorPropertyEntity> inputProperties = new ArrayList<>();
     private List<ProcessorPropertyEntity> outputProperties = new ArrayList<>();
@@ -22,6 +24,7 @@ public class SciScriptEntity implements Serializable {
             outputProperties.add(new ProcessorPropertyEntity(property));
         }
 
+        this.id = script.getId();
         this.code = script.getCode();
         this.name = script.getName();
     }
@@ -40,5 +43,9 @@ public class SciScriptEntity implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public UUID getId() {
+        return id;
     }
 }

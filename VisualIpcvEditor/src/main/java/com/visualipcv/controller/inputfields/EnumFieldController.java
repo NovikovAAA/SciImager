@@ -7,6 +7,7 @@ import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
 import com.visualipcv.core.DataType;
 import com.visualipcv.core.InputNodeSlot;
+import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.ValidationException;
 import com.visualipcv.core.dataconstraints.EnumConstraint;
 import javafx.beans.value.ChangeListener;
@@ -51,7 +52,7 @@ public class EnumFieldController extends Controller<Pane> {
         });
 
         valueProperty.setBinder((Object slot) -> {
-            return ((InputNodeSlot)slot).getValue();
+            return InputFieldController.getValueFromSlot((NodeSlot)slot);
         });
 
         valueField.setOnAction(new EventHandler<ActionEvent>() {
