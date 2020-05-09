@@ -13,9 +13,9 @@ public class NativeProcessor extends Processor {
         super(new ProcessorBuilder()
         .setName(uid.getName())
         .setModule(uid.getModule())
-        .setCategory(getCategory(uid)));
-        getInputProperties().addAll(getInputPropertyList(uid));
-        getOutputProperties().addAll(getOutputPropertyList(uid));
+        .setCategory(getCategory(uid))
+        .setInputProperties(getInputPropertyList(uid))
+        .setOutputProperties(getOutputPropertyList(uid)));
     }
 
     public DataBundle execute(DataBundle inputs, DataBundle props) {
