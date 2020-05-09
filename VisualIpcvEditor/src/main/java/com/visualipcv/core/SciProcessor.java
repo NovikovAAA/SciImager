@@ -7,14 +7,24 @@ import java.util.HashMap;
 public class SciProcessor extends Processor {
     SciScript script;
 
-    public SciProcessor(String name, String module, String category, SciScript script) {
+    public SciProcessor(SciScript script) {
         super(new ProcessorBuilder()
-            .setName(name)
-            .setModule(module)
-            .setCategory(category));
-        getInputProperties().addAll(script.getInputProperties());
-        getOutputProperties().addAll(script.getOutputProperties());
+                .setName(script.getName())
+                .setModule(script.getId().toString())
+                .setCategory(script.getDocument().getName())
+                .setInputProperties(script.getInputProperties())
+                .setOutputProperties(script.getOutputProperties()));
         this.script = script;
+    }
+
+    public void rebuild() {
+        super.rebuild(new ProcessorBuilder()
+                .setName(script.getName())
+                .setModule(script.getId().toString())
+                .setCategory(script.getDocument().getName())
+                .setInputProperties(script.getInputProperties())
+                .setOutputProperties(script.getOutputProperties()));
+        ProcessorLibrary.update();
     }
 
     @Override

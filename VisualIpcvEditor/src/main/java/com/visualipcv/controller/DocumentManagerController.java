@@ -135,7 +135,7 @@ public class DocumentManagerController extends Controller<AnchorPane> {
                 }
 
                 if (document.isDocument()) {
-                    setContextMenu(createDocumentContextMenu(document));
+                    setContextMenu(createDocumentContextMenu(this, document));
                 } else {
                     setContextMenu(createDocumentPartContextMenu(this, document));
                 }
@@ -169,7 +169,7 @@ public class DocumentManagerController extends Controller<AnchorPane> {
         return menu;
     }
 
-    private static ContextMenu createDocumentContextMenu(DocumentElement document) {
+    private static ContextMenu createDocumentContextMenu(DocumentCell cell, DocumentElement document) {
         ContextMenu menu = new ContextMenu();
 
         MenuItem newGraphItem = new MenuItem("New graph");
@@ -188,16 +188,38 @@ public class DocumentManagerController extends Controller<AnchorPane> {
             }
         });
 
+        MenuItem newDocumentItem = new MenuItem("New document");
+        newDocumentItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                document.getDocument().addDocument();
+            }
+        });
+
+        MenuItem renameDocumentItem = new MenuItem("Rename");
+        renameDocumentItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                cell.getTreeView().setEditable(true);
+                cell.startEdit();
+            }
+        });
+
         MenuItem closeItem = new MenuItem("Close");
         closeItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                DocumentManager.closeDocument(document.getDocument());
+                if(document.getDocument().getParent() == null)
+                    DocumentManager.closeDocument(document.getDocument());
+                else
+                    document.getDocument().getDocument().remove(document.getDocument());
             }
         });
 
         menu.getItems().add(newGraphItem);
         menu.getItems().add(newScriptItem);
+        menu.getItems().add(newDocumentItem);
+        menu.getItems().add(renameDocumentItem);
         menu.getItems().add(closeItem);
 
         return menu;
@@ -238,7 +260,7 @@ public class DocumentManagerController extends Controller<AnchorPane> {
         documentsProperty.addEventListener(new PropertyChangedEventListener() {
             @Override
             public void onChanged(Object oldValue, Object newValue) {
-                rebuildTree((Set<Document>)oldValue, (Set<Document>)newValue);
+                rebuildTree((Set<Document>)newValue);
             }
         });
 
@@ -260,20 +282,26 @@ public class DocumentManagerController extends Controller<AnchorPane> {
         invalidate();
     }
 
-    private void rebuildTree(Set<Document> oldList, Set<Document> documents) {
+    private void rebuildTree(Set<Document> documents) {
         TreeItem<DocumentElement> root = new TreeItem<>();
 
         for(Document document : documents) {
-            TreeItem<DocumentElement> documentItem = new TreeItem<>(new DocumentElement(document));
-            root.getChildren().add(documentItem);
-            documentItem.setExpanded(true);
-
-            for(IDocumentPart part : document.getParts()) {
-                TreeItem<DocumentElement> item = new TreeItem<>(new DocumentElement(part));
-                documentItem.getChildren().add(item);
-            }
+            root.getChildren().add(buildSubtree(document));
         }
 
         treeView.setRoot(root);
+    }
+
+    private TreeItem<DocumentElement> buildSubtree(IDocumentPart part) {
+        TreeItem<DocumentElement> documentItem = new TreeItem<>(new DocumentElement(part));
+        documentItem.setExpanded(true);
+
+        if(part instanceof Document) {
+            for(IDocumentPart doc : ((Document)part).getParts()) {
+                documentItem.getChildren().add(buildSubtree(doc));
+            }
+        }
+
+        return documentItem;
     }
 }

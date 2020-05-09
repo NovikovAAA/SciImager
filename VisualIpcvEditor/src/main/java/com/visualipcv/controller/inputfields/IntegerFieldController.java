@@ -1,11 +1,11 @@
 package com.visualipcv.controller.inputfields;
 
-import com.visualipcv.controller.BorderUtils;
 import com.visualipcv.controller.Controller;
-import com.visualipcv.controller.InputFieldController;
+import com.visualipcv.controller.BorderUtils;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
 import com.visualipcv.core.InputNodeSlot;
+import com.visualipcv.controller.InputFieldController;
 import com.visualipcv.core.NodeSlot;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -39,7 +39,7 @@ public class IntegerFieldController extends Controller<Pane> {
         });
 
         valueProperty.setBinder((Object nodeSlot) -> {
-            return InputFieldController.getValueFromSlot((NodeSlot)nodeSlot);
+            return InputFieldController.getValueFromSlot((NodeSlot)nodeSlot).toString();
         });
 
         valueField.setOnAction(new EventHandler<ActionEvent>() {

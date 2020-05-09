@@ -5,6 +5,7 @@ import com.visualipcv.core.Converter;
 import com.visualipcv.core.DataTypeLibrary;
 import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.core.ReflectedProcessorGenerator;
+import com.visualipcv.scripts.SciConverters;
 import com.visualipcv.scripts.SciRunner;
 import com.visualipcv.utils.LinkUtils;
 
@@ -14,14 +15,13 @@ public class Starter {
     static {
         LinkUtils.linkNativeLibraries();
 
-        if(System.getProperty("os.name").contains("win")) {
-            SciRunner.load();
-        }
+        SciRunner.load();
 
         DataTypeLibrary.init();
         ProcessorLibrary.getInstance();
         ReflectedProcessorGenerator.loadReflected();
         Converter.registerDefaultConverters();
+        SciConverters.load();
     }
 
     public static void main(String[] args) throws IOException {

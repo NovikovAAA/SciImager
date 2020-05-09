@@ -288,6 +288,17 @@ public class NodeController extends GraphElementController<AnchorPane> {
             menu.getItems().add(item);
         }
 
+        MenuItem descriptionItem = new MenuItem("Add description");
+        descriptionItem.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                ((GraphElement)getContext()).setDescription("Just a node");
+                invalidate();
+            }
+        });
+
+        menu.getItems().add(descriptionItem);
+
         if(!node.isProxy()) {
             for(ProcessorCommand command : ((Node)getContext()).findProcessor().getCommands()) {
                 MenuItem item = new MenuItem(command.getName());

@@ -8,6 +8,7 @@ public abstract class GraphElement {
     private UUID id;
     private Graph graph;
     private String name = "Property";
+    private String description = "";
     private double x;
     private double y;
     private List<NodeCommand> commands = new ArrayList<>();
@@ -56,6 +57,14 @@ public abstract class GraphElement {
     public void setName(String name) {
         this.name = name;
         getGraph().onChanged();
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void addCommand(NodeCommand command) {

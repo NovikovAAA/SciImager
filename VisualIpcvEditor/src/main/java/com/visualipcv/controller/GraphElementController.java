@@ -27,9 +27,12 @@ public class GraphElementController <T extends Region> extends Controller<T> {
     private EditableLabel title;
     @FXML
     private AnchorPane wrapper;
+    @FXML
+    private EditableLabel description;
 
     private final UIProperty selectedProperty = new UIProperty(false);
     private final UIProperty titleProperty = new UIProperty();
+    private final UIProperty descriptionProperty = new UIProperty();
     private final UIProperty xOffsetProperty = new UIProperty();
     private final UIProperty yOffsetProperty = new UIProperty();
 
@@ -41,6 +44,14 @@ public class GraphElementController <T extends Region> extends Controller<T> {
             @Override
             public void onChanged(Object oldValue, Object newValue) {
                 title.setText((String)newValue);
+            }
+        });
+
+        descriptionProperty.addEventListener(new PropertyChangedEventListener() {
+            @Override
+            public void onChanged(Object oldValue, Object newValue) {
+                description.setText((String)newValue);
+                description.setVisible(!description.getText().isEmpty());
             }
         });
 
@@ -85,8 +96,20 @@ public class GraphElementController <T extends Region> extends Controller<T> {
             }
         });
 
+        description.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                ((GraphElement)getContext()).setDescription(newValue);
+                invalidate();
+            }
+        });
+
         titleProperty.setBinder((Object node) -> {
             return ((GraphElement)node).getName();
+        });
+
+        descriptionProperty.setBinder((Object node) -> {
+            return ((GraphElement)node).getDescription();
         });
 
         xOffsetProperty.setBinder((Object node) -> {

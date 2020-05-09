@@ -14,6 +14,7 @@ public class Group extends GraphElement {
 
     public Group(Graph graph, GroupEntity entity) {
         super(graph, entity.getName(), entity.getX(), entity.getY());
+        setDescription(entity.getDescription());
         this.width = entity.getWidth();
         this.height = entity.getHeight();
     }

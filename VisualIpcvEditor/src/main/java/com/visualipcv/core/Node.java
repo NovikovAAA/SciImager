@@ -34,6 +34,7 @@ public class Node extends GraphElement {
 
     public Node(Graph graph, NodeEntity nodeEntity) {
         super(graph, nodeEntity.getName(), nodeEntity.getX(), nodeEntity.getY());
+        setDescription(nodeEntity.getDescription());
 
         this.setId(nodeEntity.getId());
         this.processorUID = nodeEntity.getProcessorUID();

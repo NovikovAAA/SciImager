@@ -13,6 +13,7 @@ import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.OutputNodeSlot;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorBuilder;
+import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.core.ProcessorProperty;
 
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ public class GraphProcessor extends Processor {
                 .setModule(graph.getId().toString())
                 .setInputProperties(getInputProperties(graph))
                 .setOutputProperties(getOutputProperties(graph)));
+        ProcessorLibrary.update();
     }
 
     @Override
@@ -90,10 +92,14 @@ public class GraphProcessor extends Processor {
             if(n.isProxy())
                 continue;
 
-            if(n.findProcessor().isProperty()) {
-                ProcessorProperty property = n.getInputSlots().get(0).getProperty();
-                String name = node.getName();
-                properties.add(new ProcessorProperty(name, property.getType()));
+            Processor processor = n.findProcessor();
+
+            if(processor != null) {
+                if(processor.isProperty()) {
+                    ProcessorProperty property = n.getInputSlots().get(0).getProperty();
+                    String name = node.getName();
+                    properties.add(new ProcessorProperty(name, property.getType()));
+                }
             }
         }
 

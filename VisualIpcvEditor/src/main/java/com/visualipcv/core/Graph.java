@@ -181,8 +181,12 @@ public class Graph implements IDocumentPart {
             if(n.isProxy())
                 continue;
 
-            if(n.findProcessor().isOutput()) {
-                outputs.add(n);
+            Processor processor = n.findProcessor();
+
+            if(processor != null) {
+                if(n.findProcessor().isOutput()) {
+                    outputs.add(n);
+                }
             }
         }
 

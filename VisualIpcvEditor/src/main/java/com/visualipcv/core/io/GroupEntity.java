@@ -12,6 +12,7 @@ public class GroupEntity implements Serializable {
     private double width;
     private double height;
     private String name;
+    private String description;
 
     public GroupEntity(Group group) {
         this.id = group.getId();
@@ -20,6 +21,7 @@ public class GroupEntity implements Serializable {
         this.width = group.getWidth();
         this.height = group.getHeight();
         this.name = group.getName();
+        this.description = group.getDescription();
     }
 
     public UUID getId() {
@@ -44,6 +46,10 @@ public class GroupEntity implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void resetId() {
