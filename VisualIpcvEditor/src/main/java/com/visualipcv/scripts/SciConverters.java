@@ -7,6 +7,7 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.scilab.modules.types.ScilabDouble;
 import org.scilab.modules.types.ScilabInteger;
+import org.scilab.modules.types.ScilabString;
 import org.scilab.modules.types.ScilabType;
 import org.scilab.modules.types.ScilabTypeEnum;
 
@@ -24,43 +25,121 @@ public class SciConverters {
             }
             @Override
             public Object fromScilabToJava(ScilabType value) {
+                if(value == null)
+                    return 0.0;
+
                 return ((ScilabDouble)value).getRealElement(0, 0);
+            }
+        });
+
+        converters.put(DataTypes.INTEGER, new SciConverter() {
+            @Override
+            public ScilabType fromJavaToScilab(Object value) {
+                return new ScilabInteger((Integer)value);
+            }
+
+            @Override
+            public Object fromScilabToJava(ScilabType value) {
+                if(value == null)
+                    return 0;
+
+                return ((ScilabInteger)value).getIntElement(0, 0);
             }
         });
 
         converters.put(DataTypes.VECTOR2, new SciConverter() {
             @Override
             public ScilabType fromJavaToScilab(Object value) {
-                double[] values = (double[])value;
-                return new ScilabDouble(new double[][] { values });
+                Double[] values = (Double[])value;
+                double[][] fuckingPrimitivesForFuckingJava = new double[1][2];
+
+                for(int i = 0; i < values.length; i++)
+                    fuckingPrimitivesForFuckingJava[0][i] = values[i];
+
+                return new ScilabDouble(fuckingPrimitivesForFuckingJava);
             }
             @Override
             public Object fromScilabToJava(ScilabType value) {
-                return ((ScilabDouble)value).getRealPart()[0];
+                if(value == null)
+                    return new Double[2];
+
+                double[] res = ((ScilabDouble)value).getRealPart()[0];
+                Double[] fuckingJava = new Double[2];
+
+                for(int i = 0; i < fuckingJava.length; i++) {
+                    fuckingJava[i] = res[i];
+                }
+
+                return fuckingJava;
             }
         });
 
         converters.put(DataTypes.VECTOR3, new SciConverter() {
             @Override
             public ScilabType fromJavaToScilab(Object value) {
-                double[] values = (double[])value;
-                return new ScilabDouble(new double[][] { values });
+                Double[] values = (Double[])value;
+                double[][] fuckingPrimitivesForFuckingJava = new double[1][3];
+
+                for(int i = 0; i < values.length; i++)
+                    fuckingPrimitivesForFuckingJava[0][i] = values[i];
+
+                return new ScilabDouble(fuckingPrimitivesForFuckingJava);
             }
             @Override
             public Object fromScilabToJava(ScilabType value) {
-                return ((ScilabDouble)value).getRealPart()[0];
+                if(value == null)
+                    return new Double[3];
+
+                double[] res = ((ScilabDouble)value).getRealPart()[0];
+                Double[] fuckingJava = new Double[3];
+
+                for(int i = 0; i < fuckingJava.length; i++) {
+                    fuckingJava[i] = res[i];
+                }
+
+                return fuckingJava;
             }
         });
 
         converters.put(DataTypes.VECTOR4, new SciConverter() {
             @Override
             public ScilabType fromJavaToScilab(Object value) {
-                double[] values = (double[])value;
-                return new ScilabDouble(new double[][] { values });
+                Double[] values = (Double[])value;
+                double[][] fuckingPrimitivesForFuckingJava = new double[1][4];
+
+                for(int i = 0; i < values.length; i++)
+                    fuckingPrimitivesForFuckingJava[0][i] = values[i];
+
+                return new ScilabDouble(fuckingPrimitivesForFuckingJava);
             }
             @Override
             public Object fromScilabToJava(ScilabType value) {
-                return ((ScilabDouble)value).getRealPart()[0];
+                if(value == null)
+                    return new Double[4];
+
+                double[] res = ((ScilabDouble)value).getRealPart()[0];
+                Double[] fuckingJava = new Double[4];
+
+                for(int i = 0; i < fuckingJava.length; i++) {
+                    fuckingJava[i] = res[i];
+                }
+
+                return fuckingJava;
+            }
+        });
+
+        converters.put(DataTypes.STRING, new SciConverter() {
+            @Override
+            public ScilabType fromJavaToScilab(Object value) {
+                return new ScilabString((String)value);
+            }
+
+            @Override
+            public Object fromScilabToJava(ScilabType value) {
+                if(value == null)
+                    return "";
+
+                return ((ScilabString)value).getData()[0][0];
             }
         });
 
@@ -69,36 +148,22 @@ public class SciConverters {
             public ScilabType fromJavaToScilab(Object value) {
                 Mat image = (Mat)value;
 
-                if(OpenCvUtils.isUChar(image.type())) {
-                    int[][] data = new int[image.height()][image.width()];
+                Mat converted = new Mat();
+                image.convertTo(converted, CvType.makeType(4, 3));
+                int[] data = new int[converted.width() * converted.height() * 3];
+                converted.get(0, 0, data);
+                data[data.length - 2] = converted.width();
+                data[data.length - 1] = converted.height();
 
-                    for(int i = 0; i < image.height(); i++) {
-                        for(int j = 0; j < image.width(); j++) {
-                            byte[] ch = new byte[3];
-                            image.get(i, j, ch);
-                            data[i][j] = ch[1];
-                        }
-                    }
-
-                    return new ScilabInteger(data, false);
-                }
-
-                return null;
+                return new ScilabInteger(new int[][] { data, new int[] { converted.width() }, new int[] { converted.height() } }, false);
             }
+
             @Override
             public Object fromScilabToJava(ScilabType value) {
                 if(value.getType() == ScilabTypeEnum.sci_ints) {
                     int[][] data = ((ScilabInteger)value).getDataAsInt();
-                    Mat image = new Mat(data.length, data[0].length, CvType.CV_8UC1);
-
-                    for(int i = 0; i < image.height(); i++) {
-                        for(int j = 0; j < image.width(); j++) {
-                            byte[] ch = new byte[1];
-                            ch[0] = (byte)data[i][j];
-                            image.put(i, j, ch);
-                        }
-                    }
-
+                    Mat image = new Mat(data[2][0], data[1][0], CvType.makeType(4, 3));
+                    image.put(0, 0, data[0]);
                     return image;
                 }
 

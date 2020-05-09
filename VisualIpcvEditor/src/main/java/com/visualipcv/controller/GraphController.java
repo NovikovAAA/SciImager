@@ -3,6 +3,7 @@ package com.visualipcv.controller;
 import com.visualipcv.Console;
 import com.visualipcv.controller.binding.Binder;
 import com.visualipcv.controller.binding.BindingHelper;
+import com.visualipcv.controller.binding.FactoryFunction;
 import com.visualipcv.controller.binding.PropertyChangedEventListener;
 import com.visualipcv.controller.binding.UIProperty;
 import com.visualipcv.core.Connection;
@@ -10,8 +11,10 @@ import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.Document;
 import com.visualipcv.core.DocumentManager;
 import com.visualipcv.core.Graph;
+import com.visualipcv.core.GraphElement;
 import com.visualipcv.core.GraphExecutionContext;
 import com.visualipcv.core.GraphExecutionData;
+import com.visualipcv.core.Group;
 import com.visualipcv.core.Node;
 import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.Processor;
@@ -20,6 +23,7 @@ import com.visualipcv.core.ProcessorVersionMismatchException;
 import com.visualipcv.core.io.ConnectionEntity;
 import com.visualipcv.core.io.GraphClipboard;
 import com.visualipcv.core.io.GraphEntity;
+import com.visualipcv.core.io.GroupEntity;
 import com.visualipcv.core.io.NodeEntity;
 import com.visualipcv.editor.Editor;
 import com.visualipcv.editor.EditorCommand;
@@ -49,6 +53,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -69,7 +74,7 @@ public class GraphController extends Controller<GraphView> implements INameable 
     private double initialMouseX;
     private double initialMouseY;
 
-    private ObservableList<NodeController> nodes = FXCollections.observableArrayList();
+    private ObservableList<GraphElementController<?>> nodes = FXCollections.observableArrayList();
     private ObservableList<ConnectionController> connections = FXCollections.observableArrayList();
 
     private UIProperty nameProperty = new UIProperty();
@@ -108,17 +113,17 @@ public class GraphController extends Controller<GraphView> implements INameable 
             }
         });
 
-        nodes.addListener(new ListChangeListener<NodeController>() {
+        nodes.addListener(new ListChangeListener<GraphElementController<?>>() {
             @Override
-            public void onChanged(Change<? extends NodeController> c) {
+            public void onChanged(Change<? extends GraphElementController<?>> c) {
                 while(c.next()) {
                     if(c.wasAdded()) {
-                        for(NodeController node : c.getAddedSubList()) {
+                        for(GraphElementController<?> node : c.getAddedSubList()) {
                             getView().getInternalPane().getChildren().add(node.getView());
                         }
                     }
                     if(c.wasRemoved()) {
-                        for(NodeController node : c.getRemoved()) {
+                        for(GraphElementController<?> node : c.getRemoved()) {
                             getView().getInternalPane().getChildren().remove(node.getView());
                         }
                     }
@@ -148,7 +153,20 @@ public class GraphController extends Controller<GraphView> implements INameable 
             @Override
             public void onChanged(Object oldValue, Object newValue) {
                 nodes.clear();
-                nodes.addAll((List<NodeController>)newValue);
+                List<GraphElementController<?>> elements = (List<GraphElementController<?>>)newValue;
+
+                elements.sort(new Comparator<GraphElementController<?>>() {
+                    @Override
+                    public int compare(GraphElementController<?> o1, GraphElementController<?> o2) {
+                        if(o1 instanceof GroupController && o2 instanceof NodeController)
+                            return -1;
+                        else if(o2 instanceof GroupController && o1 instanceof NodeController)
+                            return 1;
+                        return 0;
+                    }
+                });
+
+                nodes.addAll(elements);
             }
         });
 
@@ -161,7 +179,15 @@ public class GraphController extends Controller<GraphView> implements INameable 
         });
 
         nodesProperty.setBinder((Object g) -> {
-            return BindingHelper.bindList(nodesProperty, ((Graph) g).getNodes(), (Node node) -> new NodeController(this));
+            return BindingHelper.bindList(nodesProperty, ((Graph) g).getNodes(), new FactoryFunction<Controller<?>, GraphElement>() {
+                @Override
+                public Controller<?> create(GraphElement arg) {
+                    if(arg instanceof Node)
+                        return new NodeController(GraphController.this);
+                    else
+                        return new GroupController(GraphController.this);
+                }
+            });
         });
 
         connectionsProperty.setBinder((Object g) -> {
@@ -254,18 +280,25 @@ public class GraphController extends Controller<GraphView> implements INameable 
                 }
 
                 if(semaphore.tryAcquire()) {
-                    for (NodeController node : getNodes())
-                        node.poll(node.errorProperty());
+                    for (GraphElementController<?> node : getNodes()) {
+                        if(node instanceof NodeController) {
+                            ((NodeController)node).poll(((NodeController)node).errorProperty());
+                        }
+                    }
 
-                    for(NodeController node : getNodes()) {
+                    for(GraphElementController<?> node : getNodes()) {
+                        if(!(node instanceof NodeController))
+                            continue;
+
+                        NodeController nodeController = (NodeController)node;
                         Object preview = getExecutionContext().load(node.getContext(), "Preview");
 
                         if(preview != null) {
                             if(preview instanceof Image) {
-                                node.setContent((Image)preview);
+                                nodeController.setContent((Image)preview);
                             }
                         } else {
-                            node.setContent(null);
+                            nodeController.setContent(null);
                         }
                     }
 
@@ -305,7 +338,7 @@ public class GraphController extends Controller<GraphView> implements INameable 
         return null;
     }
 
-    public List<NodeController> getNodes() {
+    public List<GraphElementController<?>> getNodes() {
         return nodes;
     }
 
@@ -313,10 +346,10 @@ public class GraphController extends Controller<GraphView> implements INameable 
         return connections;
     }
 
-    public List<NodeController> getSelectedNodes() {
-        List<NodeController> selectedNodes = new ArrayList<>();
+    public List<GraphElementController<?>> getSelectedNodes() {
+        List<GraphElementController<?>> selectedNodes = new ArrayList<>();
 
-        for(NodeController node : nodes) {
+        for(GraphElementController<?> node : nodes) {
             if(node.isSelected()) {
                 selectedNodes.add(node);
             }
@@ -386,6 +419,19 @@ public class GraphController extends Controller<GraphView> implements INameable 
         }
     }
 
+    public List<GraphElementController<?>> getNodesInArea(double minX, double minY, double maxX, double maxY) {
+        List<GraphElementController<?>> nodes = new ArrayList<>();
+
+        for(GraphElementController<?> node : this.nodes) {
+            if(node.getView().getLayoutX() >= minX && node.getView().getLayoutX() + node.getView().getWidth() < maxX &&
+                    node.getView().getLayoutY() >= minY && node.getView().getLayoutY() + node.getView().getHeight() < maxY) {
+                nodes.add(node);
+            }
+        }
+
+        return nodes;
+    }
+
     public void onMouseReleased(MouseEvent event) {
         if(event.getButton() == selectionButton && selectionPreview != null) {
             getView().getInternalPane().getChildren().remove(selectionPreview);
@@ -397,11 +443,8 @@ public class GraphController extends Controller<GraphView> implements INameable 
             double minY = Math.min(initialMouseY, newPos.getY());
             double maxY = Math.max(initialMouseY, newPos.getY());
 
-            for(NodeController node : nodes) {
-                if(node.getView().getLayoutX() >= minX && node.getView().getLayoutX() + node.getView().getWidth() < maxX &&
-                    node.getView().getLayoutY() >= minY && node.getView().getLayoutY() + node.getView().getHeight() < maxY) {
-                    node.setSelected(true);
-                }
+            for(GraphElementController<?> node : getNodesInArea(minX, minY, maxX, maxY)) {
+                node.setSelected(true);
             }
         }
 
@@ -461,7 +504,20 @@ public class GraphController extends Controller<GraphView> implements INameable 
     }
 
     public void moveSelected(double deltaX, double deltaY) {
-        for(NodeController node : getSelectedNodes()) {
+        List<GraphElementController<?>> nodesForMove = getSelectedNodes();
+
+        for(GraphElementController<?> node : getSelectedNodes()) {
+            if(node instanceof GroupController) {
+                GroupController group = (GroupController)node;
+                nodesForMove.addAll(getNodesInArea(
+                        group.getView().getLayoutX(),
+                        group.getView().getLayoutY(),
+                        group.getView().getWidth() + group.getView().getLayoutX(),
+                        group.getView().getHeight() + group.getView().getLayoutY()));
+            }
+        }
+
+        for(GraphElementController<?> node : nodesForMove) {
             double x = node.getView().getLayoutX();
             double y = node.getView().getLayoutY();
             x += deltaX / getView().getZoom();
@@ -470,13 +526,13 @@ public class GraphController extends Controller<GraphView> implements INameable 
         }
     }
 
-    public void removeNode(NodeController node) {
+    public void removeNode(GraphElementController<?> node) {
         ((Graph)getContext()).removeNode(node.getContext());
         invalidate();
     }
 
     public void removeSelected() {
-        for(NodeController node : getSelectedNodes()) {
+        for(GraphElementController<?> node : getSelectedNodes()) {
             removeNode(node);
         }
 
@@ -484,18 +540,40 @@ public class GraphController extends Controller<GraphView> implements INameable 
     }
 
     public void clearSelection() {
-        for(NodeController node : nodes) {
+        for(GraphElementController<?> node : nodes) {
             node.setSelected(false);
         }
     }
 
+    public void groupSelected() {
+        if(getSelectedNodes().isEmpty())
+            return;
+
+        double minX = Double.MAX_VALUE, minY = Double.MAX_VALUE, maxX = -Double.MAX_VALUE, maxY = -Double.MAX_VALUE;
+
+        for(GraphElementController<?> node : getSelectedNodes()) {
+            minX = Math.min(minX, node.getView().getLayoutX());
+            minY = Math.min(minY, node.getView().getLayoutY());
+            maxX = Math.max(maxX, node.getView().getLayoutX() + node.getView().getWidth());
+            maxY = Math.max(maxY, node.getView().getLayoutY() + node.getView().getHeight());
+        }
+
+        Group group = new Group(getContext(), minX - 10.0, minY - 40.0, maxX - minX + 20.0, maxY - minY + 60.0);
+        ((Graph)getContext()).addNode(group);
+        invalidate();
+    }
+
     private GraphClipboard createGraphClipboardFromSelection() {
         List<Node> nodes = new ArrayList<>();
+        List<Group> groups = new ArrayList<>();
         List<Connection> connections = new ArrayList<>();
 
-        for(NodeController node : this.nodes) {
+        for(GraphElementController<?> node : this.nodes) {
             if(node.isSelected()) {
-                nodes.add(node.getContext());
+                if(node instanceof NodeController)
+                    nodes.add(node.getContext());
+                else
+                    groups.add(node.getContext());
             }
         }
 
@@ -506,7 +584,7 @@ public class GraphController extends Controller<GraphView> implements INameable 
                 connections.add(connection);
         }
 
-        return new GraphClipboard(nodes, connections);
+        return new GraphClipboard(nodes, connections, groups);
     }
 
     public boolean copy(GraphClipboard graphClipboard) {
@@ -544,7 +622,7 @@ public class GraphController extends Controller<GraphView> implements INameable 
         GraphClipboard clipboard = createGraphClipboardFromSelection();
         boolean res = copy(clipboard);
 
-        for(NodeController node : getSelectedNodes())
+        for(GraphElementController<?> node : getSelectedNodes())
             removeNode(node);
 
         return res;
@@ -592,7 +670,7 @@ public class GraphController extends Controller<GraphView> implements INameable 
             stream.close();
             invalidate();
 
-            for(NodeController controller : nodes) {
+            for(GraphElementController<?> controller : nodes) {
                 if(nodesToSelect.contains(controller.<Node>getContext())) {
                     controller.setSelected(true);
                 }
@@ -604,7 +682,7 @@ public class GraphController extends Controller<GraphView> implements INameable 
         return true;
     }
 
-    public void select(NodeController node, boolean ctrlDown) {
+    public void select(GraphElementController<?> node, boolean ctrlDown) {
         if(!node.isSelected() && !ctrlDown)
             clearSelection();
 

@@ -35,11 +35,9 @@ public class SciRunner {
     public static ScilabType get(String name) {
         try {
             return scilab.get(name);
-        } catch(JavasciException e) {
-            Console.error(e);
+        } catch (Exception e) {
+            return null;
         }
-
-        return null;
     }
 
     public static void execute(String code) {

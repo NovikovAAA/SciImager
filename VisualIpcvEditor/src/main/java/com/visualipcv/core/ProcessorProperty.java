@@ -12,7 +12,7 @@ public class ProcessorProperty {
 
     public ProcessorProperty(ProcessorPropertyEntity entity) {
         this.name = entity.getName();
-        this.type = DataTypeLibrary.getByName(entity.getName());
+        this.type = DataTypeLibrary.getByName(entity.getType());
         this.showControl = entity.showControl();
         this.showConnector = entity.showConnector();
     }

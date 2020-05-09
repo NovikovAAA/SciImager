@@ -103,15 +103,23 @@ public class EditableLabel extends Pane {
     public void layoutChildren() {
         super.layoutChildren();
 
-        label.setLayoutX(getLayoutX());
-        label.setLayoutY(getLayoutY());
+        label.setLayoutX(0);
+        label.setLayoutY(0);
         label.setPrefWidth(getWidth());
         label.setPrefHeight(getHeight());
+        label.setMinWidth(getWidth());
+        label.setMinHeight(getHeight());
+        label.setMaxHeight(getWidth());
+        label.setMaxWidth(getHeight());
 
-        textField.setLayoutX(getLayoutX());
-        textField.setLayoutY(getLayoutY());
+        textField.setLayoutX(0);
+        textField.setLayoutY(0);
         textField.setPrefWidth(getWidth());
         textField.setPrefHeight(getHeight());
+        textField.setMinWidth(getWidth());
+        textField.setMinHeight(getHeight());
+        textField.setMaxWidth(getWidth());
+        textField.setMaxHeight(getHeight());
         textField.setPadding(label.getPadding());
     }
 
@@ -185,16 +193,19 @@ public class EditableLabel extends Pane {
         if(editableState)
             return;
 
+        editableState = true;
         getChildren().remove(label);
         getChildren().add(textField);
         pseudoClassStateChanged(PseudoClass.getPseudoClass("editable"), true);
         requestLayout();
+        textField.requestFocus();
     }
 
     private void exitEditableMode() {
         if(!editableState)
             return;
 
+        editableState = false;
         getChildren().remove(textField);
         getChildren().add(label);
         pseudoClassStateChanged(PseudoClass.getPseudoClass("editable"), false);

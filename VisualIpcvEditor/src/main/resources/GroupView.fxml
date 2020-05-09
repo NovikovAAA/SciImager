@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import com.visualipcv.view.EditableLabel?>
+<?import javafx.scene.layout.BorderPane?>
+
+<fx:root styleClass="group" onKeyPressed="#onKeyPressed" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" type="AnchorPane" xmlns:fx="http://javafx.com/fxml/1">
+    <EditableLabel fx:id="description" styleClass="description" AnchorPane.topAnchor="-20.0" AnchorPane.leftAnchor="0.0" prefHeight="20.0" minWidth="100.0"/>
+    <AnchorPane fx:id="wrapper" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="3.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="3.0">
+        <VBox styleClass="body" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <HBox styleClass="header" prefHeight="34.0" prefWidth="200.0">
+                <padding>
+                    <Insets topRightBottomLeft="5.0"/>
+                </padding>
+                <AnchorPane HBox.hgrow="ALWAYS">
+                    <StackPane AnchorPane.topAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+                        <EditableLabel fx:id="title" styleClass="group-title" text="Text" />
+                    </StackPane>
+                </AnchorPane>
+            </HBox>
+        </VBox>
+    </AnchorPane>
+    <effect>
+        <DropShadow />
+    </effect>
+    <opaqueInsets>
+        <Insets />
+    </opaqueInsets>
+</fx:root>

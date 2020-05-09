@@ -20,12 +20,17 @@ public class OutputNodeSlot extends NodeSlot {
     }
 
     public void disconnect() {
-        for(Node n : getNode().getGraph().getNodes()) {
-            if(n == getNode()) {
+        for(GraphElement n : getNode().getGraph().getNodes()) {
+            if(!(n instanceof Node))
+                continue;
+
+            Node node = (Node)n;
+
+            if(node == getNode()) {
                 continue;
             }
 
-            for(InputNodeSlot is : n.getInputSlots()) {
+            for(InputNodeSlot is : node.getInputSlots()) {
                 if(is.getConnectedSlot() == this) {
                     is.disconnect();
                 }
@@ -34,12 +39,17 @@ public class OutputNodeSlot extends NodeSlot {
     }
 
     public boolean isConnected() {
-        for(Node n : getNode().getGraph().getNodes()) {
-            if(n == getNode()) {
+        for(GraphElement n : getNode().getGraph().getNodes()) {
+            if(!(n instanceof Node))
+                continue;
+
+            Node node = (Node)n;
+
+            if(node == getNode()) {
                 continue;
             }
 
-            for(InputNodeSlot is : n.getInputSlots()) {
+            for(InputNodeSlot is : node.getInputSlots()) {
                 if(is.getConnectedSlot() == this) {
                     return true;
                 }

@@ -1,12 +1,18 @@
 package com.visualipcv.scripts;
 
+import com.visualipcv.Console;
+import com.visualipcv.core.CommonException;
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.Document;
 import com.visualipcv.core.IDocumentPart;
+import com.visualipcv.core.Processor;
+import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.core.ProcessorProperty;
+import com.visualipcv.core.SciProcessor;
 import com.visualipcv.core.io.ProcessorPropertyEntity;
 import com.visualipcv.core.io.SciScriptEntity;
 import com.visualipcv.editor.Editor;
+import com.visualipcv.procs.GraphProcessor;
 import org.scilab.modules.types.ScilabType;
 
 import java.util.ArrayList;
@@ -45,6 +51,7 @@ public class SciScript implements IDocumentPart {
     @Override
     public void setName(String name) {
         this.name = name;
+        onChanged();
     }
 
     @Override
@@ -54,10 +61,12 @@ public class SciScript implements IDocumentPart {
 
     public void addInputProperty(ProcessorProperty property) {
         inputProperties.add(property);
+        onChanged();
     }
 
     public void addOutputProperty(ProcessorProperty property) {
         outputProperties.add(property);
+        onChanged();
     }
 
     public List<ProcessorProperty> getInputProperties() {
@@ -92,6 +101,7 @@ public class SciScript implements IDocumentPart {
 
     public void setCode(String code) {
         this.code = code;
+        onChanged();
     }
 
     public DataBundle run(DataBundle inputs) {
@@ -111,6 +121,47 @@ public class SciScript implements IDocumentPart {
         }
 
         return result;
+    }
+
+    private void onChanged() {
+        if(getDocument() == null)
+            return;
+
+        Processor processor = ProcessorLibrary.findProcessor(getId());
+
+        if(processor == null) {
+            try {
+                ProcessorLibrary.addProcessor(new SciProcessor(this));
+            } catch (CommonException e) {
+                Console.error(e.getMessage());
+            }
+
+            return;
+        }
+
+        if(processor instanceof SciProcessor) {
+            try {
+                ((SciProcessor)processor).rebuild();
+            } catch (CommonException e) {
+                Console.write(e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public void onOpen() {
+        onChanged();
+    }
+
+    @Override
+    public void onClose() {
+        Processor processor = ProcessorLibrary.findProcessor(getId());
+
+        if(processor != null) {
+            ProcessorLibrary.removeProcessor(processor);
+        }
+
+        Editor.closeWindow(null, this);
     }
 
     @Override

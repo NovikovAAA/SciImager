@@ -1,10 +1,12 @@
 package com.visualipcv.core;
 
 import com.visualipcv.Console;
+import com.visualipcv.controller.GraphElementController;
 import com.visualipcv.controller.NodeController;
 import com.visualipcv.core.io.ConnectionEntity;
 import com.visualipcv.core.io.GraphClipboard;
 import com.visualipcv.core.io.GraphEntity;
+import com.visualipcv.core.io.GroupEntity;
 import com.visualipcv.core.io.NodeEntity;
 import com.visualipcv.editor.Editor;
 import com.visualipcv.procs.GraphProcessor;
@@ -34,7 +36,7 @@ public class Graph implements IDocumentPart {
     private Document document;
     private UUID id;
     private String name;
-    private ArrayList<Node> nodes = new ArrayList<>();
+    private ArrayList<GraphElement> nodes = new ArrayList<>();
     private Set<Connection> connections = new HashSet<>();
     private Map<NodeSlot, List<Connection>> slotConnectionAssoc = new HashMap<>();
 
@@ -53,7 +55,14 @@ public class Graph implements IDocumentPart {
                 addNode(new Node(this, node));
             } catch (CommonException e) {
                 Console.error(e.getMessage());
-                // TODO: exchange node with proxy
+            }
+        }
+
+        for(GroupEntity group : graphEntity.getGroups()) {
+            try {
+                addNode(new Group(this, group));
+            } catch (CommonException e) {
+                Console.error(e.getMessage());
             }
         }
 
@@ -77,7 +86,7 @@ public class Graph implements IDocumentPart {
         return name;
     }
 
-    public void addNode(Node node) {
+    public void addNode(GraphElement node) {
         nodes.add(node);
 
         try {
@@ -88,10 +97,10 @@ public class Graph implements IDocumentPart {
         onChanged();
     }
 
-    public void addNodes(Collection<Node> nodes) {
+    public void addNodes(Collection<GraphElement> nodes) {
         this.nodes.addAll(nodes);
 
-        for(Node node : nodes) {
+        for(GraphElement node : nodes) {
             try {
                 node.onCreate();
             } catch (GraphExecutionException e) {
@@ -101,29 +110,15 @@ public class Graph implements IDocumentPart {
         onChanged();
     }
 
-    public void removeNode(Node node) {
+    public void removeNode(GraphElement node) {
         nodes.remove(node);
-
-        for(Node n : nodes) {
-            for(InputNodeSlot slot : n.getInputSlots()) {
-                if(slot.getConnectedSlot() == null)
-                    continue;
-
-                if(slot.getConnectedSlot().getNode() == node) {
-                    slot.disconnect();
-                }
-            }
-        }
-
-        for(InputNodeSlot slot : node.getInputSlots()) {
-            slot.disconnect();
-        }
 
         try {
             node.onDestroy();
         } catch (GraphExecutionException e) {
             Console.write(e.getMessage());
         }
+
         onChanged();
     }
 
@@ -161,7 +156,7 @@ public class Graph implements IDocumentPart {
         onChanged();
     }
 
-    public List<Node> getNodes() {
+    public List<GraphElement> getNodes() {
         return nodes;
     }
 
@@ -177,12 +172,21 @@ public class Graph implements IDocumentPart {
     public List<Node> getOutputNodes() {
         List<Node> outputs = new ArrayList<>();
 
-        for(Node node : nodes) {
-            if(node.isProxy())
+        for(GraphElement node : nodes) {
+            if(!(node instanceof Node))
                 continue;
 
-            if(node.findProcessor().isOutput()) {
-                outputs.add(node);
+            Node n = (Node)node;
+
+            if(n.isProxy())
+                continue;
+
+            Processor processor = n.findProcessor();
+
+            if(processor != null) {
+                if(n.findProcessor().isOutput()) {
+                    outputs.add(n);
+                }
             }
         }
 
@@ -192,9 +196,12 @@ public class Graph implements IDocumentPart {
     public List<Node> getProxyNodes() {
         List<Node> proxy = new ArrayList<>();
 
-        for(Node node : nodes) {
-            if(node.isProxy()) {
-                proxy.add(node);
+        for(GraphElement node : nodes) {
+            if(!(node instanceof Node))
+                continue;
+
+            if(((Node)node).isProxy()) {
+                proxy.add((Node)node);
             }
         }
 
@@ -230,8 +237,9 @@ public class Graph implements IDocumentPart {
     public void execute(GraphExecutionContext context, boolean cleanProperties) throws GraphExecutionException {
         GraphExecutionData.clear(this, cleanProperties);
 
-        for(Node node : this.nodes) {
-            node.checkProcessorCompatibility();
+        for(GraphElement node : this.nodes) {
+            if(node instanceof Node)
+                ((Node)node).checkProcessorCompatibility();
         }
 
         List<Node> nodes = getOutputNodes();
@@ -241,22 +249,25 @@ public class Graph implements IDocumentPart {
         }
     }
 
-    public Node findNode(UUID id) {
-        for(Node node : nodes) {
+    public <T extends GraphElement> T findNode(UUID id) {
+        for(GraphElement node : nodes) {
             if(node.getId().equals(id)) {
-                return node;
+                return (T)node;
             }
         }
         return null;
     }
 
     public Node findProperty(String name) {
-        for(Node node : getNodes()) {
-            if(node.isProxy())
+        for(GraphElement node : getNodes()) {
+            if(!(node instanceof Node))
                 continue;
 
-            if(node.findProcessor().isProperty() && node.getName().equals(name)) {
-                return node;
+            if(((Node)node).isProxy())
+                continue;
+
+            if(((Node)node).findProcessor().isProperty() && node.getName().equals(name)) {
+                return (Node)node;
             }
         }
 
@@ -325,9 +336,12 @@ public class Graph implements IDocumentPart {
     }
 
     public void executeAsync(GraphExecutionContext context, Semaphore semaphore) {
-        for(Node node : this.nodes) {
-            if(!node.isProxy())
-                node.checkProcessorCompatibility();
+        for(GraphElement node : this.nodes) {
+            if(!(node instanceof Node))
+                continue;
+
+            if(!((Node)node).isProxy())
+                ((Node)node).checkProcessorCompatibility();
         }
 
         Thread thread = new Thread(new Runnable() {

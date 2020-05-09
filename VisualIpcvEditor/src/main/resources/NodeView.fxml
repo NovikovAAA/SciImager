@@ -14,10 +14,12 @@
 <?import com.visualipcv.view.EditableLabel?>
 
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.effect.Blend?>
 <fx:root styleClass="node" onKeyPressed="#onKeyPressed" onMouseReleased="#onMouseReleased" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" type="AnchorPane" xmlns:fx="http://javafx.com/fxml/1">
+    <EditableLabel fx:id="description" styleClass="description" AnchorPane.topAnchor="-20.0" AnchorPane.leftAnchor="0.0" prefHeight="20.0" minWidth="100.0"/>
     <AnchorPane fx:id="wrapper" style="-fx-background-color: transparent;" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="3.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="3.0">
-        <VBox style="-fx-border-radius: 10; -fx-background-color: #dddddd; -fx-background-radius: 10; -fx-border-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <HBox styleClass="node-header" prefHeight="34.0" prefWidth="200.0">
+        <VBox styleClass="body" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <HBox styleClass="header" prefHeight="34.0" prefWidth="200.0">
                 <padding>
                     <Insets topRightBottomLeft="5.0"/>
                 </padding>

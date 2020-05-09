@@ -16,9 +16,11 @@ public class DocumentEntity implements Serializable {
     private UUID id;
     private List<Object> entities = new ArrayList<>();
     private List<String> classes = new ArrayList<>();
+    private String name;
 
     public DocumentEntity(Document document) {
         this.id = document.getId();
+        this.name = document.getName();
 
         for(IDocumentPart part : document.getParts()) {
             Object entity = part.getSerializableProxy();
@@ -38,5 +40,9 @@ public class DocumentEntity implements Serializable {
 
     public UUID getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
     }
 }

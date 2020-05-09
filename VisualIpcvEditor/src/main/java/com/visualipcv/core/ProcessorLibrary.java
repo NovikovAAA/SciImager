@@ -94,4 +94,8 @@ public class ProcessorLibrary extends Refreshable {
         String pluginsPath = System.getProperty("user.dir") + "/Plugins";
         loadPlugins(pluginsPath);
     }
+
+    public static void update() {
+        getInstance().refresh();
+    }
 }

@@ -114,20 +114,41 @@
     -fx-font-size: 14;
 }
 
-.node-header {
+.node .header {
     -fx-background-color: lightskyblue;
     -fx-border-color: transparent;
     -fx-border-radius: 10 10 0 0;
     -fx-background-radius: 10 10 0 0;
 }
 
-.node:property .node-header {
+.node:property .header {
     -fx-background-color: darkorange;
 }
 
 .node:proxy {
     -fx-background-color: #888888;
     -fx-opacity: 0.3;
+}
+
+.node .body, .group .body {
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-border-color: black;
+}
+
+.node .body {
+    -fx-background-color: #dddddd;
+}
+
+.group .body {
+    -fx-background-color: rgba(255, 255, 255, 0.75);
+}
+
+.group .header {
+    -fx-background-color: rgba(255, 255, 255, 0.8);
+    -fx-border-color: lightgray;
+    -fx-border-radius: 10 10 0 0;
+    -fx-background-radius: 10 10 0 0;
 }
 
 .list-view .list-cell:odd {
@@ -148,4 +169,9 @@
 
 .editable-label {
 
+}
+
+.description {
+    -fx-background-color: rgba(255, 255, 255, 1);
+    -fx-background-radius: 5.0;
 }

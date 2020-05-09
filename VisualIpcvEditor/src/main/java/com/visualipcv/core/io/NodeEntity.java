@@ -19,6 +19,7 @@ public class NodeEntity implements Serializable {
     private double x;
     private double y;
     private String name;
+    private String description;
 
     private List<NodeSlotEntity> inputSlots = new ArrayList<>();
     private List<NodeSlotEntity> outputSlots = new ArrayList<>();
@@ -30,6 +31,7 @@ public class NodeEntity implements Serializable {
         this.inputValues = new HashMap<>();
         this.name = node.getName();
         this.processorUID = node.getProcessorUID();
+        this.description = node.getDescription();
 
         for(InputNodeSlot slot : node.getInputSlots()) {
             inputSlots.add(new NodeSlotEntity(slot));
@@ -70,6 +72,10 @@ public class NodeEntity implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public void addOffset(double dx, double dy) {

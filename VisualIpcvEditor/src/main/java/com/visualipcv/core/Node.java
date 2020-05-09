@@ -8,28 +8,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Node {
-    private final UUID id;
-    private Graph graph;
+public class Node extends GraphElement {
     private ProcessorUID processorUID;
-    private String name = "Property";
     private List<InputNodeSlot> inputSlots;
     private List<OutputNodeSlot> outputSlots;
-    private double x;
-    private double y;
-    private List<NodeCommand> commands = new ArrayList<>();
     private boolean isProxy = false;
 
     private GraphExecutionException lastError;
 
     public Node(Graph graph, Processor processor, double x, double y) {
-        this.id = java.util.UUID.randomUUID();
-        this.name = processor.getName();
+        super(graph, processor.getName(), x, y);
         this.processorUID = processor.getUID();
-        this.graph = graph;
-
-        this.x = x;
-        this.y = y;
 
         this.inputSlots = new ArrayList<>();
         this.outputSlots = new ArrayList<>();
@@ -44,13 +33,11 @@ public class Node {
     }
 
     public Node(Graph graph, NodeEntity nodeEntity) {
-        this.id = nodeEntity.getId();
-        this.name = nodeEntity.getName();
-        this.processorUID = nodeEntity.getProcessorUID();
-        this.graph = graph;
+        super(graph, nodeEntity.getName(), nodeEntity.getX(), nodeEntity.getY());
+        setDescription(nodeEntity.getDescription());
 
-        this.x = nodeEntity.getX();
-        this.y = nodeEntity.getY();
+        this.setId(nodeEntity.getId());
+        this.processorUID = nodeEntity.getProcessorUID();
 
         this.inputSlots = new ArrayList<>();
         this.outputSlots = new ArrayList<>();
@@ -111,16 +98,8 @@ public class Node {
         }
     }
 
-    public UUID getId() {
-        return id;
-    }
-
     public boolean isProxy() {
         return isProxy;
-    }
-
-    public Graph getGraph() {
-        return graph;
     }
 
     public Processor findProcessor() {
@@ -151,10 +130,6 @@ public class Node {
         return null;
     }
 
-    public List<NodeCommand> getCommands() {
-        return commands;
-    }
-
     public NodeSlot getNodeSlot(String name) {
         InputNodeSlot inputNodeSlot = getInputNodeSlot(name);
 
@@ -162,19 +137,6 @@ public class Node {
             return inputNodeSlot;
 
         return getOutputNodeSlot(name);
-    }
-
-    public void setLocation(double x, double y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public double getX() {
-        return x;
-    }
-
-    public double getY() {
-        return y;
     }
 
     private Object getValueFromInput(GraphExecutionContext context, InputNodeSlot slot) throws GraphExecutionException {
@@ -212,15 +174,6 @@ public class Node {
         return lastError;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-        getGraph().onChanged();
-    }
-
     public void execute(GraphExecutionContext context) throws GraphExecutionException {
         Processor processor = ProcessorLibrary.findProcessor(processorUID);
 
@@ -250,10 +203,7 @@ public class Node {
         }
     }
 
-    public void addCommand(NodeCommand command) {
-        this.commands.add(command);
-    }
-
+    @Override
     public void onCreate() throws GraphExecutionException {
         try {
             if(findProcessor() != null)
@@ -263,7 +213,26 @@ public class Node {
         }
     }
 
+    @Override
     public void onDestroy() throws GraphExecutionException {
+        for(GraphElement n : getGraph().getNodes()) {
+            if(n instanceof Node) {
+                Node temp = (Node)n;
+                for(InputNodeSlot slot : temp.getInputSlots()) {
+                    if(slot.getConnectedSlot() == null)
+                        continue;
+
+                    if(slot.getConnectedSlot().getNode() == this) {
+                        slot.disconnect();
+                    }
+                }
+            }
+        }
+
+        for(InputNodeSlot slot : getInputSlots()) {
+            slot.disconnect();
+        }
+
         try {
             if(findProcessor() != null)
                 findProcessor().onCreate();
