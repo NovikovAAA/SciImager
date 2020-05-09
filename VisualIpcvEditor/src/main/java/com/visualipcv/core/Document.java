@@ -24,6 +24,7 @@ public class Document implements IDocumentPart {
     public Document(Document parent, DocumentEntity entity) {
         this(parent);
         this.id = entity.getId();
+        this.name = entity.getName();
 
         for(Object part : entity.getEntities()) {
             try {
@@ -53,6 +54,15 @@ public class Document implements IDocumentPart {
         DocumentManager.getInstance().refresh();
         script.onOpen();
         return script;
+    }
+
+    public Document addDocument() {
+        Document document = new Document(this);
+        document.setName("New collection");
+        parts.add(document);
+        DocumentManager.getInstance().refresh();
+        document.onOpen();
+        return document;
     }
 
     public void remove(IDocumentPart part) {
@@ -97,6 +107,10 @@ public class Document implements IDocumentPart {
         }
 
         return null;
+    }
+
+    public Document getParent() {
+        return parent;
     }
 
     @Override

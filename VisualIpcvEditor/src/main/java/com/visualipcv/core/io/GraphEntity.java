@@ -2,6 +2,8 @@ package com.visualipcv.core.io;
 
 import com.visualipcv.core.Connection;
 import com.visualipcv.core.Graph;
+import com.visualipcv.core.GraphElement;
+import com.visualipcv.core.Group;
 import com.visualipcv.core.Node;
 
 import java.io.Serializable;
@@ -14,15 +16,20 @@ public class GraphEntity implements Serializable {
     private UUID id;
     private List<NodeEntity> nodes;
     private List<ConnectionEntity> connections;
+    private List<GroupEntity> groups;
 
     public GraphEntity(Graph graph) {
         name = graph.getName();
         nodes = new ArrayList<>();
         connections = new ArrayList<>();
+        groups = new ArrayList<>();
         id = graph.getId();
 
-        for(Node node : graph.getNodes()) {
-            nodes.add(new NodeEntity(node));
+        for(GraphElement node : graph.getNodes()) {
+            if(node instanceof Node)
+                nodes.add(new NodeEntity((Node)node));
+            else
+                groups.add(new GroupEntity((Group)node));
         }
 
         for(Connection connection : graph.getConnections()) {
@@ -33,6 +40,7 @@ public class GraphEntity implements Serializable {
     public GraphEntity(GraphClipboard graph) {
         nodes = new ArrayList<>();
         connections = new ArrayList<>();
+        groups = new ArrayList<>();
 
         for(Node node : graph.getNodes()) {
             nodes.add(new NodeEntity(node));
@@ -57,5 +65,9 @@ public class GraphEntity implements Serializable {
 
     public List<ConnectionEntity> getConnections() {
         return connections;
+    }
+
+    public List<GroupEntity> getGroups() {
+        return groups;
     }
 }

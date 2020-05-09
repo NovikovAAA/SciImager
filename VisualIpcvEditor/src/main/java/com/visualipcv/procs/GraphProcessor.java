@@ -3,6 +3,7 @@ package com.visualipcv.procs;
 import com.visualipcv.core.CommonException;
 import com.visualipcv.core.DataBundle;
 import com.visualipcv.core.Graph;
+import com.visualipcv.core.GraphElement;
 import com.visualipcv.core.GraphExecutionContext;
 import com.visualipcv.core.GraphExecutionData;
 import com.visualipcv.core.GraphExecutionException;
@@ -12,6 +13,7 @@ import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.OutputNodeSlot;
 import com.visualipcv.core.Processor;
 import com.visualipcv.core.ProcessorBuilder;
+import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.core.ProcessorProperty;
 
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ public class GraphProcessor extends Processor {
                 .setModule(graph.getId().toString())
                 .setInputProperties(getInputProperties(graph))
                 .setOutputProperties(getOutputProperties(graph)));
+        ProcessorLibrary.update();
     }
 
     @Override
@@ -80,14 +83,23 @@ public class GraphProcessor extends Processor {
     private static List<ProcessorProperty> getInputProperties(Graph graph) {
         List<ProcessorProperty> properties = new ArrayList<>();
 
-        for(Node node : graph.getNodes()) {
-            if(node.isProxy())
+        for(GraphElement node : graph.getNodes()) {
+            if(!(node instanceof Node))
                 continue;
 
-            if(node.findProcessor().isProperty()) {
-                ProcessorProperty property = node.getInputSlots().get(0).getProperty();
-                String name = node.getName();
-                properties.add(new ProcessorProperty(name, property.getType()));
+            Node n = (Node)node;
+
+            if(n.isProxy())
+                continue;
+
+            Processor processor = n.findProcessor();
+
+            if(processor != null) {
+                if(processor.isProperty()) {
+                    ProcessorProperty property = n.getInputSlots().get(0).getProperty();
+                    String name = node.getName();
+                    properties.add(new ProcessorProperty(name, property.getType()));
+                }
             }
         }
 

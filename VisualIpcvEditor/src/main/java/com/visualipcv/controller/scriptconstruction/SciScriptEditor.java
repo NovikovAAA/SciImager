@@ -15,6 +15,8 @@ import com.visualipcv.editor.EditorCommand;
 import com.visualipcv.editor.EditorWindow;
 import com.visualipcv.scripts.SciScript;
 import com.visualipcv.view.docking.DockPos;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -64,6 +66,13 @@ public class SciScriptEditor extends Controller<AnchorPane> implements INameable
         outputProperties.getView().maxHeightProperty().bind(properties.heightProperty().multiply(0.4));
 
         nameProperty.setBinder(context -> ((SciScript)context).getName());
+
+        codeField.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                ((SciScript)getContext()).setCode(newValue);
+            }
+        });
     }
 
     @Override
@@ -71,6 +80,7 @@ public class SciScriptEditor extends Controller<AnchorPane> implements INameable
         super.setContext(context);
         inputProperties.setContext(((SciScript)context).getInputProperties());
         outputProperties.setContext(((SciScript)context).getOutputProperties());
+        codeField.setText(((SciScript)context).getCode());
     }
 
     @Override
