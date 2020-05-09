@@ -7,6 +7,7 @@
 #include <VisualIPCV/Logger.hpp>
 
 #include <VisualIPCV/FaceDetectProcessor.hpp>
+#include <VisualIPCV/ImageCropProcessor.hpp>
 
 using namespace cv;
 using namespace std;
@@ -17,13 +18,21 @@ int main(int argc, const char * argv[]) {
     
     DataBundle input;
     input.write("image", src);
-    input.write("cascadePath", path);
+    input.write("x", 20.0);
+    input.write("y", 20.0);
+    input.write("width", 400.0);
+    input.write("height", 400.0);
+//    input.write("cascadePath", path);
     
     DataBundle nodeState;
     
-    FaceDetectProcessor processor;
-    processor.execute(input, nodeState);
+    ImageCropProcessor processor;
+    DataBundle outputDataBundle = processor.execute(input, nodeState);
     
+    Mat *result = outputDataBundle.read<Mat*>("result");
+
+    namedWindow("window1", 1); imshow("window1", *result);
+    waitKey(0);
     return 0;
 }
 

@@ -10,7 +10,6 @@
 
 #include <stdio.h>
 #include "Processor.hpp"
-#include <opencv2/core.hpp>
 
 class IPCV_API FaceDetectProcessor : public Processor {
 public:

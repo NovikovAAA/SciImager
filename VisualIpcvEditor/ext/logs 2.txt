@@ -1,0 +1,7 @@
+Processor FaceDetectConcat
+Processor ImageProperties
+Processor FaceDetect
+Processor ImageCrop
+Processor ImageProperties
+Processor FaceDetect
+Processor ImageCrop
