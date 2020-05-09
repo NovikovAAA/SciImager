@@ -17,7 +17,7 @@
 
 struct DataBundle {
     std::map<std::string, DataValue> dataMap;
-    std::vector<BaseDataTypeClassifier> outputPropertiesDataTypes;
+    std::map<std::string, BaseDataTypeClassifier> outputPropertiesDataTypes;
     
     DataBundle() {}
     template <class T>

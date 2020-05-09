@@ -21,6 +21,12 @@ BaseDataType::BaseDataType(const BaseDataType & object) {
     }
 }
 
+BaseDataType::BaseDataType(BaseDataTypeClassifier typeClassifier) {
+    this->typeClassifier = typeClassifier;
+    this->name = typeNameForClassifier(typeClassifier);
+    this->color = {0, 0, 0, 0};
+}
+
 BaseDataType::BaseDataType(BaseDataTypeClassifier typeClassifier, std::array<double, COLOR_ARRAY_SIZE> color) {
     this->typeClassifier = typeClassifier;
     this->name = typeNameForClassifier(typeClassifier);

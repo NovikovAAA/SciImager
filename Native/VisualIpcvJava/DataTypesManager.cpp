@@ -7,6 +7,7 @@
 
 #include "DataTypesManager.hpp"
 #include <VisualIPCV/Logger.hpp>
+#include <cassert>
 
 DataTypesManager::DataTypesManager() {
     classifiers = {JNI_DOUBLE, JNI_STRING, JNI_IMAGE, UNKNOWN};
@@ -50,6 +51,8 @@ string DataTypesManager::javaTypeNameForClassifier(PrimitiveTypeСlassifier clas
             return "java/lang/Double";
         case JNI_STRING:
             return "java/lang/String";
+        case JNI_IMAGE:
+            return "org/opencv/core/Mat";
         default:
             return "java/lang/Object";
     }
@@ -62,6 +65,10 @@ jmethodID DataTypesManager::dataTypeConstructorForClassifier(JNIEnv* env, jclass
         case JNI_DOUBLE:
             constructorString = "<init>";
             signatureString = "(D)V";
+            break;
+        case JNI_IMAGE:
+            constructorString = "<init>";
+            signatureString = "(J)V";
             break;
         default:
             return nullptr;
@@ -76,6 +83,10 @@ jmethodID DataTypesManager::dataTypeGetValueMethodForClassifier(JNIEnv* env, jcl
         case JNI_DOUBLE:
             getValueString = "doubleValue";
             signatureString = "()D";
+            break;
+        case JNI_IMAGE:
+            getValueString = "getNativeObjAddr";
+            signatureString = "()J";
             break;
         default:
             return nullptr;

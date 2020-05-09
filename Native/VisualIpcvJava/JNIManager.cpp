@@ -7,8 +7,15 @@
 
 #include "JNIManager.hpp"
 #include "DataTypesManager.hpp"
+
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+
 #include <VisualIPCV/Logger.hpp>
+
 #include <iostream>
+
+using namespace cv;
 
 Processor* JNIManager::processorFromJava(JNIEnv *env, jobject uid) {
     jclass uidClass = env->FindClass("com/visualipcv/core/ProcessorUID");
@@ -83,12 +90,13 @@ jobject JNIManager::processorResultForJava(JNIEnv *env, DataBundle result) {
     assert(outputDataBundle != nullptr);
     
     BaseDataTypeClassifier dataTypeClassifier = BaseDataTypeClassifier::ANY;
-    if (result.outputPropertiesDataTypes.size() > 0) {
-        dataTypeClassifier = result.outputPropertiesDataTypes[0];
-    }
+    assert(result.outputPropertiesDataTypes.size() > 0);
     
-    DataTypeJNIObject *dataTypeJniObject = DataTypesManager::getInstance().getPrimitiveType(env, dataTypeClassifier);
     for (auto& item : result.dataMap) {
+        dataTypeClassifier = result.outputPropertiesDataTypes[item.first];
+        DataTypeJNIObject *dataTypeJniObject = DataTypesManager::getInstance().getPrimitiveType(env, dataTypeClassifier);
+        assert(dataTypeJniObject != nullptr);
+        
         jstring key = env->NewStringUTF(item.first.c_str());
         jobject value = nullptr;
         switch (dataTypeClassifier) {
@@ -103,6 +111,11 @@ jobject JNIManager::processorResultForJava(JNIEnv *env, DataBundle result) {
             case BaseDataTypeClassifier::STRING: {
                 std::string resultString = result.read<std::string>(item.first);
                 value = env->NewStringUTF(resultString.c_str());
+                break;
+            }
+            case BaseDataTypeClassifier::IMAGE: {
+                Mat *newImage = new Mat(*(result.read<Mat*>(item.first)));
+                value = (jobject)env->NewObject(dataTypeJniObject->dataTypeClass, dataTypeJniObject->dataTypeConstructor, (int64_t)newImage);
                 break;
             }
             default:
@@ -192,6 +205,11 @@ void JNIManager::writeToBundle(JNIEnv *env, jobject object, DataBundle *valuesBu
             assert(valueJString != nullptr);
             std::string valueString = env->GetStringUTFChars(valueJString, 0);
             valuesBundle->write(key, valueString);
+            break;
+        }
+        case JNI_IMAGE: {
+            Mat &native_image = *(Mat*)env->CallLongMethod(object, dataTypeJniObject->dataTypeGetValueMethod);
+            valuesBundle->write(key, &native_image);
             break;
         }
         default:
