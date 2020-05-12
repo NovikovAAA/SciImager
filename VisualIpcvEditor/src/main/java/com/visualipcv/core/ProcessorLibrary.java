@@ -22,6 +22,7 @@ public class ProcessorLibrary extends Refreshable {
     public static native List<ProcessorUID> getProcessorList();
 
     private static ProcessorLibrary instance;
+    private static boolean disablePluginsLoad = false;
 
     public static ProcessorLibrary getInstance() {
         if(instance == null)
@@ -29,9 +30,16 @@ public class ProcessorLibrary extends Refreshable {
         return instance;
     }
 
+    public static void disablePlugins() {
+        disablePluginsLoad = true;
+    }
+
     public ProcessorLibrary() {
         loadProcessorsFromPackage("com.visualipcv.procs");
-        loadPlugins();
+
+        if(!disablePluginsLoad)
+            loadPlugins();
+
         List<ProcessorUID> uids = getProcessorList();
 
         for (ProcessorUID uid: uids) {
