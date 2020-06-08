@@ -10,7 +10,7 @@
 #include <cassert>
 
 DataTypesManager::DataTypesManager() {
-    classifiers = {JNI_DOUBLE, JNI_STRING, JNI_IMAGE, UNKNOWN};
+    classifiers = {JNI_DOUBLE, JNI_INTEGER, JNI_STRING, JNI_IMAGE, JNI_VECTOR2, UNKNOWN};
 }
 
 DataTypeJNIObject* DataTypesManager::getPrimitiveType(JNIEnv* env, jobject object) {
@@ -38,6 +38,7 @@ bool DataTypesManager::checkType(JNIEnv* env, PrimitiveTypeСlassifier classifie
 DataTypeJNIObject* DataTypesManager::createPrimitiveType(JNIEnv* env, PrimitiveTypeСlassifier classifier) {
     string javaTypeName = javaTypeNameForClassifier(classifier);
     jclass typeClass = env->FindClass(javaTypeName.c_str());
+    assert(typeClass != nullptr);
     
     jmethodID constructor = dataTypeConstructorForClassifier(env, typeClass, classifier);
     jmethodID getValueMethod = dataTypeGetValueMethodForClassifier(env, typeClass, classifier);
@@ -47,12 +48,18 @@ DataTypeJNIObject* DataTypesManager::createPrimitiveType(JNIEnv* env, PrimitiveT
 
 string DataTypesManager::javaTypeNameForClassifier(PrimitiveTypeСlassifier classifier) {
     switch (classifier) {
+        case JNI_INTEGER:
+            return "java/lang/Integer";
         case JNI_DOUBLE:
             return "java/lang/Double";
         case JNI_STRING:
             return "java/lang/String";
         case JNI_IMAGE:
             return "org/opencv/core/Mat";
+        case JNI_VECTOR2:
+        case JNI_VECTOR3:
+        case JNI_VECTOR4:
+            return "[Ljava/lang/Double;";
         default:
             return "java/lang/Object";
     }
@@ -62,6 +69,10 @@ jmethodID DataTypesManager::dataTypeConstructorForClassifier(JNIEnv* env, jclass
     string constructorString;
     string signatureString;
     switch (classifier) {
+        case JNI_INTEGER:
+            constructorString = "<init>";
+            signatureString = "(I)V";
+            break;
         case JNI_DOUBLE:
             constructorString = "<init>";
             signatureString = "(D)V";
@@ -69,6 +80,12 @@ jmethodID DataTypesManager::dataTypeConstructorForClassifier(JNIEnv* env, jclass
         case JNI_IMAGE:
             constructorString = "<init>";
             signatureString = "(J)V";
+            break;
+        case JNI_VECTOR2:
+        case JNI_VECTOR3:
+        case JNI_VECTOR4:
+            constructorString = "<init>";
+            signatureString = "([D)V";
             break;
         default:
             return nullptr;
@@ -80,6 +97,10 @@ jmethodID DataTypesManager::dataTypeGetValueMethodForClassifier(JNIEnv* env, jcl
     string getValueString;
     string signatureString;
     switch (classifier) {
+        case JNI_INTEGER:
+            getValueString = "intValue";
+            signatureString = "()I";
+            break;
         case JNI_DOUBLE:
             getValueString = "doubleValue";
             signatureString = "()D";
@@ -104,6 +125,12 @@ PrimitiveTypeСlassifier DataTypesManager::primitiveTypeClassifier(BaseDataTypeC
             return JNI_STRING;
         case BaseDataTypeClassifier::IMAGE:
             return JNI_IMAGE;
+        case BaseDataTypeClassifier::VECTOR2:
+            return JNI_VECTOR2;
+        case BaseDataTypeClassifier::VECTOR3:
+            return JNI_VECTOR3;
+        case BaseDataTypeClassifier::VECTOR4:
+            return JNI_VECTOR4;
         default:
             return UNKNOWN;
     }

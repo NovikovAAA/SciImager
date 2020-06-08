@@ -15,13 +15,22 @@ public class Starter {
     static {
         LinkUtils.linkNativeLibraries();
 
-        SciRunner.load();
+//        SciRunner.load();
 
         DataTypeLibrary.init();
         ProcessorLibrary.getInstance();
         ReflectedProcessorGenerator.loadReflected();
         Converter.registerDefaultConverters();
-        SciConverters.load();
+
+        Integer integer = new Integer(3);
+        integer.intValue();
+
+        Double doubleVar = new Double(3.0);
+        doubleVar.doubleValue();
+
+        Double[] doubleArray = new Double[32];
+        doubleArray.getClass();
+//        SciConverters.load();
     }
 
     public static void main(String[] args) throws IOException {

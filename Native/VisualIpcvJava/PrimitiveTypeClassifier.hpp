@@ -13,6 +13,9 @@ enum PrimitiveTypeСlassifier {
     JNI_INTEGER,
     JNI_STRING,
     JNI_IMAGE,
+    JNI_VECTOR2,
+    JNI_VECTOR3,
+    JNI_VECTOR4,
     UNKNOWN
 };
 
