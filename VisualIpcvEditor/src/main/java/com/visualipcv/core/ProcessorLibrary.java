@@ -37,13 +37,14 @@ public class ProcessorLibrary extends Refreshable {
     public ProcessorLibrary() {
         loadProcessorsFromPackage("com.visualipcv.procs");
 
-        if(!disablePluginsLoad)
+        if(!disablePluginsLoad) {
             loadPlugins();
 
-        List<ProcessorUID> uids = getProcessorList();
+            List<ProcessorUID> uids = getProcessorList();
 
-        for (ProcessorUID uid: uids) {
-            processors.add(new NativeProcessor(uid));
+            for (ProcessorUID uid: uids) {
+                processors.add(new NativeProcessor(uid));
+            }
         }
     }
 
