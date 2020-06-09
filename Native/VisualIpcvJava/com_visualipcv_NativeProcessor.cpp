@@ -25,6 +25,12 @@ extern "C"
 		return env->NewStringUTF(category.c_str());
 	}
 
+    JNIEXPORT jboolean JNICALL Java_com_visualipcv_core_NativeProcessor_getIsProperty(JNIEnv* env, jclass clazz, jobject uid)
+    {
+        Processor *processor = JNIManager::getInstance().processorFromJava(env, uid);
+        return processor->isProperty;
+    }
+
 	JNIEXPORT jobject JNICALL Java_com_visualipcv_core_NativeProcessor_execute(JNIEnv* env, jclass clazz, jobject uid, jobject inputs)
 	{
         DataBundle inputBundle = JNIManager::getInstance().dataBundleFromJava(env, inputs);

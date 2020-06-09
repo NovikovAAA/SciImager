@@ -16,7 +16,7 @@
 class Processor {
 public:
     IPCV_API Processor(const Processor & object);
-    IPCV_API Processor(std::string name, std::string module, std::string category, std::vector<ProcessorProperty> inputProperties, std::vector<ProcessorProperty> outputProperties);
+    IPCV_API Processor(std::string name, std::string module, std::string category, std::vector<ProcessorProperty> inputProperties, std::vector<ProcessorProperty> outputProperties, bool isProperty = false);
     
     std::string name;
     std::string module;
@@ -24,6 +24,8 @@ public:
     
     std::vector<ProcessorProperty> inputProperties;
     std::vector<ProcessorProperty> outputProperties;
+    
+    bool isProperty;
     
     IPCV_API virtual DataBundle execute(DataBundle const &dataMap, DataBundle &nodeSate) = 0;
     IPCV_API virtual void preExecute(DataBundle nodeState) {}

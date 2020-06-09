@@ -171,22 +171,18 @@ jobject JNIManager::processorResultForJava(JNIEnv *env, DataBundle result) {
                 assert(doubleInit != nullptr);
                 
                 for (int i = 0; i < doubleArray.size(); i++) {
-                    Logger::getInstance().log("double array[" + to_string(i) + "] = " + to_string(doubleArray[i]));
-                    
                     jobject arrayValueObject = env->NewObject(doubleClass, doubleInit, doubleArray[i]);
                     assert(arrayValueObject != nullptr);
                     env->SetObjectArrayElement(valuesArray, i, arrayValueObject);
                 }
                 value = (jobject)valuesArray;
-                
                 break;
             }
             default:
                 break;
         }
-        //assert(value != nullptr);
+        assert(value != nullptr);
         env->CallVoidMethod(outputDataBundle, dataBundleModel.dataBundleWriteMethod, key, value);
-        Logger::getInstance().log("Successfully write value to data bundle");
     }
     return outputDataBundle;
 }
@@ -262,17 +258,4 @@ DataBundleJNIModel JNIManager::getDataBundleModel(JNIEnv *env) {
     model.dataBundleWriteMethod = dataBundleWrite;
     
     return model;
-}
-
-int JNIManager::getVectorSize(BaseDataTypeClassifier vectorType) {
-    switch (vectorType) {
-        case BaseDataTypeClassifier::VECTOR2:
-            return 2;
-        case BaseDataTypeClassifier::VECTOR3:
-            return 3;
-        case BaseDataTypeClassifier::VECTOR4:
-            return 4;
-        default:
-            return 0;
-    }
 }

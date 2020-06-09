@@ -9,10 +9,11 @@
 
 Processor::Processor(const Processor & object) : Processor(object.name, object.module, object.category, object.inputProperties, object.outputProperties) {}
 
-Processor::Processor(std::string name, std::string module, std::string category, std::vector<ProcessorProperty> inputProperties, std::vector<ProcessorProperty> outputProperties) {
+Processor::Processor(std::string name, std::string module, std::string category, std::vector<ProcessorProperty> inputProperties, std::vector<ProcessorProperty> outputProperties, bool isProperty) {
     this->name = name;
     this->module = module;
     this->category = category;
+    this->isProperty = isProperty;
     
     for (int i = 0; i < inputProperties.size(); i++) {
         this->inputProperties.push_back(ProcessorProperty(inputProperties[i]));
@@ -20,7 +21,6 @@ Processor::Processor(std::string name, std::string module, std::string category,
     
     for (int i = 0; i < outputProperties.size(); i++) {
         this->outputProperties.push_back(ProcessorProperty(outputProperties[i]));
-        
     }
 }
 

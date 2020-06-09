@@ -12,7 +12,7 @@ bool integerPropertyProcessorResult = ProcessorManager::registerProcessor(new In
 
 IntegerPropertyProcessor::IntegerPropertyProcessor() : Processor("IntegerProperty", "Core", "TEST_C++",
 {ProcessorProperty("Value", BaseDataType(BaseDataTypeClassifier::INTEGER))},
-{ProcessorProperty("Result", BaseDataType(BaseDataTypeClassifier::INTEGER))}) {}
+{ProcessorProperty("Result", BaseDataType(BaseDataTypeClassifier::INTEGER))}, true) {}
 
 DataBundle IntegerPropertyProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     int inputValue = dataMap.read<int>("Value");
