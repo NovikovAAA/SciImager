@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <memory>
 #include <VisualIPCV/BaseDataTypeClassifier.hpp>
 #include "PrimitiveTypeClassifier.hpp"
 #include "DataTypeJNIObject.hpp"
@@ -24,8 +25,8 @@ public:
         static DataTypesManager instance;
         return instance;
     }
-    DataTypeJNIObject* getPrimitiveType(JNIEnv* env, jobject object);
-    DataTypeJNIObject* getPrimitiveType(JNIEnv* env, BaseDataTypeClassifier dataTypeClassifier);
+    std::unique_ptr<DataTypeJNIObject> getPrimitiveType(JNIEnv* env, jobject object);
+    std::unique_ptr<DataTypeJNIObject> getPrimitiveType(JNIEnv* env, BaseDataTypeClassifier dataTypeClassifier);
 private:
     DataTypesManager();
     DataTypesManager(const DataTypesManager&);
@@ -39,7 +40,7 @@ private:
     
     bool checkType(JNIEnv* env, PrimitiveTypeСlassifier classifier, jobject object);
     
-    DataTypeJNIObject* createPrimitiveType(JNIEnv* env, PrimitiveTypeСlassifier classifier);
+    std::unique_ptr<DataTypeJNIObject> createPrimitiveType(JNIEnv* env, PrimitiveTypeСlassifier classifier);
     
     PrimitiveTypeСlassifier primitiveTypeClassifier(BaseDataTypeClassifier dataTypeClassifier);
 };

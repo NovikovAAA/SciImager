@@ -14,7 +14,7 @@ using namespace cv;
 using namespace std;
 
 int main(int argc, const char * argv[]) {
-    double *inputArray = new double(2);
+    std::vector<double> inputArray(2);
     inputArray[0] = 3;
     inputArray[1] = 14;
     
@@ -26,7 +26,7 @@ int main(int argc, const char * argv[]) {
     Vector2PropertyProcessor processor;
     DataBundle outputBundle = processor.execute(inputBundle, nodeState);
     
-    double *outputArray = outputBundle.read<double*>("Result");
+    auto outputArray = outputBundle.read<std::vector<double>>("Result");
     for (int i = 0; i < 2; i++) {
         cout << outputArray[i] << endl;
     }

@@ -13,4 +13,7 @@
 #include "DllExport.h"
 #include "framework.h"
 
+#include <any>
+#include <memory>
+
 #endif //PCH_H

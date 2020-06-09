@@ -13,7 +13,7 @@ DataTypesManager::DataTypesManager() {
     classifiers = {JNI_DOUBLE, JNI_INTEGER, JNI_STRING, JNI_IMAGE, JNI_VECTOR2, UNKNOWN};
 }
 
-DataTypeJNIObject* DataTypesManager::getPrimitiveType(JNIEnv* env, jobject object) {
+std::unique_ptr<DataTypeJNIObject> DataTypesManager::getPrimitiveType(JNIEnv* env, jobject object) {
     for (int i = 0; i < classifiers.size(); i++) {
         if (checkType(env, classifiers[i], object)) {
             return createPrimitiveType(env, classifiers[i]);
@@ -22,7 +22,7 @@ DataTypeJNIObject* DataTypesManager::getPrimitiveType(JNIEnv* env, jobject objec
     return nullptr;
 }
 
-DataTypeJNIObject* DataTypesManager::getPrimitiveType(JNIEnv* env, BaseDataTypeClassifier dataTypeClassifier) {
+std::unique_ptr<DataTypeJNIObject> DataTypesManager::getPrimitiveType(JNIEnv* env, BaseDataTypeClassifier dataTypeClassifier) {
     PrimitiveTypeСlassifier classifier = primitiveTypeClassifier(dataTypeClassifier);
     return createPrimitiveType(env, classifier);
 }
@@ -35,15 +35,17 @@ bool DataTypesManager::checkType(JNIEnv* env, PrimitiveTypeСlassifier classifie
     return (bool)env->IsInstanceOf(object, typeClass);
 }
 
-DataTypeJNIObject* DataTypesManager::createPrimitiveType(JNIEnv* env, PrimitiveTypeСlassifier classifier) {
+std::unique_ptr<DataTypeJNIObject> DataTypesManager::createPrimitiveType(JNIEnv* env, PrimitiveTypeСlassifier classifier) {
     string javaTypeName = javaTypeNameForClassifier(classifier);
     jclass typeClass = env->FindClass(javaTypeName.c_str());
     assert(typeClass != nullptr);
     
     jmethodID constructor = dataTypeConstructorForClassifier(env, typeClass, classifier);
+    assert(constructor);
     jmethodID getValueMethod = dataTypeGetValueMethodForClassifier(env, typeClass, classifier);
+    assert(getValueMethod);
     
-    return new DataTypeJNIObject(classifier, typeClass, constructor, getValueMethod);
+    return std::make_unique<DataTypeJNIObject>(classifier, typeClass, constructor, getValueMethod);
 }
 
 string DataTypesManager::javaTypeNameForClassifier(PrimitiveTypeСlassifier classifier) {

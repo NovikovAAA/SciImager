@@ -98,8 +98,7 @@ DataBundle JNIManager::dataBundleFromJava(JNIEnv *env, jobject inputValues) {
     
     jmethodID mapGet = env->GetMethodID(mapClass, "get", "(Ljava/lang/Object;)Ljava/lang/Object;");
     assert(mapGet != nullptr);
-    jmethodID mapPut = env->GetMethodID(mapClass, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
-    assert(mapPut != nullptr);
+    
     jmethodID mapKeySet = env->GetMethodID(mapClass, "keySet", "()Ljava/util/Set;");
     assert(mapKeySet != nullptr);
     jmethodID setToArray = env->GetMethodID(setClass, "toArray", "()[Ljava/lang/Object;");
@@ -120,15 +119,15 @@ DataBundle JNIManager::dataBundleFromJava(JNIEnv *env, jobject inputValues) {
         jobject dataValueObject = env->CallObjectMethod(dataBundleValuesObject, mapGet, keyString);
         assert(dataValueObject != nullptr);
 
-        std::string key = env->GetStringUTFChars(keyString, 0);
+        auto key = env->GetStringUTFChars(keyString, 0);
         writeToBundle(env, dataValueObject, &valuesBundle, key);
+        env->ReleaseStringUTFChars(keyString, key);
     }
     return valuesBundle;
 }
 
 jobject JNIManager::processorResultForJava(JNIEnv *env, DataBundle result) {
     DataBundleJNIModel dataBundleModel = getDataBundleModel(env);
-    
     jobject outputDataBundle = env->NewObject(dataBundleModel.dataBundleClass, dataBundleModel.dataBundleConstructor);
     assert(outputDataBundle != nullptr);
     
@@ -137,7 +136,7 @@ jobject JNIManager::processorResultForJava(JNIEnv *env, DataBundle result) {
     
     for (auto& item : result.dataMap) {
         dataTypeClassifier = result.outputPropertiesDataTypes[item.first];
-        DataTypeJNIObject *dataTypeJniObject = DataTypesManager::getInstance().getPrimitiveType(env, dataTypeClassifier);
+        auto dataTypeJniObject = DataTypesManager::getInstance().getPrimitiveType(env, dataTypeClassifier);
         assert(dataTypeJniObject != nullptr);
         
         jstring key = env->NewStringUTF(item.first.c_str());
@@ -164,15 +163,14 @@ jobject JNIManager::processorResultForJava(JNIEnv *env, DataBundle result) {
             case BaseDataTypeClassifier::VECTOR2:
             case BaseDataTypeClassifier::VECTOR3:
             case BaseDataTypeClassifier::VECTOR4: {
-                int vectorSize = getVectorSize(dataTypeClassifier);
-                double *doubleArray = result.read<double*>(item.first);
+                std::vector<double> doubleArray = result.read<std::vector<double>>(item.first);
                 
                 jclass doubleClass = env->FindClass("java/lang/Double");
-                jobjectArray valuesArray = env->NewObjectArray(vectorSize, doubleClass, nullptr);
+                jobjectArray valuesArray = env->NewObjectArray(doubleArray.size(), doubleClass, nullptr);
                 jmethodID doubleInit = env->GetMethodID(doubleClass, "<init>", "(D)V");
                 assert(doubleInit != nullptr);
                 
-                for (int i = 0; i < vectorSize; i++) {
+                for (int i = 0; i < doubleArray.size(); i++) {
                     Logger::getInstance().log("double array[" + to_string(i) + "] = " + to_string(doubleArray[i]));
                     
                     jobject arrayValueObject = env->NewObject(doubleClass, doubleInit, doubleArray[i]);
@@ -181,14 +179,14 @@ jobject JNIManager::processorResultForJava(JNIEnv *env, DataBundle result) {
                 }
                 value = (jobject)valuesArray;
                 
-                Logger::getInstance().log("value!");
                 break;
             }
             default:
                 break;
         }
-        assert(value != nullptr);
+        //assert(value != nullptr);
         env->CallVoidMethod(outputDataBundle, dataBundleModel.dataBundleWriteMethod, key, value);
+        Logger::getInstance().log("Successfully write value to data bundle");
     }
     return outputDataBundle;
 }
@@ -196,7 +194,7 @@ jobject JNIManager::processorResultForJava(JNIEnv *env, DataBundle result) {
 #pragma mark - Private
 
 void JNIManager::writeToBundle(JNIEnv *env, jobject object, DataBundle *valuesBundle, std::string key) {
-    DataTypeJNIObject* dataTypeJniObject = DataTypesManager::getInstance().getPrimitiveType(env, object);
+    auto dataTypeJniObject = DataTypesManager::getInstance().getPrimitiveType(env, object);
     switch (dataTypeJniObject->classifier) {
         case JNI_DOUBLE: {
             assert(dataTypeJniObject->dataTypeGetValueMethod != nullptr);
@@ -231,7 +229,8 @@ void JNIManager::writeToBundle(JNIEnv *env, jobject object, DataBundle *valuesBu
             jobjectArray valuesArray = (jobjectArray)object;
             jsize length = env->GetArrayLength((jobjectArray)valuesArray);
             
-            double *resultArray = new double(length);
+            std::vector<double> resultArray(length);
+            
             for (int i = 0; i < length; i++) {
                 jobject valueObject = env->GetObjectArrayElement(valuesArray, i);
                 assert(valueObject != nullptr);
