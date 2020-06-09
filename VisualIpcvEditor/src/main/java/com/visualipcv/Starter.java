@@ -21,16 +21,6 @@ public class Starter {
         ProcessorLibrary.getInstance();
         ReflectedProcessorGenerator.loadReflected();
         Converter.registerDefaultConverters();
-
-        Integer integer = new Integer(3);
-        integer.intValue();
-
-        Double doubleVar = new Double(3.0);
-        doubleVar.doubleValue();
-
-        Double[] doubleArray = new Double[32];
-        doubleArray.getClass();
-//        SciConverters.load();
     }
 
     public static void main(String[] args) throws IOException {
