@@ -156,8 +156,15 @@ jobject JNIManager::processorResultForJava(JNIEnv *env, DataBundle result) {
                 break;
             }
             case BaseDataTypeClassifier::IMAGE: {
-                Mat *newImage = new Mat(*(result.read<Mat*>(item.first)));
-                value = (jobject)env->NewObject(dataTypeJniObject->dataTypeClass, dataTypeJniObject->dataTypeConstructor, (int64_t)newImage);
+                Mat *newImage = result.read<Mat*>(item.first);
+                jclass matClass = env->FindClass("org/opencv/core/Mat");
+                jmethodID matCtr = env->GetMethodID(matClass, "<init>", "()V");
+                jobject matObject = env->NewObject(matClass, matCtr);
+                auto native_image = (Mat*)env->CallLongMethod(matObject, dataTypeJniObject->dataTypeGetValueMethod);
+                newImage->copyTo(*native_image);
+                delete newImage;
+
+                value = matObject;
                 break;
             }
             case BaseDataTypeClassifier::VECTOR2:
@@ -216,8 +223,8 @@ void JNIManager::writeToBundle(JNIEnv *env, jobject object, DataBundle *valuesBu
             break;
         }
         case JNI_IMAGE: {
-            Mat &native_image = *(Mat*)env->CallLongMethod(object, dataTypeJniObject->dataTypeGetValueMethod);
-            valuesBundle->write(key, &native_image);
+            auto native_image = (Mat*)env->CallLongMethod(object, dataTypeJniObject->dataTypeGetValueMethod);
+            valuesBundle->write(key, native_image);
             break;
         }
         case JNI_VECTOR2:

@@ -19,7 +19,8 @@ ImagePropertyProcessor::ImagePropertyProcessor() : Processor("ImageProperty", "C
 
 DataBundle ImagePropertyProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     Mat *image = dataMap.read<Mat*>("Value");
-    Mat *coppiedImage = new Mat(*image);
+    Mat* coppiedImage = new Mat();
+    image->copyTo(*coppiedImage);
     
     DataBundle resultDataBundle;
     resultDataBundle.write("Result", coppiedImage);
