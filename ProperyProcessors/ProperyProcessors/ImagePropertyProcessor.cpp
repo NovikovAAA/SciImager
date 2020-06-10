@@ -1,0 +1,34 @@
+//
+//  ImagePropertyProcessor.cpp
+//  VisualIPCV
+//
+//  Created by Артём Новиков on 10.06.2020.
+//
+
+#include "ImagePropertyProcessor.hpp"
+#include "ProcessorManager.hpp"
+#include <opencv2/core.hpp>
+#include <opencv2/imgcodecs.hpp>
+#include <string>
+
+using namespace cv;
+using namespace std;
+
+bool imagePropertyProcessorResult = ProcessorManager::registerProcessor(new ImagePropertyProcessor());
+
+ImagePropertyProcessor::ImagePropertyProcessor() : Processor("ImageProperty", "Core", "C++ Properties",
+{ProcessorProperty("Path", BaseDataType(BaseDataTypeClassifier::STRING))},
+{ProcessorProperty("Result", BaseDataType(BaseDataTypeClassifier::IMAGE))}, true) {}
+
+DataBundle ImagePropertyProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
+    string imagePathString = dataMap.read<string>("Path");
+    Mat image = imread(imagePathString);
+    Mat *copiedImage = new Mat();
+    
+    image.copyTo(*copiedImage);
+    
+    DataBundle resultDataBundle;
+    resultDataBundle.write("Result", copiedImage);
+    prepareResult(&resultDataBundle);
+    return resultDataBundle;
+}

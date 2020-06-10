@@ -1,0 +1,382 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		66D39ACC2491800E0037131C /* ImageTestTransferProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D39ABC2491800E0037131C /* ImageTestTransferProcessor.cpp */; };
+		66D39ACD2491800E0037131C /* ImagePropertyProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D39ABD2491800E0037131C /* ImagePropertyProcessor.cpp */; };
+		66D39ACE2491800E0037131C /* StringPropertyProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D39ABE2491800E0037131C /* StringPropertyProcessor.cpp */; };
+		66D39ACF2491800E0037131C /* IntegerPropertyProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66D39ABF2491800E0037131C /* IntegerPropertyProcessor.hpp */; };
+		66D39AD02491800E0037131C /* ImagePropertyProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66D39AC02491800E0037131C /* ImagePropertyProcessor.hpp */; };
+		66D39AD12491800E0037131C /* Vector3PropertyProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66D39AC12491800E0037131C /* Vector3PropertyProcessor.hpp */; };
+		66D39AD22491800E0037131C /* ImageTestTransferProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66D39AC22491800E0037131C /* ImageTestTransferProcessor.hpp */; };
+		66D39AD32491800E0037131C /* Vector2PropertyProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66D39AC32491800E0037131C /* Vector2PropertyProcessor.hpp */; };
+		66D39AD42491800E0037131C /* IntegerPropertyProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D39AC42491800E0037131C /* IntegerPropertyProcessor.cpp */; };
+		66D39AD52491800E0037131C /* Vector4PropertyProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D39AC52491800E0037131C /* Vector4PropertyProcessor.cpp */; };
+		66D39AD62491800E0037131C /* DoublePropertyProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D39AC62491800E0037131C /* DoublePropertyProcessor.cpp */; };
+		66D39AD72491800E0037131C /* DoublePropertyProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66D39AC72491800E0037131C /* DoublePropertyProcessor.hpp */; };
+		66D39AD82491800E0037131C /* Vector2PropertyProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D39AC82491800E0037131C /* Vector2PropertyProcessor.cpp */; };
+		66D39AD92491800E0037131C /* Vector4PropertyProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66D39AC92491800E0037131C /* Vector4PropertyProcessor.hpp */; };
+		66D39ADA2491800E0037131C /* StringPropertyProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66D39ACA2491800E0037131C /* StringPropertyProcessor.hpp */; };
+		66D39ADB2491800E0037131C /* Vector3PropertyProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D39ACB2491800E0037131C /* Vector3PropertyProcessor.cpp */; };
+		66D39B20249186890037131C /* VectorBaseProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D39B1E249186890037131C /* VectorBaseProcessor.cpp */; };
+		66D39B21249186890037131C /* VectorBaseProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66D39B1F249186890037131C /* VectorBaseProcessor.hpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		66D39AAE24917EA90037131C /* libProperyProcessors.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libProperyProcessors.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		66D39ABC2491800E0037131C /* ImageTestTransferProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageTestTransferProcessor.cpp; sourceTree = "<group>"; };
+		66D39ABD2491800E0037131C /* ImagePropertyProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImagePropertyProcessor.cpp; sourceTree = "<group>"; };
+		66D39ABE2491800E0037131C /* StringPropertyProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringPropertyProcessor.cpp; sourceTree = "<group>"; };
+		66D39ABF2491800E0037131C /* IntegerPropertyProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = IntegerPropertyProcessor.hpp; sourceTree = "<group>"; };
+		66D39AC02491800E0037131C /* ImagePropertyProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ImagePropertyProcessor.hpp; sourceTree = "<group>"; };
+		66D39AC12491800E0037131C /* Vector3PropertyProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Vector3PropertyProcessor.hpp; sourceTree = "<group>"; };
+		66D39AC22491800E0037131C /* ImageTestTransferProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ImageTestTransferProcessor.hpp; sourceTree = "<group>"; };
+		66D39AC32491800E0037131C /* Vector2PropertyProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Vector2PropertyProcessor.hpp; sourceTree = "<group>"; };
+		66D39AC42491800E0037131C /* IntegerPropertyProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = IntegerPropertyProcessor.cpp; sourceTree = "<group>"; };
+		66D39AC52491800E0037131C /* Vector4PropertyProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector4PropertyProcessor.cpp; sourceTree = "<group>"; };
+		66D39AC62491800E0037131C /* DoublePropertyProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DoublePropertyProcessor.cpp; sourceTree = "<group>"; };
+		66D39AC72491800E0037131C /* DoublePropertyProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DoublePropertyProcessor.hpp; sourceTree = "<group>"; };
+		66D39AC82491800E0037131C /* Vector2PropertyProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector2PropertyProcessor.cpp; sourceTree = "<group>"; };
+		66D39AC92491800E0037131C /* Vector4PropertyProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Vector4PropertyProcessor.hpp; sourceTree = "<group>"; };
+		66D39ACA2491800E0037131C /* StringPropertyProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = StringPropertyProcessor.hpp; sourceTree = "<group>"; };
+		66D39ACB2491800E0037131C /* Vector3PropertyProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Vector3PropertyProcessor.cpp; sourceTree = "<group>"; };
+		66D39B1E249186890037131C /* VectorBaseProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VectorBaseProcessor.cpp; sourceTree = "<group>"; };
+		66D39B1F249186890037131C /* VectorBaseProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VectorBaseProcessor.hpp; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		66D39AAC24917EA90037131C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		66D39AA524917EA90037131C = {
+			isa = PBXGroup;
+			children = (
+				66D39AB024917EA90037131C /* ProperyProcessors */,
+				66D39AAF24917EA90037131C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		66D39AAF24917EA90037131C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				66D39AAE24917EA90037131C /* libProperyProcessors.dylib */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		66D39AB024917EA90037131C /* ProperyProcessors */ = {
+			isa = PBXGroup;
+			children = (
+				66D39B1E249186890037131C /* VectorBaseProcessor.cpp */,
+				66D39B1F249186890037131C /* VectorBaseProcessor.hpp */,
+				66D39AC62491800E0037131C /* DoublePropertyProcessor.cpp */,
+				66D39AC72491800E0037131C /* DoublePropertyProcessor.hpp */,
+				66D39ABD2491800E0037131C /* ImagePropertyProcessor.cpp */,
+				66D39AC02491800E0037131C /* ImagePropertyProcessor.hpp */,
+				66D39ABC2491800E0037131C /* ImageTestTransferProcessor.cpp */,
+				66D39AC22491800E0037131C /* ImageTestTransferProcessor.hpp */,
+				66D39AC42491800E0037131C /* IntegerPropertyProcessor.cpp */,
+				66D39ABF2491800E0037131C /* IntegerPropertyProcessor.hpp */,
+				66D39ABE2491800E0037131C /* StringPropertyProcessor.cpp */,
+				66D39ACA2491800E0037131C /* StringPropertyProcessor.hpp */,
+				66D39AC82491800E0037131C /* Vector2PropertyProcessor.cpp */,
+				66D39AC32491800E0037131C /* Vector2PropertyProcessor.hpp */,
+				66D39ACB2491800E0037131C /* Vector3PropertyProcessor.cpp */,
+				66D39AC12491800E0037131C /* Vector3PropertyProcessor.hpp */,
+				66D39AC52491800E0037131C /* Vector4PropertyProcessor.cpp */,
+				66D39AC92491800E0037131C /* Vector4PropertyProcessor.hpp */,
+			);
+			path = ProperyProcessors;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		66D39AAA24917EA90037131C /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66D39AD02491800E0037131C /* ImagePropertyProcessor.hpp in Headers */,
+				66D39B21249186890037131C /* VectorBaseProcessor.hpp in Headers */,
+				66D39ADA2491800E0037131C /* StringPropertyProcessor.hpp in Headers */,
+				66D39AD72491800E0037131C /* DoublePropertyProcessor.hpp in Headers */,
+				66D39AD32491800E0037131C /* Vector2PropertyProcessor.hpp in Headers */,
+				66D39AD92491800E0037131C /* Vector4PropertyProcessor.hpp in Headers */,
+				66D39AD12491800E0037131C /* Vector3PropertyProcessor.hpp in Headers */,
+				66D39AD22491800E0037131C /* ImageTestTransferProcessor.hpp in Headers */,
+				66D39ACF2491800E0037131C /* IntegerPropertyProcessor.hpp in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		66D39AAD24917EA90037131C /* ProperyProcessors */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66D39AB924917EA90037131C /* Build configuration list for PBXNativeTarget "ProperyProcessors" */;
+			buildPhases = (
+				66D39AAA24917EA90037131C /* Headers */,
+				66D39AAB24917EA90037131C /* Sources */,
+				66D39AAC24917EA90037131C /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ProperyProcessors;
+			productName = ProperyProcessors;
+			productReference = 66D39AAE24917EA90037131C /* libProperyProcessors.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		66D39AA624917EA90037131C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1150;
+				ORGANIZATIONNAME = "Артём Новиков";
+				TargetAttributes = {
+					66D39AAD24917EA90037131C = {
+						CreatedOnToolsVersion = 11.5;
+					};
+				};
+			};
+			buildConfigurationList = 66D39AA924917EA90037131C /* Build configuration list for PBXProject "ProperyProcessors" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 66D39AA524917EA90037131C;
+			productRefGroup = 66D39AAF24917EA90037131C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				66D39AAD24917EA90037131C /* ProperyProcessors */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		66D39AAB24917EA90037131C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66D39AD62491800E0037131C /* DoublePropertyProcessor.cpp in Sources */,
+				66D39ADB2491800E0037131C /* Vector3PropertyProcessor.cpp in Sources */,
+				66D39ACE2491800E0037131C /* StringPropertyProcessor.cpp in Sources */,
+				66D39AD52491800E0037131C /* Vector4PropertyProcessor.cpp in Sources */,
+				66D39ACD2491800E0037131C /* ImagePropertyProcessor.cpp in Sources */,
+				66D39AD42491800E0037131C /* IntegerPropertyProcessor.cpp in Sources */,
+				66D39ACC2491800E0037131C /* ImageTestTransferProcessor.cpp in Sources */,
+				66D39B20249186890037131C /* VectorBaseProcessor.cpp in Sources */,
+				66D39AD82491800E0037131C /* Vector2PropertyProcessor.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		66D39AB724917EA90037131C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		66D39AB824917EA90037131C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		66D39ABA24917EA90037131C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = F9F78MZ3Y9;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				OTHER_LDFLAGS = (
+					"/Users/artemnovikov/Documents/Учеба/Диплом/Scilmager/VisualIpcvEditor/ext/libVisualIPCV.dylib",
+					/usr/local/lib/libopencv_core.4.3.0.dylib,
+					/usr/local/lib/libopencv_imgproc.4.3.0.dylib,
+					/usr/local/lib/libopencv_imgcodecs.4.3.0.dylib,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					/usr/local/Cellar/opencv/4.3.0/include/opencv4,
+					"/Users/artemnovikov/Documents/Учеба/Диплом/Scilmager/Native/VisualIPCV/**",
+				);
+			};
+			name = Debug;
+		};
+		66D39ABB24917EA90037131C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = F9F78MZ3Y9;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				OTHER_LDFLAGS = (
+					"/Users/artemnovikov/Documents/Учеба/Диплом/Scilmager/VisualIpcvEditor/ext/libVisualIPCV.dylib",
+					/usr/local/lib/libopencv_core.4.3.0.dylib,
+					/usr/local/lib/libopencv_imgproc.4.3.0.dylib,
+					/usr/local/lib/libopencv_imgcodecs.4.3.0.dylib,
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					/usr/local/Cellar/opencv/4.3.0/include/opencv4,
+					"/Users/artemnovikov/Documents/Учеба/Диплом/Scilmager/Native/VisualIPCV/**",
+				);
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		66D39AA924917EA90037131C /* Build configuration list for PBXProject "ProperyProcessors" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66D39AB724917EA90037131C /* Debug */,
+				66D39AB824917EA90037131C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66D39AB924917EA90037131C /* Build configuration list for PBXNativeTarget "ProperyProcessors" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66D39ABA24917EA90037131C /* Debug */,
+				66D39ABB24917EA90037131C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 66D39AA624917EA90037131C /* Project object */;
+}
