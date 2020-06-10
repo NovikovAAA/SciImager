@@ -15,7 +15,7 @@ bool imagePropertyProcessorResult = ProcessorManager::registerProcessor(new Imag
 
 ImagePropertyProcessor::ImagePropertyProcessor() : Processor("ImageProperty", "Core", "TEST_C++",
 {ProcessorProperty("Value", BaseDataType(BaseDataTypeClassifier::IMAGE))},
-{ProcessorProperty("Result", BaseDataType(BaseDataTypeClassifier::IMAGE))}) {}
+{ProcessorProperty("Result", BaseDataType(BaseDataTypeClassifier::IMAGE))}, true) {}
 
 DataBundle ImagePropertyProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     Mat *image = dataMap.read<Mat*>("Value");

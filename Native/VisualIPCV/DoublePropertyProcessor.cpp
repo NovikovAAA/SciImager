@@ -12,7 +12,7 @@ bool doublePropertyProcessorResult = ProcessorManager::registerProcessor(new Dou
 
 DoublePropertyProcessor::DoublePropertyProcessor() : Processor("DoubleProperty", "Core", "TEST_C++",
 {ProcessorProperty("Value", BaseDataType(BaseDataTypeClassifier::DOUBLE))},
-{ProcessorProperty("Result", BaseDataType(BaseDataTypeClassifier::DOUBLE))}) {}
+{ProcessorProperty("Result", BaseDataType(BaseDataTypeClassifier::DOUBLE))}, true) {}
 
 DataBundle DoublePropertyProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     double inputValue = dataMap.read<double>("Value");

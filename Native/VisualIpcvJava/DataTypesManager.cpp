@@ -41,9 +41,7 @@ std::unique_ptr<DataTypeJNIObject> DataTypesManager::createPrimitiveType(JNIEnv*
     assert(typeClass != nullptr);
     
     jmethodID constructor = dataTypeConstructorForClassifier(env, typeClass, classifier);
-    assert(constructor);
     jmethodID getValueMethod = dataTypeGetValueMethodForClassifier(env, typeClass, classifier);
-    assert(getValueMethod);
     
     return std::make_unique<DataTypeJNIObject>(classifier, typeClass, constructor, getValueMethod);
 }
@@ -82,12 +80,6 @@ jmethodID DataTypesManager::dataTypeConstructorForClassifier(JNIEnv* env, jclass
         case JNI_IMAGE:
             constructorString = "<init>";
             signatureString = "(J)V";
-            break;
-        case JNI_VECTOR2:
-        case JNI_VECTOR3:
-        case JNI_VECTOR4:
-            constructorString = "<init>";
-            signatureString = "([D)V";
             break;
         default:
             return nullptr;
