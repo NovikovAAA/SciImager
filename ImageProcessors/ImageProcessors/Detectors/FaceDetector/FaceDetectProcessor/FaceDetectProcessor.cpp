@@ -7,11 +7,7 @@
 
 #include "FaceDetectProcessor.hpp"
 #include "ProcessorManager.hpp"
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/objdetect/objdetect.hpp>
-
-using namespace cv;
+#include "BaseFaceDetector.hpp"
 
 bool faceDetectProccessorLoadResult = ProcessorManager::registerProcessor(new FaceDetectProcessor());
 
@@ -20,23 +16,25 @@ FaceDetectProcessor::FaceDetectProcessor() : Processor("FaceDetect", "Core", "C+
 {ProcessorProperty("result", BaseDataType(BaseDataTypeClassifier::IMAGE))}) {}
 
 DataBundle FaceDetectProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
-    Mat *image = dataMap.read<Mat*>("image");
-    std::string cascadePath = dataMap.read<std::string>("cascadePath");
+    Mat* image;
+    try {
+        image = dataMap.read<Mat *>("image");
+    } catch (const std::exception& e) {
+        image = new Mat();
 
-    CascadeClassifier face_cascade;
-    face_cascade.load(cascadePath);
-
-    // Detect faces
-    std::vector<Rect> faces;
-    face_cascade.detectMultiScale(*image, faces, 1.1, 2, 0 | CASCADE_SCALE_IMAGE, Size(30, 30));
-
-    // Draw rects on the detected faces
-    for (int i = 0; i < faces.size(); i++) {
-        rectangle(*image, faces[i], Scalar(255, 0, 255), 5);
+        DataBundle resultDataBundle;
+        resultDataBundle.write("result", image);
+        prepareResult(&resultDataBundle);
+        return resultDataBundle;
     }
     
+    std::string cascadePath = dataMap.read<std::string>("cascadePath");
+    
+    BaseFaceDetector *detector = new BaseFaceDetector(cascadePath);
+    auto detectResult = detector->obtainImageWithSelectedFaces(image);
+    
     DataBundle resultDataBundle;
-    resultDataBundle.write("result", image);
+    resultDataBundle.write("result", detectResult);
     prepareResult(&resultDataBundle);
     return resultDataBundle;
 }

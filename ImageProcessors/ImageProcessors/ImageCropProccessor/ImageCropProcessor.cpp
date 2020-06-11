@@ -10,6 +10,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
 #include <cassert>
+#include "Logger.hpp"
 
 using namespace cv;
 
@@ -24,8 +25,17 @@ ImageCropProcessor::ImageCropProcessor() : Processor("ImageCrop", "Core", "C++ I
 {ProcessorProperty("result", BaseDataType(BaseDataTypeClassifier::IMAGE))}) {}
 
 DataBundle ImageCropProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
-    Mat *image = dataMap.read<Mat*>("image");
-    assert(image != nullptr);
+    Mat* image;
+    try {
+        image = dataMap.read<Mat *>("image");
+    } catch (const std::exception& e) {
+        image = new Mat();
+
+        DataBundle resultDataBundle;
+        resultDataBundle.write("result", image);
+        prepareResult(&resultDataBundle);
+        return resultDataBundle;
+    }
     
     double x = dataMap.read<double>("x");
     double y = dataMap.read<double>("y");
@@ -44,9 +54,8 @@ DataBundle ImageCropProcessor::execute(const DataBundle &dataMap, DataBundle &no
     height = y + height > imageSize.height ? height = imageSize.height - y : height;
 
     Rect cropRect(x, y, width, height);
-
     Mat *croppedImage = new Mat(sourceImage(cropRect));
-
+    
     DataBundle resultDataBundle;
     resultDataBundle.write("result", croppedImage);
     prepareResult(&resultDataBundle);

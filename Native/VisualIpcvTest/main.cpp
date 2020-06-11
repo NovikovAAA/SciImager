@@ -1,8 +1,8 @@
 #include <iostream>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/objdetect/objdetect.hpp>
+//#include <opencv2/imgproc.hpp>
+//#include <opencv2/objdetect/objdetect.hpp>
 #include <VisualIPCV/ProcessorManager.hpp>
 #include <VisualIPCV/Logger.hpp>
 
@@ -28,6 +28,7 @@ int main(int argc, const char * argv[]) {
 //        cout << outputArray[i] << endl;
 //    }
     
+//    imw
     return 0;
 }
 

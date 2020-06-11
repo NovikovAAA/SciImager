@@ -7,15 +7,39 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		66570B292492994100A48092 /* CarNumbersDetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66570B272492994100A48092 /* CarNumbersDetector.cpp */; };
+		66570B2A2492994100A48092 /* CarNumbersDetector.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66570B282492994100A48092 /* CarNumbersDetector.hpp */; };
+		66570B2F2492A52300A48092 /* BaseDetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66570B2D2492A52300A48092 /* BaseDetector.cpp */; };
+		66570B302492A52300A48092 /* BaseDetector.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66570B2E2492A52300A48092 /* BaseDetector.hpp */; };
+		66570B352492AF6A00A48092 /* CarNumbersSaver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66570B332492AF6A00A48092 /* CarNumbersSaver.cpp */; };
+		66570B362492AF6A00A48092 /* CarNumbersSaver.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66570B342492AF6A00A48092 /* CarNumbersSaver.hpp */; };
+		66570B3F2492D11400A48092 /* ImageSaver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66570B3D2492D11400A48092 /* ImageSaver.cpp */; };
+		66570B402492D11400A48092 /* ImageSaver.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66570B3E2492D11400A48092 /* ImageSaver.hpp */; };
 		66D39B182491852D0037131C /* ImageCropProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D39B122491852D0037131C /* ImageCropProcessor.cpp */; };
 		66D39B192491852D0037131C /* FaceDetectProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66D39B132491852D0037131C /* FaceDetectProcessor.hpp */; };
 		66D39B1A2491852D0037131C /* FaceDetectProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D39B142491852D0037131C /* FaceDetectProcessor.cpp */; };
 		66D39B1B2491852D0037131C /* ImageCropProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66D39B152491852D0037131C /* ImageCropProcessor.hpp */; };
 		66D39B1C2491852D0037131C /* ImagePropertiesProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D39B162491852D0037131C /* ImagePropertiesProcessor.cpp */; };
 		66D39B1D2491852D0037131C /* ImagePropertiesProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66D39B172491852D0037131C /* ImagePropertiesProcessor.hpp */; };
+		66EF59852493EFB10080E6EC /* CarNumberFill.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF59832493EFB10080E6EC /* CarNumberFill.cpp */; };
+		66EF59862493EFB10080E6EC /* CarNumberFill.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66EF59842493EFB10080E6EC /* CarNumberFill.hpp */; };
+		66EF598A2493F0CD0080E6EC /* BaseCarDetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF59882493F0CD0080E6EC /* BaseCarDetector.cpp */; };
+		66EF598B2493F0CD0080E6EC /* BaseCarDetector.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66EF59892493F0CD0080E6EC /* BaseCarDetector.hpp */; };
+		66EF598E2493F9790080E6EC /* FaceSaver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF598C2493F9790080E6EC /* FaceSaver.cpp */; };
+		66EF598F2493F9790080E6EC /* FaceSaver.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66EF598D2493F9790080E6EC /* FaceSaver.hpp */; };
+		66EF59932493FAFD0080E6EC /* BaseFaceDetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF59912493FAFD0080E6EC /* BaseFaceDetector.cpp */; };
+		66EF59942493FAFD0080E6EC /* BaseFaceDetector.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66EF59922493FAFD0080E6EC /* BaseFaceDetector.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		66570B272492994100A48092 /* CarNumbersDetector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CarNumbersDetector.cpp; sourceTree = "<group>"; };
+		66570B282492994100A48092 /* CarNumbersDetector.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CarNumbersDetector.hpp; sourceTree = "<group>"; };
+		66570B2D2492A52300A48092 /* BaseDetector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BaseDetector.cpp; sourceTree = "<group>"; };
+		66570B2E2492A52300A48092 /* BaseDetector.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BaseDetector.hpp; sourceTree = "<group>"; };
+		66570B332492AF6A00A48092 /* CarNumbersSaver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CarNumbersSaver.cpp; sourceTree = "<group>"; };
+		66570B342492AF6A00A48092 /* CarNumbersSaver.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CarNumbersSaver.hpp; sourceTree = "<group>"; };
+		66570B3D2492D11400A48092 /* ImageSaver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImageSaver.cpp; sourceTree = "<group>"; };
+		66570B3E2492D11400A48092 /* ImageSaver.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ImageSaver.hpp; sourceTree = "<group>"; };
 		66D39B04249183E00037131C /* libImageProcessors.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libImageProcessors.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		66D39B122491852D0037131C /* ImageCropProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageCropProcessor.cpp; sourceTree = "<group>"; };
 		66D39B132491852D0037131C /* FaceDetectProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FaceDetectProcessor.hpp; sourceTree = "<group>"; };
@@ -23,6 +47,14 @@
 		66D39B152491852D0037131C /* ImageCropProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ImageCropProcessor.hpp; sourceTree = "<group>"; };
 		66D39B162491852D0037131C /* ImagePropertiesProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImagePropertiesProcessor.cpp; sourceTree = "<group>"; };
 		66D39B172491852D0037131C /* ImagePropertiesProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ImagePropertiesProcessor.hpp; sourceTree = "<group>"; };
+		66EF59832493EFB10080E6EC /* CarNumberFill.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CarNumberFill.cpp; sourceTree = "<group>"; };
+		66EF59842493EFB10080E6EC /* CarNumberFill.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CarNumberFill.hpp; sourceTree = "<group>"; };
+		66EF59882493F0CD0080E6EC /* BaseCarDetector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BaseCarDetector.cpp; sourceTree = "<group>"; };
+		66EF59892493F0CD0080E6EC /* BaseCarDetector.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BaseCarDetector.hpp; sourceTree = "<group>"; };
+		66EF598C2493F9790080E6EC /* FaceSaver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FaceSaver.cpp; sourceTree = "<group>"; };
+		66EF598D2493F9790080E6EC /* FaceSaver.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FaceSaver.hpp; sourceTree = "<group>"; };
+		66EF59912493FAFD0080E6EC /* BaseFaceDetector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BaseFaceDetector.cpp; sourceTree = "<group>"; };
+		66EF59922493FAFD0080E6EC /* BaseFaceDetector.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BaseFaceDetector.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,6 +68,91 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		66570B222492989500A48092 /* Detectors */ = {
+			isa = PBXGroup;
+			children = (
+				66570B2C2492A4E400A48092 /* BaseDetector */,
+				66570B24249298C300A48092 /* CarNumbersDetector */,
+				66570B23249298B100A48092 /* FaceDetector */,
+			);
+			path = Detectors;
+			sourceTree = "<group>";
+		};
+		66570B23249298B100A48092 /* FaceDetector */ = {
+			isa = PBXGroup;
+			children = (
+				66EF59902493FAD80080E6EC /* BaseFaceDetector */,
+				66EF59812493EEB90080E6EC /* FaceSaver */,
+				66EF59802493EEAF0080E6EC /* FaceDetectProcessor */,
+			);
+			path = FaceDetector;
+			sourceTree = "<group>";
+		};
+		66570B24249298C300A48092 /* CarNumbersDetector */ = {
+			isa = PBXGroup;
+			children = (
+				66EF59872493F06D0080E6EC /* BaseCarDetector */,
+				66EF59822493EF8B0080E6EC /* CarNumberFill */,
+				66570B322492AF3100A48092 /* CarNumbersSaver */,
+				66570B312492AF1D00A48092 /* CarNumbersDetector */,
+			);
+			path = CarNumbersDetector;
+			sourceTree = "<group>";
+		};
+		66570B25249298EA00A48092 /* ImageCropProccessor */ = {
+			isa = PBXGroup;
+			children = (
+				66D39B122491852D0037131C /* ImageCropProcessor.cpp */,
+				66D39B152491852D0037131C /* ImageCropProcessor.hpp */,
+			);
+			path = ImageCropProccessor;
+			sourceTree = "<group>";
+		};
+		66570B26249298FF00A48092 /* ImagePropertiesProcessor */ = {
+			isa = PBXGroup;
+			children = (
+				66D39B162491852D0037131C /* ImagePropertiesProcessor.cpp */,
+				66D39B172491852D0037131C /* ImagePropertiesProcessor.hpp */,
+			);
+			path = ImagePropertiesProcessor;
+			sourceTree = "<group>";
+		};
+		66570B2C2492A4E400A48092 /* BaseDetector */ = {
+			isa = PBXGroup;
+			children = (
+				66570B2D2492A52300A48092 /* BaseDetector.cpp */,
+				66570B2E2492A52300A48092 /* BaseDetector.hpp */,
+			);
+			path = BaseDetector;
+			sourceTree = "<group>";
+		};
+		66570B312492AF1D00A48092 /* CarNumbersDetector */ = {
+			isa = PBXGroup;
+			children = (
+				66570B272492994100A48092 /* CarNumbersDetector.cpp */,
+				66570B282492994100A48092 /* CarNumbersDetector.hpp */,
+			);
+			path = CarNumbersDetector;
+			sourceTree = "<group>";
+		};
+		66570B322492AF3100A48092 /* CarNumbersSaver */ = {
+			isa = PBXGroup;
+			children = (
+				66570B332492AF6A00A48092 /* CarNumbersSaver.cpp */,
+				66570B342492AF6A00A48092 /* CarNumbersSaver.hpp */,
+			);
+			path = CarNumbersSaver;
+			sourceTree = "<group>";
+		};
+		66570B3C2492D10000A48092 /* ImageSaver */ = {
+			isa = PBXGroup;
+			children = (
+				66570B3D2492D11400A48092 /* ImageSaver.cpp */,
+				66570B3E2492D11400A48092 /* ImageSaver.hpp */,
+			);
+			path = ImageSaver;
+			sourceTree = "<group>";
+		};
 		66D39AFB249183E00037131C = {
 			isa = PBXGroup;
 			children = (
@@ -55,14 +172,57 @@
 		66D39B06249183E00037131C /* ImageProcessors */ = {
 			isa = PBXGroup;
 			children = (
-				66D39B142491852D0037131C /* FaceDetectProcessor.cpp */,
-				66D39B132491852D0037131C /* FaceDetectProcessor.hpp */,
-				66D39B122491852D0037131C /* ImageCropProcessor.cpp */,
-				66D39B152491852D0037131C /* ImageCropProcessor.hpp */,
-				66D39B162491852D0037131C /* ImagePropertiesProcessor.cpp */,
-				66D39B172491852D0037131C /* ImagePropertiesProcessor.hpp */,
+				66570B3C2492D10000A48092 /* ImageSaver */,
+				66570B26249298FF00A48092 /* ImagePropertiesProcessor */,
+				66570B25249298EA00A48092 /* ImageCropProccessor */,
+				66570B222492989500A48092 /* Detectors */,
 			);
 			path = ImageProcessors;
+			sourceTree = "<group>";
+		};
+		66EF59802493EEAF0080E6EC /* FaceDetectProcessor */ = {
+			isa = PBXGroup;
+			children = (
+				66D39B142491852D0037131C /* FaceDetectProcessor.cpp */,
+				66D39B132491852D0037131C /* FaceDetectProcessor.hpp */,
+			);
+			path = FaceDetectProcessor;
+			sourceTree = "<group>";
+		};
+		66EF59812493EEB90080E6EC /* FaceSaver */ = {
+			isa = PBXGroup;
+			children = (
+				66EF598C2493F9790080E6EC /* FaceSaver.cpp */,
+				66EF598D2493F9790080E6EC /* FaceSaver.hpp */,
+			);
+			path = FaceSaver;
+			sourceTree = "<group>";
+		};
+		66EF59822493EF8B0080E6EC /* CarNumberFill */ = {
+			isa = PBXGroup;
+			children = (
+				66EF59832493EFB10080E6EC /* CarNumberFill.cpp */,
+				66EF59842493EFB10080E6EC /* CarNumberFill.hpp */,
+			);
+			path = CarNumberFill;
+			sourceTree = "<group>";
+		};
+		66EF59872493F06D0080E6EC /* BaseCarDetector */ = {
+			isa = PBXGroup;
+			children = (
+				66EF59882493F0CD0080E6EC /* BaseCarDetector.cpp */,
+				66EF59892493F0CD0080E6EC /* BaseCarDetector.hpp */,
+			);
+			path = BaseCarDetector;
+			sourceTree = "<group>";
+		};
+		66EF59902493FAD80080E6EC /* BaseFaceDetector */ = {
+			isa = PBXGroup;
+			children = (
+				66EF59912493FAFD0080E6EC /* BaseFaceDetector.cpp */,
+				66EF59922493FAFD0080E6EC /* BaseFaceDetector.hpp */,
+			);
+			path = BaseFaceDetector;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -72,9 +232,17 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66570B2A2492994100A48092 /* CarNumbersDetector.hpp in Headers */,
 				66D39B192491852D0037131C /* FaceDetectProcessor.hpp in Headers */,
+				66EF598F2493F9790080E6EC /* FaceSaver.hpp in Headers */,
+				66570B362492AF6A00A48092 /* CarNumbersSaver.hpp in Headers */,
+				66EF59942493FAFD0080E6EC /* BaseFaceDetector.hpp in Headers */,
+				66EF598B2493F0CD0080E6EC /* BaseCarDetector.hpp in Headers */,
+				66570B302492A52300A48092 /* BaseDetector.hpp in Headers */,
 				66D39B1D2491852D0037131C /* ImagePropertiesProcessor.hpp in Headers */,
+				66EF59862493EFB10080E6EC /* CarNumberFill.hpp in Headers */,
 				66D39B1B2491852D0037131C /* ImageCropProcessor.hpp in Headers */,
+				66570B402492D11400A48092 /* ImageSaver.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,9 +303,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66EF59852493EFB10080E6EC /* CarNumberFill.cpp in Sources */,
 				66D39B1C2491852D0037131C /* ImagePropertiesProcessor.cpp in Sources */,
 				66D39B1A2491852D0037131C /* FaceDetectProcessor.cpp in Sources */,
+				66570B2F2492A52300A48092 /* BaseDetector.cpp in Sources */,
 				66D39B182491852D0037131C /* ImageCropProcessor.cpp in Sources */,
+				66570B3F2492D11400A48092 /* ImageSaver.cpp in Sources */,
+				66EF598A2493F0CD0080E6EC /* BaseCarDetector.cpp in Sources */,
+				66EF598E2493F9790080E6EC /* FaceSaver.cpp in Sources */,
+				66570B292492994100A48092 /* CarNumbersDetector.cpp in Sources */,
+				66EF59932493FAFD0080E6EC /* BaseFaceDetector.cpp in Sources */,
+				66570B352492AF6A00A48092 /* CarNumbersSaver.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

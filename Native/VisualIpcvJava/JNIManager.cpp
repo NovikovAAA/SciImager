@@ -117,9 +117,12 @@ DataBundle JNIManager::dataBundleFromJava(JNIEnv *env, jobject inputValues) {
         jstring keyString = (jstring) env->GetObjectArrayElement(keysArray, i);
         assert(keyString != nullptr);
         jobject dataValueObject = env->CallObjectMethod(dataBundleValuesObject, mapGet, keyString);
-        assert(dataValueObject != nullptr);
-
         auto key = env->GetStringUTFChars(keyString, 0);
+        if (dataValueObject == nullptr) {
+            valuesBundle.write(key, nullptr);
+            env->ReleaseStringUTFChars(keyString, key);
+            continue;
+        }
         writeToBundle(env, dataValueObject, &valuesBundle, key);
         env->ReleaseStringUTFChars(keyString, key);
     }
@@ -157,9 +160,13 @@ jobject JNIManager::processorResultForJava(JNIEnv *env, DataBundle result) {
             }
             case BaseDataTypeClassifier::IMAGE: {
                 Mat *newImage = result.read<Mat*>(item.first);
+                if (newImage == nullptr) {
+                    newImage = new Mat();
+                }
                 jclass matClass = env->FindClass("org/opencv/core/Mat");
                 jmethodID matCtr = env->GetMethodID(matClass, "<init>", "()V");
                 jobject matObject = env->NewObject(matClass, matCtr);
+                
                 auto native_image = (Mat*)env->CallLongMethod(matObject, dataTypeJniObject->dataTypeGetValueMethod);
                 newImage->copyTo(*native_image);
                 delete newImage;
@@ -220,6 +227,9 @@ void JNIManager::writeToBundle(JNIEnv *env, jobject object, DataBundle *valuesBu
         }
         case JNI_IMAGE: {
             auto native_image = (Mat*)env->CallLongMethod(object, dataTypeJniObject->dataTypeGetValueMethod);
+            if (native_image == nullptr) {
+                native_image = new Mat();
+            }
             valuesBundle->write(key, native_image);
             break;
         }

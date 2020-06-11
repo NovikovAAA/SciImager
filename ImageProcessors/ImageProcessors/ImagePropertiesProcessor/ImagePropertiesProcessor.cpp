@@ -22,7 +22,17 @@ ImagePropertiesProcessor::ImagePropertiesProcessor() : Processor("ImagePropertie
  ProcessorProperty("depth", BaseDataType(BaseDataTypeClassifier::DOUBLE))}) {}
 
 DataBundle ImagePropertiesProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
-    Mat *image = dataMap.read<Mat*>("image");
+    Mat* image;
+    try {
+        image = dataMap.read<Mat *>("image");
+    } catch (const std::exception& e) {
+        image = new Mat();
+
+        DataBundle resultDataBundle;
+        resultDataBundle.write("result", image);
+        prepareResult(&resultDataBundle);
+        return resultDataBundle;
+    }
 
     double height = image->size().height;
     double width = image->size().width;
