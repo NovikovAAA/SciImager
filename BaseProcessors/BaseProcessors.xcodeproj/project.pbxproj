@@ -11,6 +11,14 @@
 		66D39AF8249182EC0037131C /* SumProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66D39AF4249182EC0037131C /* SumProcessor.hpp */; };
 		66D39AF9249182EC0037131C /* StringConcatProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66D39AF5249182EC0037131C /* StringConcatProcessor.hpp */; };
 		66D39AFA249182EC0037131C /* SumProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D39AF6249182EC0037131C /* SumProcessor.cpp */; };
+		66EF59A02494029A0080E6EC /* MulProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF599E2494029A0080E6EC /* MulProcessor.cpp */; };
+		66EF59A12494029A0080E6EC /* MulProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66EF599F2494029A0080E6EC /* MulProcessor.hpp */; };
+		66EF59A42494032A0080E6EC /* Vector2Brake.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF59A22494032A0080E6EC /* Vector2Brake.cpp */; };
+		66EF59A52494032A0080E6EC /* Vector2Brake.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66EF59A32494032A0080E6EC /* Vector2Brake.hpp */; };
+		66EF59A8249404740080E6EC /* Vector3Brake.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF59A6249404740080E6EC /* Vector3Brake.cpp */; };
+		66EF59A9249404740080E6EC /* Vector3Brake.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66EF59A7249404740080E6EC /* Vector3Brake.hpp */; };
+		66EF59AC249404960080E6EC /* Vector4Brake.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF59AA249404960080E6EC /* Vector4Brake.cpp */; };
+		66EF59AD249404960080E6EC /* Vector4Brake.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66EF59AB249404960080E6EC /* Vector4Brake.hpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +27,14 @@
 		66D39AF4249182EC0037131C /* SumProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SumProcessor.hpp; sourceTree = "<group>"; };
 		66D39AF5249182EC0037131C /* StringConcatProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = StringConcatProcessor.hpp; sourceTree = "<group>"; };
 		66D39AF6249182EC0037131C /* SumProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SumProcessor.cpp; sourceTree = "<group>"; };
+		66EF599E2494029A0080E6EC /* MulProcessor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MulProcessor.cpp; sourceTree = "<group>"; };
+		66EF599F2494029A0080E6EC /* MulProcessor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MulProcessor.hpp; sourceTree = "<group>"; };
+		66EF59A22494032A0080E6EC /* Vector2Brake.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Vector2Brake.cpp; sourceTree = "<group>"; };
+		66EF59A32494032A0080E6EC /* Vector2Brake.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Vector2Brake.hpp; sourceTree = "<group>"; };
+		66EF59A6249404740080E6EC /* Vector3Brake.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Vector3Brake.cpp; sourceTree = "<group>"; };
+		66EF59A7249404740080E6EC /* Vector3Brake.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Vector3Brake.hpp; sourceTree = "<group>"; };
+		66EF59AA249404960080E6EC /* Vector4Brake.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Vector4Brake.cpp; sourceTree = "<group>"; };
+		66EF59AB249404960080E6EC /* Vector4Brake.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Vector4Brake.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,12 +67,92 @@
 		66D39AE7249181440037131C /* BaseProcessors */ = {
 			isa = PBXGroup;
 			children = (
-				66D39AF3249182EC0037131C /* StringConcatProcessor.cpp */,
-				66D39AF5249182EC0037131C /* StringConcatProcessor.hpp */,
+				66EF599C249402720080E6EC /* Strings */,
+				66EF59992494022C0080E6EC /* Math */,
+				66EF5995249401E50080E6EC /* VectorBrakers */,
+			);
+			path = BaseProcessors;
+			sourceTree = "<group>";
+		};
+		66EF5995249401E50080E6EC /* VectorBrakers */ = {
+			isa = PBXGroup;
+			children = (
+				66EF5998249402170080E6EC /* Vector4Brake */,
+				66EF59972494020F0080E6EC /* Vector3Brake */,
+				66EF5996249402060080E6EC /* Vector2Brake */,
+			);
+			path = VectorBrakers;
+			sourceTree = "<group>";
+		};
+		66EF5996249402060080E6EC /* Vector2Brake */ = {
+			isa = PBXGroup;
+			children = (
+				66EF59A22494032A0080E6EC /* Vector2Brake.cpp */,
+				66EF59A32494032A0080E6EC /* Vector2Brake.hpp */,
+			);
+			path = Vector2Brake;
+			sourceTree = "<group>";
+		};
+		66EF59972494020F0080E6EC /* Vector3Brake */ = {
+			isa = PBXGroup;
+			children = (
+				66EF59A6249404740080E6EC /* Vector3Brake.cpp */,
+				66EF59A7249404740080E6EC /* Vector3Brake.hpp */,
+			);
+			path = Vector3Brake;
+			sourceTree = "<group>";
+		};
+		66EF5998249402170080E6EC /* Vector4Brake */ = {
+			isa = PBXGroup;
+			children = (
+				66EF59AA249404960080E6EC /* Vector4Brake.cpp */,
+				66EF59AB249404960080E6EC /* Vector4Brake.hpp */,
+			);
+			path = Vector4Brake;
+			sourceTree = "<group>";
+		};
+		66EF59992494022C0080E6EC /* Math */ = {
+			isa = PBXGroup;
+			children = (
+				66EF599B249402480080E6EC /* MulProcessor */,
+				66EF599A249402310080E6EC /* SumProcessor */,
+			);
+			path = Math;
+			sourceTree = "<group>";
+		};
+		66EF599A249402310080E6EC /* SumProcessor */ = {
+			isa = PBXGroup;
+			children = (
 				66D39AF6249182EC0037131C /* SumProcessor.cpp */,
 				66D39AF4249182EC0037131C /* SumProcessor.hpp */,
 			);
-			path = BaseProcessors;
+			path = SumProcessor;
+			sourceTree = "<group>";
+		};
+		66EF599B249402480080E6EC /* MulProcessor */ = {
+			isa = PBXGroup;
+			children = (
+				66EF599E2494029A0080E6EC /* MulProcessor.cpp */,
+				66EF599F2494029A0080E6EC /* MulProcessor.hpp */,
+			);
+			path = MulProcessor;
+			sourceTree = "<group>";
+		};
+		66EF599C249402720080E6EC /* Strings */ = {
+			isa = PBXGroup;
+			children = (
+				66EF599D2494027E0080E6EC /* StringConcatProcessor */,
+			);
+			path = Strings;
+			sourceTree = "<group>";
+		};
+		66EF599D2494027E0080E6EC /* StringConcatProcessor */ = {
+			isa = PBXGroup;
+			children = (
+				66D39AF3249182EC0037131C /* StringConcatProcessor.cpp */,
+				66D39AF5249182EC0037131C /* StringConcatProcessor.hpp */,
+			);
+			path = StringConcatProcessor;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -66,7 +162,11 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66EF59AD249404960080E6EC /* Vector4Brake.hpp in Headers */,
+				66EF59A52494032A0080E6EC /* Vector2Brake.hpp in Headers */,
+				66EF59A12494029A0080E6EC /* MulProcessor.hpp in Headers */,
 				66D39AF8249182EC0037131C /* SumProcessor.hpp in Headers */,
+				66EF59A9249404740080E6EC /* Vector3Brake.hpp in Headers */,
 				66D39AF9249182EC0037131C /* StringConcatProcessor.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -130,6 +230,10 @@
 			files = (
 				66D39AFA249182EC0037131C /* SumProcessor.cpp in Sources */,
 				66D39AF7249182EC0037131C /* StringConcatProcessor.cpp in Sources */,
+				66EF59A02494029A0080E6EC /* MulProcessor.cpp in Sources */,
+				66EF59A8249404740080E6EC /* Vector3Brake.cpp in Sources */,
+				66EF59A42494032A0080E6EC /* Vector2Brake.cpp in Sources */,
+				66EF59AC249404960080E6EC /* Vector4Brake.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
