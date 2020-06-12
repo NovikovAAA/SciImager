@@ -10,12 +10,7 @@
 #define CarNumbersSaver_hpp
 
 #include <stdio.h>
-#include <filesystem>
-#include <opencv2/imgproc.hpp>
 #include "Processor.hpp"
-
-using namespace cv;
-using namespace std::filesystem;
 
 class IPCV_API CarNumbersSaver : public Processor {
 public:

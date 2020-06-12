@@ -180,7 +180,7 @@ jobject JNIManager::processorResultForJava(JNIEnv *env, DataBundle result) {
                 std::vector<double> doubleArray = result.read<std::vector<double>>(item.first);
                 
                 jclass doubleClass = env->FindClass("java/lang/Double");
-                jobjectArray valuesArray = env->NewObjectArray(doubleArray.size(), doubleClass, nullptr);
+                jobjectArray valuesArray = env->NewObjectArray((jsize)doubleArray.size(), doubleClass, nullptr);
                 jmethodID doubleInit = env->GetMethodID(doubleClass, "<init>", "(D)V");
                 assert(doubleInit != nullptr);
                 
