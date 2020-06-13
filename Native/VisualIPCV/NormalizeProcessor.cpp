@@ -13,7 +13,7 @@
 
 using namespace cv;
 
-bool NormalizeProcessorLoadResult = ProcessorManager::registerProcessor(new NormalizeProcessor());
+bool normalizeProcessorLoadResult = ProcessorManager::registerProcessor(new NormalizeProcessor());
 
 NormalizeProcessor::NormalizeProcessor() : Processor("NormalizeMinMax", "Core", "C++ Image Processors",
 {ProcessorProperty("image", BaseDataType(BaseDataTypeClassifier::IMAGE)),
