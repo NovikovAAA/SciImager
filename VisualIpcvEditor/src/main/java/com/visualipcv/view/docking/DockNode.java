@@ -481,7 +481,6 @@ public class DockNode extends VBox implements EventHandler<MouseEvent> {
 
         dockNode.close();
 
-        // Блядский костыль для блядского JavaFX: вкладки рисуются поверх друг друга, если убрать этот ебанутый код
         for(Tab tab : tabPane.getTabs()) {
             tabPane.getSelectionModel().select(tab);
         }

@@ -23,11 +23,11 @@ std::unique_ptr<DataTypeJNIObject> DataTypesManager::getPrimitiveType(JNIEnv* en
 }
 
 std::unique_ptr<DataTypeJNIObject> DataTypesManager::getPrimitiveType(JNIEnv* env, BaseDataTypeClassifier dataTypeClassifier) {
-    PrimitiveTypeСlassifier classifier = primitiveTypeClassifier(dataTypeClassifier);
+    PrimitiveTypeClassifier classifier = primitiveTypeClassifier(dataTypeClassifier);
     return createPrimitiveType(env, classifier);
 }
 
-bool DataTypesManager::checkType(JNIEnv* env, PrimitiveTypeСlassifier classifier, jobject object) {
+bool DataTypesManager::checkType(JNIEnv* env, PrimitiveTypeClassifier classifier, jobject object) {
     jclass typeClass = env->FindClass(javaTypeNameForClassifier(classifier).c_str());
     if (typeClass == nullptr) {
         return false;
@@ -35,7 +35,7 @@ bool DataTypesManager::checkType(JNIEnv* env, PrimitiveTypeСlassifier classifie
     return (bool)env->IsInstanceOf(object, typeClass);
 }
 
-std::unique_ptr<DataTypeJNIObject> DataTypesManager::createPrimitiveType(JNIEnv* env, PrimitiveTypeСlassifier classifier) {
+std::unique_ptr<DataTypeJNIObject> DataTypesManager::createPrimitiveType(JNIEnv* env, PrimitiveTypeClassifier classifier) {
     string javaTypeName = javaTypeNameForClassifier(classifier);
     jclass typeClass = env->FindClass(javaTypeName.c_str());
     assert(typeClass != nullptr);
@@ -46,7 +46,7 @@ std::unique_ptr<DataTypeJNIObject> DataTypesManager::createPrimitiveType(JNIEnv*
     return std::make_unique<DataTypeJNIObject>(classifier, typeClass, constructor, getValueMethod);
 }
 
-string DataTypesManager::javaTypeNameForClassifier(PrimitiveTypeСlassifier classifier) {
+string DataTypesManager::javaTypeNameForClassifier(PrimitiveTypeClassifier classifier) {
     switch (classifier) {
         case JNI_INTEGER:
             return "java/lang/Integer";
@@ -65,7 +65,7 @@ string DataTypesManager::javaTypeNameForClassifier(PrimitiveTypeСlassifier clas
     }
 }
 
-jmethodID DataTypesManager::dataTypeConstructorForClassifier(JNIEnv* env, jclass typeClass,PrimitiveTypeСlassifier classifier) {
+jmethodID DataTypesManager::dataTypeConstructorForClassifier(JNIEnv* env, jclass typeClass,PrimitiveTypeClassifier classifier) {
     string constructorString;
     string signatureString;
     switch (classifier) {
@@ -87,7 +87,7 @@ jmethodID DataTypesManager::dataTypeConstructorForClassifier(JNIEnv* env, jclass
     return env->GetMethodID(typeClass, constructorString.c_str(), signatureString.c_str());
 }
 
-jmethodID DataTypesManager::dataTypeGetValueMethodForClassifier(JNIEnv* env, jclass typeClass, PrimitiveTypeСlassifier classifier) {
+jmethodID DataTypesManager::dataTypeGetValueMethodForClassifier(JNIEnv* env, jclass typeClass, PrimitiveTypeClassifier classifier) {
     string getValueString;
     string signatureString;
     switch (classifier) {
@@ -109,7 +109,7 @@ jmethodID DataTypesManager::dataTypeGetValueMethodForClassifier(JNIEnv* env, jcl
     return env->GetMethodID(typeClass, getValueString.c_str(), signatureString.c_str());
 }
 
-PrimitiveTypeСlassifier DataTypesManager::primitiveTypeClassifier(BaseDataTypeClassifier dataTypeClassifier) {
+PrimitiveTypeClassifier DataTypesManager::primitiveTypeClassifier(BaseDataTypeClassifier dataTypeClassifier) {
     switch (dataTypeClassifier) {
         case BaseDataTypeClassifier::DOUBLE:
             return JNI_DOUBLE;
