@@ -22,18 +22,13 @@ FaceSaver::FaceSaver() : Processor("FaceSaver", "Core", "C++ Image Processors",
 DataBundle FaceSaver::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     Mat* image;
     try {
-        image = dataMap.read<Mat *>("image");
+        image = dataMap.read<Mat *>(inputProperties[0].name);
     } catch (const std::exception& e) {
-        image = new Mat();
-
-        DataBundle resultDataBundle;
-        resultDataBundle.write("result", image);
-        prepareResult(&resultDataBundle);
-        return resultDataBundle;
+        return executionResult(outputProperties[0].name, new Mat());
     }
     
-    string cascadePath = dataMap.read<string>("cascadePath");
-    string savingPath = dataMap.read<string>("saving path");
+    string savingPath = dataMap.read<string>(inputProperties[1].name);
+    string cascadePath = dataMap.read<string>(inputProperties[2].name);
     
     BaseFaceDetector *detector = new BaseFaceDetector(cascadePath);
     auto detectResult = detector->obtainImageWithSelectedFaces(image);
@@ -44,9 +39,5 @@ DataBundle FaceSaver::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
         Mat imageToSave = *image;
         saver.save(imageToSave(facesRects[i]), to_string(i), "png");
     }
-    
-    DataBundle resultDataBundle;
-    resultDataBundle.write("result", detectResult);
-    prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    return executionResult(outputProperties[0].name, detectResult);
 }

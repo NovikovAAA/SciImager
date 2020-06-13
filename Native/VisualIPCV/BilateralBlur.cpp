@@ -25,27 +25,18 @@ BilateralBlur::BilateralBlur() : Processor("BilateralBlur", "Core", "C++ Image P
 DataBundle BilateralBlur::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     Mat* image;
     try {
-        image = dataMap.read<Mat *>("image");
+        image = dataMap.read<Mat *>(inputProperties[0].name);
     } catch (const std::exception& e) {
-        image = new Mat();
-
-        DataBundle resultDataBundle;
-        resultDataBundle.write("result", image);
-        prepareResult(&resultDataBundle);
-        return resultDataBundle;
+        return executionResult(outputProperties[0].name, new Mat());
     }
     
-    int diametr = dataMap.read<int>("diametr");
-    double sigmaColor = dataMap.read<double>("sigmaColor");
-    double sigmaSpace = dataMap.read<double>("sigmaSpace");
+    int diametr = dataMap.read<int>(inputProperties[1].name);
+    double sigmaColor = dataMap.read<double>(inputProperties[2].name);
+    double sigmaSpace = dataMap.read<double>(inputProperties[3].name);
     
     diametr = diametr > 0 ? diametr : 1;
     
     Mat *dstImage = new Mat();
     bilateralFilter(*image, *dstImage, diametr, sigmaColor, sigmaSpace);
-    
-    DataBundle resultDataBundle;
-    resultDataBundle.write("result", dstImage);
-    prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    return executionResult(outputProperties[0].name, dstImage);
 }

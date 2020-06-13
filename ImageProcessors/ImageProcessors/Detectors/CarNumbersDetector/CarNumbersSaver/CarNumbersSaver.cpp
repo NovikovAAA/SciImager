@@ -21,17 +21,12 @@ CarNumbersSaver::CarNumbersSaver() : Processor("CarNumbersSaver", "Core", "C++ I
 DataBundle CarNumbersSaver::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     Mat* image;
     try {
-        image = dataMap.read<Mat *>("image");
+        image = dataMap.read<Mat *>(inputProperties[0].name);
     } catch (const std::exception& e) {
-        image = new Mat();
-
-        DataBundle resultDataBundle;
-        resultDataBundle.write("result", image);
-        prepareResult(&resultDataBundle);
-        return resultDataBundle;
+        return executionResult(outputProperties[0].name, new Mat());
     }
     
-    string savingPath = dataMap.read<string>("saving path");
+    string savingPath = dataMap.read<string>(inputProperties[1].name);
     
     BaseCarDetector *detector = new BaseCarDetector();
     auto detectResult = detector->obtainImageWithSelectedNumbers(image);
@@ -42,9 +37,5 @@ DataBundle CarNumbersSaver::execute(const DataBundle &dataMap, DataBundle &nodeS
         Mat imageToSave = *image;
         saver.save(imageToSave(numbersRects[i]), to_string(i), "png");
     }
-    
-    DataBundle resultDataBundle;
-    resultDataBundle.write("result", detectResult);
-    prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    return executionResult(outputProperties[0].name, detectResult);
 }

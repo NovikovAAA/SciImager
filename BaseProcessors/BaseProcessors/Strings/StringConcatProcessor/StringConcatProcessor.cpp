@@ -16,15 +16,11 @@ StringConcatProcessor::StringConcatProcessor() : Processor("StringConcat", "Core
 {ProcessorProperty("result", BaseDataType(BaseDataTypeClassifier::STRING, {0, 0, 0, 0}))}) {}
 
 DataBundle StringConcatProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
-    std::string firstString = dataMap.read<std::string>("firstString");
-    std::string secondString = dataMap.read<std::string>("secondString");
+    std::string firstString = dataMap.read<std::string>(inputProperties[0].name);
+    std::string secondString = dataMap.read<std::string>(inputProperties[1].name);
     
     std::string result = concat(firstString, secondString);
-    
-    DataBundle resultDataBundle;
-    resultDataBundle.write("result", result);
-    prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    return executionResult(outputProperties[0].name, result);
 }
 
 std::string StringConcatProcessor::concat(std::string firstString, std::string secondString) {

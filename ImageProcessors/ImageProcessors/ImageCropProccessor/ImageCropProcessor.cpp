@@ -27,20 +27,15 @@ ImageCropProcessor::ImageCropProcessor() : Processor("ImageCrop", "Core", "C++ I
 DataBundle ImageCropProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     Mat* image;
     try {
-        image = dataMap.read<Mat *>("image");
+        image = dataMap.read<Mat *>(inputProperties[0].name);
     } catch (const std::exception& e) {
-        image = new Mat();
-
-        DataBundle resultDataBundle;
-        resultDataBundle.write("result", image);
-        prepareResult(&resultDataBundle);
-        return resultDataBundle;
+        return executionResult(outputProperties[0].name, new Mat());
     }
     
-    double x = dataMap.read<double>("x");
-    double y = dataMap.read<double>("y");
-    double width = dataMap.read<double>("width");
-    double height = dataMap.read<double>("height");
+    double x = dataMap.read<double>(inputProperties[1].name);
+    double y = dataMap.read<double>(inputProperties[2].name);
+    double width = dataMap.read<double>(inputProperties[3].name);
+    double height = dataMap.read<double>(inputProperties[4].name);
 
     Mat sourceImage = *image;
     Size imageSize = sourceImage.size();
@@ -55,10 +50,5 @@ DataBundle ImageCropProcessor::execute(const DataBundle &dataMap, DataBundle &no
 
     Rect cropRect(x, y, width, height);
     Mat *croppedImage = new Mat(sourceImage(cropRect));
-    
-    DataBundle resultDataBundle;
-    resultDataBundle.write("result", croppedImage);
-    prepareResult(&resultDataBundle);
-    
-    return resultDataBundle;
+    return executionResult(outputProperties[0].name, croppedImage);
 }

@@ -23,15 +23,15 @@ ImagePropertiesProcessor::ImagePropertiesProcessor() : Processor("ImagePropertie
 
 DataBundle ImagePropertiesProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     Mat* image;
+    vector<const ResultTransferModel<double>> resultModels;
+    
     try {
-        image = dataMap.read<Mat *>("image");
+        image = dataMap.read<Mat *>(inputProperties[0].name);
     } catch (const std::exception& e) {
-        image = new Mat();
-
-        DataBundle resultDataBundle;
-        resultDataBundle.write("result", image);
-        prepareResult(&resultDataBundle);
-        return resultDataBundle;
+        for (auto& outputProperty : outputProperties) {
+            resultModels.push_back(ResultTransferModel<double>{ outputProperty.name, 0.0 });
+        }
+        return executionResult(resultModels);
     }
 
     double height = image->size().height;
@@ -39,12 +39,9 @@ DataBundle ImagePropertiesProcessor::execute(const DataBundle &dataMap, DataBund
     double channels = image->channels();
     double depth = image->depth();
     
-    DataBundle resultDataBundle;
-    resultDataBundle.write("height", height);
-    resultDataBundle.write("width", width);
-    resultDataBundle.write("channels", channels);
-    resultDataBundle.write("depth", depth);
-    prepareResult(&resultDataBundle);
-    
-    return resultDataBundle;
+    resultModels.push_back(ResultTransferModel<double>{ outputProperties[0].name, height });
+    resultModels.push_back(ResultTransferModel<double>{ outputProperties[1].name, width });
+    resultModels.push_back(ResultTransferModel<double>{ outputProperties[2].name, channels });
+    resultModels.push_back(ResultTransferModel<double>{ outputProperties[3].name, depth });
+    return executionResult(resultModels);
 }

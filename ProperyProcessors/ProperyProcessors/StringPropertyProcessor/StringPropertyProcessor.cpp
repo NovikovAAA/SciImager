@@ -16,10 +16,6 @@ StringPropertyProcessor::StringPropertyProcessor() : Processor("StringProperty",
 {ProcessorProperty("Result", BaseDataType(BaseDataTypeClassifier::STRING))}, true) {}
 
 DataBundle StringPropertyProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
-    std::string inputValue = dataMap.read<std::string>("Value");
-    
-    DataBundle resultDataBundle;
-    resultDataBundle.write("Result", inputValue);
-    prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    std::string inputValue = dataMap.read<std::string>(inputProperties[0].name);
+    return executionResult(outputProperties[0].name, inputValue);
 }

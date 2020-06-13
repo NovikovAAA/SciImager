@@ -23,16 +23,12 @@ CvtColorProcessor::CvtColorProcessor() : Processor("CvtColor", "Core", "C++ Imag
 DataBundle CvtColorProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     Mat* image;
     try {
-        image = dataMap.read<Mat *>("image");
+        image = dataMap.read<Mat *>(inputProperties[0].name);
     } catch (const std::exception& e) {
-        image = new Mat();
-
-        DataBundle resultDataBundle;
-        resultDataBundle.write("result", image);
-        prepareResult(&resultDataBundle);
-        return resultDataBundle;
+        return executionResult(outputProperties[0].name, new Mat());
     }
-    int colorConversionCode = dataMap.read<int>("Color conversion code");
+    
+    int colorConversionCode = dataMap.read<int>(inputProperties[1].name);
     colorConversionCode = colorConversionCode >= 0 ? colorConversionCode < 144 ? colorConversionCode : 143 : 0;
     
     Mat *dstImage = new Mat();
@@ -40,14 +36,7 @@ DataBundle CvtColorProcessor::execute(const DataBundle &dataMap, DataBundle &nod
     try {
         cvtColor(*image, *dstImage, colorConversionCode);
     } catch (const std::exception& e) {
-        DataBundle resultDataBundle;
-        resultDataBundle.write("result", new Mat(*image));
-        prepareResult(&resultDataBundle);
-        return resultDataBundle;
+        return executionResult(outputProperties[0].name, new Mat(*image));
     }
-    
-    DataBundle resultDataBundle;
-    resultDataBundle.write("result", dstImage);
-    prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    return executionResult(outputProperties[0].name, dstImage);
 }

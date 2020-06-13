@@ -15,10 +15,6 @@ DoublePropertyProcessor::DoublePropertyProcessor() : Processor("DoubleProperty",
 {ProcessorProperty("Result", BaseDataType(BaseDataTypeClassifier::DOUBLE))}, true) {}
 
 DataBundle DoublePropertyProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
-    double inputValue = dataMap.read<double>("Value");
-    
-    DataBundle resultDataBundle;
-    resultDataBundle.write("Result", inputValue);
-    prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    double inputValue = dataMap.read<double>(inputProperties[0].name);
+    return executionResult(outputProperties[0].name, inputValue);
 }

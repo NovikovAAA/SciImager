@@ -18,23 +18,14 @@ FaceDetectProcessor::FaceDetectProcessor() : Processor("FaceDetect", "Core", "C+
 DataBundle FaceDetectProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     Mat* image;
     try {
-        image = dataMap.read<Mat *>("image");
+        image = dataMap.read<Mat *>(inputProperties[0].name);
     } catch (const std::exception& e) {
-        image = new Mat();
-
-        DataBundle resultDataBundle;
-        resultDataBundle.write("result", image);
-        prepareResult(&resultDataBundle);
-        return resultDataBundle;
+        return executionResult(outputProperties[0].name, new Mat());
     }
     
-    std::string cascadePath = dataMap.read<std::string>("cascadePath");
+    std::string cascadePath = dataMap.read<std::string>(inputProperties[1].name);
     
     BaseFaceDetector *detector = new BaseFaceDetector(cascadePath);
     auto detectResult = detector->obtainImageWithSelectedFaces(image);
-    
-    DataBundle resultDataBundle;
-    resultDataBundle.write("result", detectResult);
-    prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    return executionResult(outputProperties[0].name, detectResult);
 }

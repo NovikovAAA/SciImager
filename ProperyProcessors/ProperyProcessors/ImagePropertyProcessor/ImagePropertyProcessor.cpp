@@ -21,14 +21,7 @@ ImagePropertyProcessor::ImagePropertyProcessor() : Processor("ImageProperty", "C
 {ProcessorProperty("Result", BaseDataType(BaseDataTypeClassifier::IMAGE))}, true) {}
 
 DataBundle ImagePropertyProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
-    string imagePathString = dataMap.read<string>("Path");
+    string imagePathString = dataMap.read<string>(inputProperties[0].name);
     Mat image = imread(imagePathString);
-    Mat *copiedImage = new Mat();
-    
-    image.copyTo(*copiedImage);
-    
-    DataBundle resultDataBundle;
-    resultDataBundle.write("Result", copiedImage);
-    prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    return executionResult(outputProperties[0].name, new Mat(image));
 }

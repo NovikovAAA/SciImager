@@ -17,15 +17,11 @@ MulProcessor::MulProcessor() : Processor("MulProcessor", "Core", "C++ Base",
 {ProcessorProperty("result", BaseDataType(BaseDataTypeClassifier::DOUBLE))}) {}
 
 DataBundle MulProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
-    double a = dataMap.read<double>("a");
-    double b = dataMap.read<double>("b");
+    double a = dataMap.read<double>(inputProperties[0].name);
+    double b = dataMap.read<double>(inputProperties[1].name);
     
     double result = mul(a, b);
-    
-    DataBundle resultDataBundle;
-    resultDataBundle.write("result", result);
-    prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    return executionResult(outputProperties[0].name, result);
 }
 
 double MulProcessor::mul(double a, double b) {

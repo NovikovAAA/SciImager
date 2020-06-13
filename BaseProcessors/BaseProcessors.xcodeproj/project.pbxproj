@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6637A54524952BAC00E489FC /* VectorBrakeBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6637A54324952BAC00E489FC /* VectorBrakeBase.cpp */; };
+		6637A54624952BAC00E489FC /* VectorBrakeBase.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6637A54424952BAC00E489FC /* VectorBrakeBase.hpp */; };
 		66D39AF7249182EC0037131C /* StringConcatProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D39AF3249182EC0037131C /* StringConcatProcessor.cpp */; };
 		66D39AF8249182EC0037131C /* SumProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66D39AF4249182EC0037131C /* SumProcessor.hpp */; };
 		66D39AF9249182EC0037131C /* StringConcatProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66D39AF5249182EC0037131C /* StringConcatProcessor.hpp */; };
@@ -22,6 +24,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		6637A54324952BAC00E489FC /* VectorBrakeBase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = VectorBrakeBase.cpp; sourceTree = "<group>"; };
+		6637A54424952BAC00E489FC /* VectorBrakeBase.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = VectorBrakeBase.hpp; sourceTree = "<group>"; };
 		66D39AE5249181440037131C /* libBaseProcessors.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libBaseProcessors.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		66D39AF3249182EC0037131C /* StringConcatProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = StringConcatProcessor.cpp; sourceTree = "<group>"; };
 		66D39AF4249182EC0037131C /* SumProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SumProcessor.hpp; sourceTree = "<group>"; };
@@ -48,6 +52,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6637A54224952B7900E489FC /* VectorBrakeBase */ = {
+			isa = PBXGroup;
+			children = (
+				6637A54324952BAC00E489FC /* VectorBrakeBase.cpp */,
+				6637A54424952BAC00E489FC /* VectorBrakeBase.hpp */,
+			);
+			path = VectorBrakeBase;
+			sourceTree = "<group>";
+		};
 		66D39ADC249181440037131C = {
 			isa = PBXGroup;
 			children = (
@@ -77,6 +90,7 @@
 		66EF5995249401E50080E6EC /* VectorBrakers */ = {
 			isa = PBXGroup;
 			children = (
+				6637A54224952B7900E489FC /* VectorBrakeBase */,
 				66EF5998249402170080E6EC /* Vector4Brake */,
 				66EF59972494020F0080E6EC /* Vector3Brake */,
 				66EF5996249402060080E6EC /* Vector2Brake */,
@@ -162,6 +176,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6637A54624952BAC00E489FC /* VectorBrakeBase.hpp in Headers */,
 				66EF59AD249404960080E6EC /* Vector4Brake.hpp in Headers */,
 				66EF59A52494032A0080E6EC /* Vector2Brake.hpp in Headers */,
 				66EF59A12494029A0080E6EC /* MulProcessor.hpp in Headers */,
@@ -231,6 +246,7 @@
 				66D39AFA249182EC0037131C /* SumProcessor.cpp in Sources */,
 				66D39AF7249182EC0037131C /* StringConcatProcessor.cpp in Sources */,
 				66EF59A02494029A0080E6EC /* MulProcessor.cpp in Sources */,
+				6637A54524952BAC00E489FC /* VectorBrakeBase.cpp in Sources */,
 				66EF59A8249404740080E6EC /* Vector3Brake.cpp in Sources */,
 				66EF59A42494032A0080E6EC /* Vector2Brake.cpp in Sources */,
 				66EF59AC249404960080E6EC /* Vector4Brake.cpp in Sources */,

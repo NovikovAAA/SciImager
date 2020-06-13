@@ -19,12 +19,12 @@ using namespace std::filesystem;
 #pragma mark - Constructors
 
 ImageSaver::ImageSaver() {
-    this->pathString = current_path().string();
+    this->pathString = current_path().string() + "/";
 }
 
 ImageSaver::ImageSaver(string pathString) {
     if (!exists(pathString)) {
-        this->pathString = current_path().string();
+        this->pathString = current_path().string() + "/";
         Logger::getInstance().log("incorrect path. Images will be save in " + this->pathString);
     } else {
         this->pathString = pathString + "/";

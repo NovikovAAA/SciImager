@@ -25,18 +25,13 @@ ThresholdProcessor::ThresholdProcessor() : Processor("ThresholdProccessor", "Cor
 DataBundle ThresholdProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     Mat* image;
     try {
-        image = dataMap.read<Mat *>("image");
+        image = dataMap.read<Mat *>(inputProperties[0].name);
     } catch (const std::exception& e) {
-        image = new Mat();
-
-        DataBundle resultDataBundle;
-        resultDataBundle.write("result", image);
-        prepareResult(&resultDataBundle);
-        return resultDataBundle;
+        return executionResult(outputProperties[0].name, new Mat());
     }
-    double tresh = dataMap.read<double>("tresh");
-    double maxValue = dataMap.read<double>("max value");
-    int tresholdType = dataMap.read<int>("treshold type");
+    double tresh = dataMap.read<double>(inputProperties[1].name);
+    double maxValue = dataMap.read<double>(inputProperties[2].name);
+    int tresholdType = dataMap.read<int>(inputProperties[3].name);
     
     tresh = tresh < 0 ? 0 : tresh > 255 ? 255 : tresh;
     maxValue = maxValue < 0 ? 0 : maxValue > 255 ? 255 : maxValue;
@@ -46,14 +41,7 @@ DataBundle ThresholdProcessor::execute(const DataBundle &dataMap, DataBundle &no
     try {
         threshold(*image, *dstImage, tresh, maxValue, tresholdType);
     } catch (const std::exception& e) {
-        DataBundle resultDataBundle;
-        resultDataBundle.write("result", new Mat(*image));
-        prepareResult(&resultDataBundle);
-        return resultDataBundle;
+        return executionResult(outputProperties[0].name, new Mat(*image));
     }
-    
-    DataBundle resultDataBundle;
-    resultDataBundle.write("result", dstImage);
-    prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    return executionResult(outputProperties[0].name, dstImage);
 }

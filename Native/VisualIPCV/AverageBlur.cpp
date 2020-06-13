@@ -26,27 +26,18 @@ AverageBlur::AverageBlur() : Processor("AverageBlur", "Core", "C++ Image Process
 DataBundle AverageBlur::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     Mat* image;
     try {
-        image = dataMap.read<Mat *>("image");
+        image = dataMap.read<Mat *>(inputProperties[0].name);
     } catch (const std::exception& e) {
-        image = new Mat();
-
-        DataBundle resultDataBundle;
-        resultDataBundle.write("result", image);
-        prepareResult(&resultDataBundle);
-        return resultDataBundle;
+        return executionResult(outputProperties[0].name, new Mat());
     }
     
-    int width = dataMap.read<int>("width");
-    int height = dataMap.read<int>("height");
+    int width = dataMap.read<int>(inputProperties[1].name);
+    int height = dataMap.read<int>(inputProperties[2].name);
     
     width = width > 0 ? width : 1;
     height = height > 0 ? height : 1;
     
     Mat *dstImage = new Mat();
     blur(*image, *dstImage, Size(width, height));
-    
-    DataBundle resultDataBundle;
-    resultDataBundle.write("result", dstImage);
-    prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    return executionResult(outputProperties[0].name, dstImage);
 }

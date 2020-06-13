@@ -10,12 +10,11 @@
 #define Vector4Brake_hpp
 
 #include <stdio.h>
-#include "Processor.hpp"
+#include "VectorBrakeBase.hpp"
 
-class Vector4Brake : public Processor {
+class Vector4Brake : public VectorBrakeBase {
 public:
     Vector4Brake();
-    DataBundle execute(const DataBundle &dataMap, DataBundle &nodeSate) override;
 };
 
 #endif /* Vector4Brake_hpp */

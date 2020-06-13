@@ -23,26 +23,16 @@ MedianBlurProcessor::MedianBlurProcessor() : Processor("MedianBlur", "Core", "C+
 DataBundle MedianBlurProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     Mat* image;
     try {
-        image = dataMap.read<Mat *>("image");
+        image = dataMap.read<Mat *>(inputProperties[0].name);
     } catch (const std::exception& e) {
-        image = new Mat();
-
-        DataBundle resultDataBundle;
-        resultDataBundle.write("result", image);
-        prepareResult(&resultDataBundle);
-        return resultDataBundle;
+        return executionResult(outputProperties[0].name, new Mat());
     }
     
-    int kSize = dataMap.read<int>("ksize");
-    
+    int kSize = dataMap.read<int>(inputProperties[1].name);
     kSize = kSize > 2 ? kSize : 3;
     kSize = kSize % 2 == 0 ? kSize - 1 : kSize;
     
     Mat *dstImage = new Mat();
     medianBlur(*image, *dstImage, kSize);
-    
-    DataBundle resultDataBundle;
-    resultDataBundle.write("result", dstImage);
-    prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    return executionResult(outputProperties[0].name, dstImage);
 }

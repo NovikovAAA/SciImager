@@ -25,14 +25,9 @@ CarNumberFill::CarNumberFill() : Processor("CarNumbersFiller", "Core", "C++ Imag
 DataBundle CarNumberFill::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     Mat* image;
     try {
-        image = dataMap.read<Mat *>("image");
+        image = dataMap.read<Mat *>(inputProperties[0].name);
     } catch (const std::exception& e) {
-        image = new Mat();
-        
-        DataBundle resultDataBundle;
-        resultDataBundle.write("result", image);
-        prepareResult(&resultDataBundle);
-        return resultDataBundle;
+        return executionResult(outputProperties[0].name, new Mat());
         
     }
     BaseCarDetector *detector = new BaseCarDetector();
@@ -41,9 +36,5 @@ DataBundle CarNumberFill::execute(const DataBundle &dataMap, DataBundle &nodeSat
     for (int i = 0; i < numbersRects.size(); i++) {
         rectangle(*image, numbersRects[i], Scalar(0, 0, 0), -1);
     }
-    
-    DataBundle resultDataBundle;
-    resultDataBundle.write("result", new Mat(*image));
-    prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    return executionResult(outputProperties[0].name, new Mat(*image));
 }

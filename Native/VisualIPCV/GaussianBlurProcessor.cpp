@@ -26,21 +26,16 @@ GaussianBlurProcessor::GaussianBlurProcessor() : Processor("GaussianBlur", "Core
 DataBundle GaussianBlurProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     Mat* image;
     try {
-        image = dataMap.read<Mat *>("image");
+        image = dataMap.read<Mat *>(inputProperties[0].name);
     } catch (const std::exception& e) {
-        image = new Mat();
-
-        DataBundle resultDataBundle;
-        resultDataBundle.write("result", image);
-        prepareResult(&resultDataBundle);
-        return resultDataBundle;
+        return executionResult(outputProperties[0].name, new Mat());
     }
     
-    int width = dataMap.read<int>("width");
-    int height = dataMap.read<int>("height");
+    int width = dataMap.read<int>(inputProperties[1].name);
+    int height = dataMap.read<int>(inputProperties[2].name);
     
-    double sigmaX = dataMap.read<double>("sigma X");
-    double sigmaY = dataMap.read<double>("sigma Y");
+    double sigmaX = dataMap.read<double>(inputProperties[3].name);
+    double sigmaY = dataMap.read<double>(inputProperties[4].name);
     
     width = width > 0 ? width : 1;
     height = height > 0 ? height : 1;
@@ -50,9 +45,5 @@ DataBundle GaussianBlurProcessor::execute(const DataBundle &dataMap, DataBundle 
     
     Mat *dstImage = new Mat();
     GaussianBlur(*image, *dstImage, Size(width, height), sigmaX, sigmaY);
-    
-    DataBundle resultDataBundle;
-    resultDataBundle.write("result", dstImage);
-    prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    return executionResult(outputProperties[0].name, dstImage);
 }

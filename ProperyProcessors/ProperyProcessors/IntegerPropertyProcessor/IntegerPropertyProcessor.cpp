@@ -15,10 +15,6 @@ IntegerPropertyProcessor::IntegerPropertyProcessor() : Processor("IntegerPropert
 {ProcessorProperty("Result", BaseDataType(BaseDataTypeClassifier::INTEGER))}, true) {}
 
 DataBundle IntegerPropertyProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
-    int inputValue = dataMap.read<int>("Value");
-    
-    DataBundle resultDataBundle;
-    resultDataBundle.write("Result", inputValue);
-    prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    int inputValue = dataMap.read<int>(inputProperties[0].name);
+    return executionResult(outputProperties[0].name, inputValue);
 }

@@ -12,6 +12,8 @@
 #include <vector>
 #include "DataBundle.hpp"
 #include "ProcessorProperty.hpp"
+#include "ResultTransferModel.hpp"
+#include "Logger.hpp"
 
 class Processor {
 public:
@@ -34,6 +36,25 @@ public:
     IPCV_API virtual void onDestroyed(DataBundle nodeState) {}
     
     IPCV_API void prepareResult(DataBundle *resultDataBundle);
+    
+protected:
+    template <class T>
+    DataBundle executionResult(std::vector<const ResultTransferModel<T>> models) {
+        DataBundle resultDataBundle;
+        for (auto& model : models) {
+           resultDataBundle.write(model.key, model.value);
+        }
+        prepareResult(&resultDataBundle);
+        return resultDataBundle;
+    }
+    
+    template <class T>
+    DataBundle executionResult(std::string key, T const &value) {
+        DataBundle resultDataBundle;
+        resultDataBundle.write(key, value);
+        prepareResult(&resultDataBundle);
+        return resultDataBundle;
+    }
 };
 
 #endif /* Processor_hpp */

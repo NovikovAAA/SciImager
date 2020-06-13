@@ -60,6 +60,98 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6637A5382495256D00E489FC /* VectorBaseProcessor */ = {
+			isa = PBXGroup;
+			children = (
+				66D39B1E249186890037131C /* VectorBaseProcessor.cpp */,
+				66D39B1F249186890037131C /* VectorBaseProcessor.hpp */,
+			);
+			path = VectorBaseProcessor;
+			sourceTree = "<group>";
+		};
+		6637A5392495257C00E489FC /* Vectors */ = {
+			isa = PBXGroup;
+			children = (
+				6637A5382495256D00E489FC /* VectorBaseProcessor */,
+				6637A53C2495259800E489FC /* Vector4PropertyProcessor */,
+				6637A53B2495259100E489FC /* Vector3PropertyProcessor */,
+				6637A53A2495258500E489FC /* Vector2PropertyProcessor */,
+			);
+			path = Vectors;
+			sourceTree = "<group>";
+		};
+		6637A53A2495258500E489FC /* Vector2PropertyProcessor */ = {
+			isa = PBXGroup;
+			children = (
+				66D39AC82491800E0037131C /* Vector2PropertyProcessor.cpp */,
+				66D39AC32491800E0037131C /* Vector2PropertyProcessor.hpp */,
+			);
+			path = Vector2PropertyProcessor;
+			sourceTree = "<group>";
+		};
+		6637A53B2495259100E489FC /* Vector3PropertyProcessor */ = {
+			isa = PBXGroup;
+			children = (
+				66D39ACB2491800E0037131C /* Vector3PropertyProcessor.cpp */,
+				66D39AC12491800E0037131C /* Vector3PropertyProcessor.hpp */,
+			);
+			path = Vector3PropertyProcessor;
+			sourceTree = "<group>";
+		};
+		6637A53C2495259800E489FC /* Vector4PropertyProcessor */ = {
+			isa = PBXGroup;
+			children = (
+				66D39AC52491800E0037131C /* Vector4PropertyProcessor.cpp */,
+				66D39AC92491800E0037131C /* Vector4PropertyProcessor.hpp */,
+			);
+			path = Vector4PropertyProcessor;
+			sourceTree = "<group>";
+		};
+		6637A53D249525BC00E489FC /* DoublePropertyProcessor */ = {
+			isa = PBXGroup;
+			children = (
+				66D39AC62491800E0037131C /* DoublePropertyProcessor.cpp */,
+				66D39AC72491800E0037131C /* DoublePropertyProcessor.hpp */,
+			);
+			path = DoublePropertyProcessor;
+			sourceTree = "<group>";
+		};
+		6637A53E249525C800E489FC /* IntegerPropertyProcessor */ = {
+			isa = PBXGroup;
+			children = (
+				66D39AC42491800E0037131C /* IntegerPropertyProcessor.cpp */,
+				66D39ABF2491800E0037131C /* IntegerPropertyProcessor.hpp */,
+			);
+			path = IntegerPropertyProcessor;
+			sourceTree = "<group>";
+		};
+		6637A53F249525D100E489FC /* StringPropertyProcessor */ = {
+			isa = PBXGroup;
+			children = (
+				66D39ABE2491800E0037131C /* StringPropertyProcessor.cpp */,
+				66D39ACA2491800E0037131C /* StringPropertyProcessor.hpp */,
+			);
+			path = StringPropertyProcessor;
+			sourceTree = "<group>";
+		};
+		6637A540249525DE00E489FC /* ImagePropertyProcessor */ = {
+			isa = PBXGroup;
+			children = (
+				66D39ABD2491800E0037131C /* ImagePropertyProcessor.cpp */,
+				66D39AC02491800E0037131C /* ImagePropertyProcessor.hpp */,
+			);
+			path = ImagePropertyProcessor;
+			sourceTree = "<group>";
+		};
+		6637A541249525E900E489FC /* ImageTestTransferProcessor */ = {
+			isa = PBXGroup;
+			children = (
+				66D39ABC2491800E0037131C /* ImageTestTransferProcessor.cpp */,
+				66D39AC22491800E0037131C /* ImageTestTransferProcessor.hpp */,
+			);
+			path = ImageTestTransferProcessor;
+			sourceTree = "<group>";
+		};
 		66D39AA524917EA90037131C = {
 			isa = PBXGroup;
 			children = (
@@ -79,24 +171,12 @@
 		66D39AB024917EA90037131C /* ProperyProcessors */ = {
 			isa = PBXGroup;
 			children = (
-				66D39B1E249186890037131C /* VectorBaseProcessor.cpp */,
-				66D39B1F249186890037131C /* VectorBaseProcessor.hpp */,
-				66D39AC62491800E0037131C /* DoublePropertyProcessor.cpp */,
-				66D39AC72491800E0037131C /* DoublePropertyProcessor.hpp */,
-				66D39ABD2491800E0037131C /* ImagePropertyProcessor.cpp */,
-				66D39AC02491800E0037131C /* ImagePropertyProcessor.hpp */,
-				66D39ABC2491800E0037131C /* ImageTestTransferProcessor.cpp */,
-				66D39AC22491800E0037131C /* ImageTestTransferProcessor.hpp */,
-				66D39AC42491800E0037131C /* IntegerPropertyProcessor.cpp */,
-				66D39ABF2491800E0037131C /* IntegerPropertyProcessor.hpp */,
-				66D39ABE2491800E0037131C /* StringPropertyProcessor.cpp */,
-				66D39ACA2491800E0037131C /* StringPropertyProcessor.hpp */,
-				66D39AC82491800E0037131C /* Vector2PropertyProcessor.cpp */,
-				66D39AC32491800E0037131C /* Vector2PropertyProcessor.hpp */,
-				66D39ACB2491800E0037131C /* Vector3PropertyProcessor.cpp */,
-				66D39AC12491800E0037131C /* Vector3PropertyProcessor.hpp */,
-				66D39AC52491800E0037131C /* Vector4PropertyProcessor.cpp */,
-				66D39AC92491800E0037131C /* Vector4PropertyProcessor.hpp */,
+				6637A541249525E900E489FC /* ImageTestTransferProcessor */,
+				6637A540249525DE00E489FC /* ImagePropertyProcessor */,
+				6637A53F249525D100E489FC /* StringPropertyProcessor */,
+				6637A53E249525C800E489FC /* IntegerPropertyProcessor */,
+				6637A53D249525BC00E489FC /* DoublePropertyProcessor */,
+				6637A5392495257C00E489FC /* Vectors */,
 			);
 			path = ProperyProcessors;
 			sourceTree = "<group>";

@@ -11,8 +11,6 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include "Logger.hpp"
-
 using namespace cv;
 
 bool NormalizeProcessorLoadResult = ProcessorManager::registerProcessor(new NormalizeProcessor());
@@ -26,31 +24,19 @@ NormalizeProcessor::NormalizeProcessor() : Processor("NormalizeMinMax", "Core", 
 DataBundle NormalizeProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     Mat* image;
     try {
-        image = dataMap.read<Mat *>("image");
+        image = dataMap.read<Mat *>(inputProperties[0].name);
     } catch (const std::exception& e) {
-        image = new Mat();
-
-        DataBundle resultDataBundle;
-        resultDataBundle.write("result", image);
-        prepareResult(&resultDataBundle);
-        return resultDataBundle;
+        return executionResult(outputProperties[0].name, new Mat());
     }
-    double alpha = dataMap.read<double>("alpha");
-    double beta = dataMap.read<double>("beta");
+    
+    double alpha = dataMap.read<double>(inputProperties[1].name);
+    double beta = dataMap.read<double>(inputProperties[2].name);
     
     Mat *dstImage = new Mat();
     try {
         cv::normalize(*image, *dstImage, alpha, beta, cv::NORM_MINMAX);
     } catch (const std::exception& e) {
-        Logger::getInstance().log("exception");
-        DataBundle resultDataBundle;
-        resultDataBundle.write("result", new Mat(*image));
-        prepareResult(&resultDataBundle);
-        return resultDataBundle;
+        return executionResult(outputProperties[0].name, new Mat(*image));
     }
-    
-    DataBundle resultDataBundle;
-    resultDataBundle.write("result", dstImage);
-    prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    return executionResult(outputProperties[0].name, dstImage);
 }

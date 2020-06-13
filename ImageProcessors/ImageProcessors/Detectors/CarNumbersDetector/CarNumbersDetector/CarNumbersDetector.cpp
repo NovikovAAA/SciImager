@@ -25,23 +25,15 @@ CarNumbersDetector::CarNumbersDetector() : Processor("CarNumbersDetector", "Core
 DataBundle CarNumbersDetector::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     Mat* image;
     try {
-        image = dataMap.read<Mat *>("image");
+        image = dataMap.read<Mat *>(inputProperties[0].name);
     } catch (const std::exception& e) {
-        image = new Mat();
-
-        DataBundle resultDataBundle;
-        resultDataBundle.write("result", image);
-        prepareResult(&resultDataBundle);
-        return resultDataBundle;
+        return executionResult(outputProperties[0].name, new Mat());
     }
-    vector<double> colorVector = dataMap.read<vector<double>>("Selection Color");
-    double rectangleWidth = dataMap.read<double>("Rectangle Width");
+    
+    double rectangleWidth = dataMap.read<double>(inputProperties[1].name);
+    vector<double> colorVector = dataMap.read<vector<double>>(inputProperties[2].name);
  
     BaseCarDetector *detector = new BaseCarDetector();
     auto detectResult = detector->obtainImageWithSelectedNumbers(image, colorVector, rectangleWidth);
-    
-    DataBundle resultDataBundle;
-    resultDataBundle.write("result", detectResult);
-    prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    return executionResult(outputProperties[0].name, detectResult);
 }
