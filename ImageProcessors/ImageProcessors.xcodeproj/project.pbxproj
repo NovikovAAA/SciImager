@@ -29,6 +29,8 @@
 		6637A5802495408200E489FC /* ImagePropertiesProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6637A5692495408200E489FC /* ImagePropertiesProcessor.cpp */; };
 		6637A5812495408200E489FC /* NormalizeProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6637A56B2495408200E489FC /* NormalizeProcessor.cpp */; };
 		6637A5822495408200E489FC /* NormalizeProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6637A56C2495408200E489FC /* NormalizeProcessor.hpp */; };
+		6637A58D24954A4800E489FC /* ImageResize.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6637A58B24954A4800E489FC /* ImageResize.hpp */; };
+		6637A58E24954A4800E489FC /* ImageResize.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6637A58C24954A4800E489FC /* ImageResize.cpp */; };
 		66570B292492994100A48092 /* CarNumbersDetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66570B272492994100A48092 /* CarNumbersDetector.cpp */; };
 		66570B2A2492994100A48092 /* CarNumbersDetector.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66570B282492994100A48092 /* CarNumbersDetector.hpp */; };
 		66570B2F2492A52300A48092 /* BaseDetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66570B2D2492A52300A48092 /* BaseDetector.cpp */; };
@@ -72,6 +74,8 @@
 		6637A5692495408200E489FC /* ImagePropertiesProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImagePropertiesProcessor.cpp; sourceTree = "<group>"; };
 		6637A56B2495408200E489FC /* NormalizeProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NormalizeProcessor.cpp; sourceTree = "<group>"; };
 		6637A56C2495408200E489FC /* NormalizeProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NormalizeProcessor.hpp; sourceTree = "<group>"; };
+		6637A58B24954A4800E489FC /* ImageResize.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ImageResize.hpp; sourceTree = "<group>"; };
+		6637A58C24954A4800E489FC /* ImageResize.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageResize.cpp; sourceTree = "<group>"; };
 		66570B272492994100A48092 /* CarNumbersDetector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CarNumbersDetector.cpp; sourceTree = "<group>"; };
 		66570B282492994100A48092 /* CarNumbersDetector.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CarNumbersDetector.hpp; sourceTree = "<group>"; };
 		66570B2D2492A52300A48092 /* BaseDetector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BaseDetector.cpp; sourceTree = "<group>"; };
@@ -214,6 +218,15 @@
 			path = Normalize;
 			sourceTree = "<group>";
 		};
+		6637A58A24954A4800E489FC /* ImageResize */ = {
+			isa = PBXGroup;
+			children = (
+				6637A58B24954A4800E489FC /* ImageResize.hpp */,
+				6637A58C24954A4800E489FC /* ImageResize.cpp */,
+			);
+			path = ImageResize;
+			sourceTree = "<group>";
+		};
 		66570B222492989500A48092 /* Detectors */ = {
 			isa = PBXGroup;
 			children = (
@@ -300,6 +313,7 @@
 		66D39B06249183E00037131C /* ImageProcessors */ = {
 			isa = PBXGroup;
 			children = (
+				6637A58A24954A4800E489FC /* ImageResize */,
 				6637A5572495408200E489FC /* Blur */,
 				6637A5542495408200E489FC /* CvtColor */,
 				6637A5642495408200E489FC /* DistanceTransform */,
@@ -368,6 +382,7 @@
 			files = (
 				66570B2A2492994100A48092 /* CarNumbersDetector.hpp in Headers */,
 				6637A5822495408200E489FC /* NormalizeProcessor.hpp in Headers */,
+				6637A58D24954A4800E489FC /* ImageResize.hpp in Headers */,
 				6637A57D2495408200E489FC /* DistanceTransformProcessor.hpp in Headers */,
 				66D39B192491852D0037131C /* FaceDetectProcessor.hpp in Headers */,
 				6637A5762495408200E489FC /* BilateralBlur.hpp in Headers */,
@@ -457,6 +472,7 @@
 				6637A56F2495408200E489FC /* WatershedProcessor.cpp in Sources */,
 				6637A5752495408200E489FC /* BilateralBlur.cpp in Sources */,
 				66EF598E2493F9790080E6EC /* FaceSaver.cpp in Sources */,
+				6637A58E24954A4800E489FC /* ImageResize.cpp in Sources */,
 				66570B292492994100A48092 /* CarNumbersDetector.cpp in Sources */,
 				6637A57E2495408200E489FC /* DistanceTransformProcessor.cpp in Sources */,
 				6637A5732495408200E489FC /* CvtColorProcessor.cpp in Sources */,
