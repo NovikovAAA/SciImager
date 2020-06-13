@@ -15,24 +15,22 @@
 #include "DataValue.hpp"
 #include "BaseDataType.hpp"
 
+#include <any>
+
 struct DataBundle {
-    std::map<std::string, DataValue> dataMap;
+    std::map<std::string, std::any> dataMap;
     std::map<std::string, BaseDataTypeClassifier> outputPropertiesDataTypes;
     
     DataBundle() {}
     template <class T>
     T read(std::string name) const {
-        DataValue const &dataValue = dataMap.find(name)->second;
-        
-        T value;
-        dataValue.read(&value);
-        return value;
+        auto result = dataMap.find(name)->second;
+        return std::any_cast<T>(result);
     }
     
     template <class T>
     void write(std::string name, T const &value) {
-        DataValue &dataValue = dataMap[name];
-        dataValue.write(&value);
+        dataMap[name] = value;
     }
 };
 

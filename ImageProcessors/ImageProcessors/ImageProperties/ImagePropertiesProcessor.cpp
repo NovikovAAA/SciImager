@@ -1,0 +1,47 @@
+//
+//  ImageProperties.cpp
+//  VisualIPCV
+//
+//  Created by Артём Новиков on 04.05.2020.
+//
+
+#include "ImagePropertiesProcessor.hpp"
+#include "ProcessorManager.hpp"
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+
+using namespace cv;
+
+bool imagePropertiesProccessorLoadResult = ProcessorManager::registerProcessor(new ImagePropertiesProcessor());
+
+ImagePropertiesProcessor::ImagePropertiesProcessor() : Processor("ImageProperties", "Core", "C++ Image Processors",
+{ProcessorProperty("image", BaseDataType(BaseDataTypeClassifier::IMAGE))},
+{ProcessorProperty("height", BaseDataType(BaseDataTypeClassifier::DOUBLE)),
+ ProcessorProperty("width", BaseDataType(BaseDataTypeClassifier::DOUBLE)),
+ ProcessorProperty("channels", BaseDataType(BaseDataTypeClassifier::DOUBLE)),
+ ProcessorProperty("depth", BaseDataType(BaseDataTypeClassifier::DOUBLE))}) {}
+
+DataBundle ImagePropertiesProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
+    Mat* image;
+    vector<const ResultTransferModel<double>> resultModels;
+    
+    try {
+        image = dataMap.read<Mat *>(inputProperties[0].name);
+    } catch (const std::exception& e) {
+        for (auto& outputProperty : outputProperties) {
+            resultModels.push_back(ResultTransferModel<double>{ outputProperty.name, 0.0 });
+        }
+        return executionResult(resultModels);
+    }
+
+    double height = image->size().height;
+    double width = image->size().width;
+    double channels = image->channels();
+    double depth = image->depth();
+    
+    resultModels.push_back(ResultTransferModel<double>{ outputProperties[0].name, height });
+    resultModels.push_back(ResultTransferModel<double>{ outputProperties[1].name, width });
+    resultModels.push_back(ResultTransferModel<double>{ outputProperties[2].name, channels });
+    resultModels.push_back(ResultTransferModel<double>{ outputProperties[3].name, depth });
+    return executionResult(resultModels);
+}

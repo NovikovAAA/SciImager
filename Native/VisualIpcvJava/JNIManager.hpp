@@ -35,6 +35,8 @@ private:
     
     DataBundleJNIModel getDataBundleModel(JNIEnv *env);
     DataTypeJNIObject getDataTypeModel(JNIEnv *env);
+    
+    int getVectorSize(BaseDataTypeClassifier vectorType);
 };
 
 #endif /* JNIHelper_hpp */

@@ -359,6 +359,8 @@ public class Graph implements IDocumentPart {
                     execute(context,  true);
                 } catch (GraphExecutionException e) {
                     throw new RuntimeException(e);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 } finally {
                     if(semaphore != null) {
                         semaphore.release();
