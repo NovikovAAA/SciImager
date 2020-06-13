@@ -7,6 +7,28 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6637A56D2495408200E489FC /* ThresholdProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6637A54C2495408200E489FC /* ThresholdProcessor.hpp */; };
+		6637A56E2495408200E489FC /* ThresholdProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6637A54D2495408200E489FC /* ThresholdProcessor.cpp */; };
+		6637A56F2495408200E489FC /* WatershedProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6637A54F2495408200E489FC /* WatershedProcessor.cpp */; };
+		6637A5702495408200E489FC /* WatershedProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6637A5502495408200E489FC /* WatershedProcessor.hpp */; };
+		6637A5712495408200E489FC /* ImageCropProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6637A5522495408200E489FC /* ImageCropProcessor.cpp */; };
+		6637A5722495408200E489FC /* ImageCropProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6637A5532495408200E489FC /* ImageCropProcessor.hpp */; };
+		6637A5732495408200E489FC /* CvtColorProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6637A5552495408200E489FC /* CvtColorProcessor.cpp */; };
+		6637A5742495408200E489FC /* CvtColorProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6637A5562495408200E489FC /* CvtColorProcessor.hpp */; };
+		6637A5752495408200E489FC /* BilateralBlur.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6637A5592495408200E489FC /* BilateralBlur.cpp */; };
+		6637A5762495408200E489FC /* BilateralBlur.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6637A55A2495408200E489FC /* BilateralBlur.hpp */; };
+		6637A5772495408200E489FC /* MedianBlurProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6637A55C2495408200E489FC /* MedianBlurProcessor.hpp */; };
+		6637A5782495408200E489FC /* MedianBlurProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6637A55D2495408200E489FC /* MedianBlurProcessor.cpp */; };
+		6637A5792495408200E489FC /* AverageBlur.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6637A55F2495408200E489FC /* AverageBlur.cpp */; };
+		6637A57A2495408200E489FC /* AverageBlur.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6637A5602495408200E489FC /* AverageBlur.hpp */; };
+		6637A57B2495408200E489FC /* GaussianBlurProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6637A5622495408200E489FC /* GaussianBlurProcessor.hpp */; };
+		6637A57C2495408200E489FC /* GaussianBlurProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6637A5632495408200E489FC /* GaussianBlurProcessor.cpp */; };
+		6637A57D2495408200E489FC /* DistanceTransformProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6637A5652495408200E489FC /* DistanceTransformProcessor.hpp */; };
+		6637A57E2495408200E489FC /* DistanceTransformProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6637A5662495408200E489FC /* DistanceTransformProcessor.cpp */; };
+		6637A57F2495408200E489FC /* ImagePropertiesProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6637A5682495408200E489FC /* ImagePropertiesProcessor.hpp */; };
+		6637A5802495408200E489FC /* ImagePropertiesProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6637A5692495408200E489FC /* ImagePropertiesProcessor.cpp */; };
+		6637A5812495408200E489FC /* NormalizeProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6637A56B2495408200E489FC /* NormalizeProcessor.cpp */; };
+		6637A5822495408200E489FC /* NormalizeProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6637A56C2495408200E489FC /* NormalizeProcessor.hpp */; };
 		66570B292492994100A48092 /* CarNumbersDetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66570B272492994100A48092 /* CarNumbersDetector.cpp */; };
 		66570B2A2492994100A48092 /* CarNumbersDetector.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66570B282492994100A48092 /* CarNumbersDetector.hpp */; };
 		66570B2F2492A52300A48092 /* BaseDetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66570B2D2492A52300A48092 /* BaseDetector.cpp */; };
@@ -15,12 +37,8 @@
 		66570B362492AF6A00A48092 /* CarNumbersSaver.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66570B342492AF6A00A48092 /* CarNumbersSaver.hpp */; };
 		66570B3F2492D11400A48092 /* ImageSaver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66570B3D2492D11400A48092 /* ImageSaver.cpp */; };
 		66570B402492D11400A48092 /* ImageSaver.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66570B3E2492D11400A48092 /* ImageSaver.hpp */; };
-		66D39B182491852D0037131C /* ImageCropProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D39B122491852D0037131C /* ImageCropProcessor.cpp */; };
 		66D39B192491852D0037131C /* FaceDetectProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66D39B132491852D0037131C /* FaceDetectProcessor.hpp */; };
 		66D39B1A2491852D0037131C /* FaceDetectProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D39B142491852D0037131C /* FaceDetectProcessor.cpp */; };
-		66D39B1B2491852D0037131C /* ImageCropProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66D39B152491852D0037131C /* ImageCropProcessor.hpp */; };
-		66D39B1C2491852D0037131C /* ImagePropertiesProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66D39B162491852D0037131C /* ImagePropertiesProcessor.cpp */; };
-		66D39B1D2491852D0037131C /* ImagePropertiesProcessor.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66D39B172491852D0037131C /* ImagePropertiesProcessor.hpp */; };
 		66EF59852493EFB10080E6EC /* CarNumberFill.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF59832493EFB10080E6EC /* CarNumberFill.cpp */; };
 		66EF59862493EFB10080E6EC /* CarNumberFill.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 66EF59842493EFB10080E6EC /* CarNumberFill.hpp */; };
 		66EF598A2493F0CD0080E6EC /* BaseCarDetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66EF59882493F0CD0080E6EC /* BaseCarDetector.cpp */; };
@@ -32,6 +50,28 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		6637A54C2495408200E489FC /* ThresholdProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ThresholdProcessor.hpp; sourceTree = "<group>"; };
+		6637A54D2495408200E489FC /* ThresholdProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ThresholdProcessor.cpp; sourceTree = "<group>"; };
+		6637A54F2495408200E489FC /* WatershedProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WatershedProcessor.cpp; sourceTree = "<group>"; };
+		6637A5502495408200E489FC /* WatershedProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = WatershedProcessor.hpp; sourceTree = "<group>"; };
+		6637A5522495408200E489FC /* ImageCropProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageCropProcessor.cpp; sourceTree = "<group>"; };
+		6637A5532495408200E489FC /* ImageCropProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ImageCropProcessor.hpp; sourceTree = "<group>"; };
+		6637A5552495408200E489FC /* CvtColorProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CvtColorProcessor.cpp; sourceTree = "<group>"; };
+		6637A5562495408200E489FC /* CvtColorProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CvtColorProcessor.hpp; sourceTree = "<group>"; };
+		6637A5592495408200E489FC /* BilateralBlur.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BilateralBlur.cpp; sourceTree = "<group>"; };
+		6637A55A2495408200E489FC /* BilateralBlur.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = BilateralBlur.hpp; sourceTree = "<group>"; };
+		6637A55C2495408200E489FC /* MedianBlurProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = MedianBlurProcessor.hpp; sourceTree = "<group>"; };
+		6637A55D2495408200E489FC /* MedianBlurProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MedianBlurProcessor.cpp; sourceTree = "<group>"; };
+		6637A55F2495408200E489FC /* AverageBlur.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AverageBlur.cpp; sourceTree = "<group>"; };
+		6637A5602495408200E489FC /* AverageBlur.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = AverageBlur.hpp; sourceTree = "<group>"; };
+		6637A5622495408200E489FC /* GaussianBlurProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = GaussianBlurProcessor.hpp; sourceTree = "<group>"; };
+		6637A5632495408200E489FC /* GaussianBlurProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GaussianBlurProcessor.cpp; sourceTree = "<group>"; };
+		6637A5652495408200E489FC /* DistanceTransformProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DistanceTransformProcessor.hpp; sourceTree = "<group>"; };
+		6637A5662495408200E489FC /* DistanceTransformProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DistanceTransformProcessor.cpp; sourceTree = "<group>"; };
+		6637A5682495408200E489FC /* ImagePropertiesProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ImagePropertiesProcessor.hpp; sourceTree = "<group>"; };
+		6637A5692495408200E489FC /* ImagePropertiesProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImagePropertiesProcessor.cpp; sourceTree = "<group>"; };
+		6637A56B2495408200E489FC /* NormalizeProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = NormalizeProcessor.cpp; sourceTree = "<group>"; };
+		6637A56C2495408200E489FC /* NormalizeProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = NormalizeProcessor.hpp; sourceTree = "<group>"; };
 		66570B272492994100A48092 /* CarNumbersDetector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CarNumbersDetector.cpp; sourceTree = "<group>"; };
 		66570B282492994100A48092 /* CarNumbersDetector.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CarNumbersDetector.hpp; sourceTree = "<group>"; };
 		66570B2D2492A52300A48092 /* BaseDetector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BaseDetector.cpp; sourceTree = "<group>"; };
@@ -41,12 +81,8 @@
 		66570B3D2492D11400A48092 /* ImageSaver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImageSaver.cpp; sourceTree = "<group>"; };
 		66570B3E2492D11400A48092 /* ImageSaver.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ImageSaver.hpp; sourceTree = "<group>"; };
 		66D39B04249183E00037131C /* libImageProcessors.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libImageProcessors.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		66D39B122491852D0037131C /* ImageCropProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageCropProcessor.cpp; sourceTree = "<group>"; };
 		66D39B132491852D0037131C /* FaceDetectProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = FaceDetectProcessor.hpp; sourceTree = "<group>"; };
 		66D39B142491852D0037131C /* FaceDetectProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FaceDetectProcessor.cpp; sourceTree = "<group>"; };
-		66D39B152491852D0037131C /* ImageCropProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ImageCropProcessor.hpp; sourceTree = "<group>"; };
-		66D39B162491852D0037131C /* ImagePropertiesProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImagePropertiesProcessor.cpp; sourceTree = "<group>"; };
-		66D39B172491852D0037131C /* ImagePropertiesProcessor.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = ImagePropertiesProcessor.hpp; sourceTree = "<group>"; };
 		66EF59832493EFB10080E6EC /* CarNumberFill.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CarNumberFill.cpp; sourceTree = "<group>"; };
 		66EF59842493EFB10080E6EC /* CarNumberFill.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CarNumberFill.hpp; sourceTree = "<group>"; };
 		66EF59882493F0CD0080E6EC /* BaseCarDetector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BaseCarDetector.cpp; sourceTree = "<group>"; };
@@ -68,6 +104,116 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6637A54B2495408200E489FC /* Threshold */ = {
+			isa = PBXGroup;
+			children = (
+				6637A54C2495408200E489FC /* ThresholdProcessor.hpp */,
+				6637A54D2495408200E489FC /* ThresholdProcessor.cpp */,
+			);
+			path = Threshold;
+			sourceTree = "<group>";
+		};
+		6637A54E2495408200E489FC /* Watershed */ = {
+			isa = PBXGroup;
+			children = (
+				6637A54F2495408200E489FC /* WatershedProcessor.cpp */,
+				6637A5502495408200E489FC /* WatershedProcessor.hpp */,
+			);
+			path = Watershed;
+			sourceTree = "<group>";
+		};
+		6637A5512495408200E489FC /* ImageCrop */ = {
+			isa = PBXGroup;
+			children = (
+				6637A5522495408200E489FC /* ImageCropProcessor.cpp */,
+				6637A5532495408200E489FC /* ImageCropProcessor.hpp */,
+			);
+			path = ImageCrop;
+			sourceTree = "<group>";
+		};
+		6637A5542495408200E489FC /* CvtColor */ = {
+			isa = PBXGroup;
+			children = (
+				6637A5552495408200E489FC /* CvtColorProcessor.cpp */,
+				6637A5562495408200E489FC /* CvtColorProcessor.hpp */,
+			);
+			path = CvtColor;
+			sourceTree = "<group>";
+		};
+		6637A5572495408200E489FC /* Blur */ = {
+			isa = PBXGroup;
+			children = (
+				6637A5582495408200E489FC /* BilateralBlur */,
+				6637A55B2495408200E489FC /* MedianBlurProcessor */,
+				6637A55E2495408200E489FC /* AverageBlur */,
+				6637A5612495408200E489FC /* GaussianBlurProcessor */,
+			);
+			path = Blur;
+			sourceTree = "<group>";
+		};
+		6637A5582495408200E489FC /* BilateralBlur */ = {
+			isa = PBXGroup;
+			children = (
+				6637A5592495408200E489FC /* BilateralBlur.cpp */,
+				6637A55A2495408200E489FC /* BilateralBlur.hpp */,
+			);
+			path = BilateralBlur;
+			sourceTree = "<group>";
+		};
+		6637A55B2495408200E489FC /* MedianBlurProcessor */ = {
+			isa = PBXGroup;
+			children = (
+				6637A55C2495408200E489FC /* MedianBlurProcessor.hpp */,
+				6637A55D2495408200E489FC /* MedianBlurProcessor.cpp */,
+			);
+			path = MedianBlurProcessor;
+			sourceTree = "<group>";
+		};
+		6637A55E2495408200E489FC /* AverageBlur */ = {
+			isa = PBXGroup;
+			children = (
+				6637A55F2495408200E489FC /* AverageBlur.cpp */,
+				6637A5602495408200E489FC /* AverageBlur.hpp */,
+			);
+			path = AverageBlur;
+			sourceTree = "<group>";
+		};
+		6637A5612495408200E489FC /* GaussianBlurProcessor */ = {
+			isa = PBXGroup;
+			children = (
+				6637A5622495408200E489FC /* GaussianBlurProcessor.hpp */,
+				6637A5632495408200E489FC /* GaussianBlurProcessor.cpp */,
+			);
+			path = GaussianBlurProcessor;
+			sourceTree = "<group>";
+		};
+		6637A5642495408200E489FC /* DistanceTransform */ = {
+			isa = PBXGroup;
+			children = (
+				6637A5652495408200E489FC /* DistanceTransformProcessor.hpp */,
+				6637A5662495408200E489FC /* DistanceTransformProcessor.cpp */,
+			);
+			path = DistanceTransform;
+			sourceTree = "<group>";
+		};
+		6637A5672495408200E489FC /* ImageProperties */ = {
+			isa = PBXGroup;
+			children = (
+				6637A5682495408200E489FC /* ImagePropertiesProcessor.hpp */,
+				6637A5692495408200E489FC /* ImagePropertiesProcessor.cpp */,
+			);
+			path = ImageProperties;
+			sourceTree = "<group>";
+		};
+		6637A56A2495408200E489FC /* Normalize */ = {
+			isa = PBXGroup;
+			children = (
+				6637A56B2495408200E489FC /* NormalizeProcessor.cpp */,
+				6637A56C2495408200E489FC /* NormalizeProcessor.hpp */,
+			);
+			path = Normalize;
+			sourceTree = "<group>";
+		};
 		66570B222492989500A48092 /* Detectors */ = {
 			isa = PBXGroup;
 			children = (
@@ -97,24 +243,6 @@
 				66570B312492AF1D00A48092 /* CarNumbersDetector */,
 			);
 			path = CarNumbersDetector;
-			sourceTree = "<group>";
-		};
-		66570B25249298EA00A48092 /* ImageCropProccessor */ = {
-			isa = PBXGroup;
-			children = (
-				66D39B122491852D0037131C /* ImageCropProcessor.cpp */,
-				66D39B152491852D0037131C /* ImageCropProcessor.hpp */,
-			);
-			path = ImageCropProccessor;
-			sourceTree = "<group>";
-		};
-		66570B26249298FF00A48092 /* ImagePropertiesProcessor */ = {
-			isa = PBXGroup;
-			children = (
-				66D39B162491852D0037131C /* ImagePropertiesProcessor.cpp */,
-				66D39B172491852D0037131C /* ImagePropertiesProcessor.hpp */,
-			);
-			path = ImagePropertiesProcessor;
 			sourceTree = "<group>";
 		};
 		66570B2C2492A4E400A48092 /* BaseDetector */ = {
@@ -172,9 +300,15 @@
 		66D39B06249183E00037131C /* ImageProcessors */ = {
 			isa = PBXGroup;
 			children = (
+				6637A5572495408200E489FC /* Blur */,
+				6637A5542495408200E489FC /* CvtColor */,
+				6637A5642495408200E489FC /* DistanceTransform */,
+				6637A5512495408200E489FC /* ImageCrop */,
+				6637A5672495408200E489FC /* ImageProperties */,
+				6637A56A2495408200E489FC /* Normalize */,
+				6637A54B2495408200E489FC /* Threshold */,
+				6637A54E2495408200E489FC /* Watershed */,
 				66570B3C2492D10000A48092 /* ImageSaver */,
-				66570B26249298FF00A48092 /* ImagePropertiesProcessor */,
-				66570B25249298EA00A48092 /* ImageCropProccessor */,
 				66570B222492989500A48092 /* Detectors */,
 			);
 			path = ImageProcessors;
@@ -233,16 +367,25 @@
 			buildActionMask = 2147483647;
 			files = (
 				66570B2A2492994100A48092 /* CarNumbersDetector.hpp in Headers */,
+				6637A5822495408200E489FC /* NormalizeProcessor.hpp in Headers */,
+				6637A57D2495408200E489FC /* DistanceTransformProcessor.hpp in Headers */,
 				66D39B192491852D0037131C /* FaceDetectProcessor.hpp in Headers */,
+				6637A5762495408200E489FC /* BilateralBlur.hpp in Headers */,
 				66EF598F2493F9790080E6EC /* FaceSaver.hpp in Headers */,
 				66570B362492AF6A00A48092 /* CarNumbersSaver.hpp in Headers */,
+				6637A57A2495408200E489FC /* AverageBlur.hpp in Headers */,
 				66EF59942493FAFD0080E6EC /* BaseFaceDetector.hpp in Headers */,
+				6637A57F2495408200E489FC /* ImagePropertiesProcessor.hpp in Headers */,
 				66EF598B2493F0CD0080E6EC /* BaseCarDetector.hpp in Headers */,
+				6637A5742495408200E489FC /* CvtColorProcessor.hpp in Headers */,
 				66570B302492A52300A48092 /* BaseDetector.hpp in Headers */,
-				66D39B1D2491852D0037131C /* ImagePropertiesProcessor.hpp in Headers */,
 				66EF59862493EFB10080E6EC /* CarNumberFill.hpp in Headers */,
-				66D39B1B2491852D0037131C /* ImageCropProcessor.hpp in Headers */,
 				66570B402492D11400A48092 /* ImageSaver.hpp in Headers */,
+				6637A56D2495408200E489FC /* ThresholdProcessor.hpp in Headers */,
+				6637A5702495408200E489FC /* WatershedProcessor.hpp in Headers */,
+				6637A5772495408200E489FC /* MedianBlurProcessor.hpp in Headers */,
+				6637A5722495408200E489FC /* ImageCropProcessor.hpp in Headers */,
+				6637A57B2495408200E489FC /* GaussianBlurProcessor.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -303,16 +446,25 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6637A5792495408200E489FC /* AverageBlur.cpp in Sources */,
 				66EF59852493EFB10080E6EC /* CarNumberFill.cpp in Sources */,
-				66D39B1C2491852D0037131C /* ImagePropertiesProcessor.cpp in Sources */,
 				66D39B1A2491852D0037131C /* FaceDetectProcessor.cpp in Sources */,
 				66570B2F2492A52300A48092 /* BaseDetector.cpp in Sources */,
-				66D39B182491852D0037131C /* ImageCropProcessor.cpp in Sources */,
 				66570B3F2492D11400A48092 /* ImageSaver.cpp in Sources */,
+				6637A56E2495408200E489FC /* ThresholdProcessor.cpp in Sources */,
 				66EF598A2493F0CD0080E6EC /* BaseCarDetector.cpp in Sources */,
+				6637A57C2495408200E489FC /* GaussianBlurProcessor.cpp in Sources */,
+				6637A56F2495408200E489FC /* WatershedProcessor.cpp in Sources */,
+				6637A5752495408200E489FC /* BilateralBlur.cpp in Sources */,
 				66EF598E2493F9790080E6EC /* FaceSaver.cpp in Sources */,
 				66570B292492994100A48092 /* CarNumbersDetector.cpp in Sources */,
+				6637A57E2495408200E489FC /* DistanceTransformProcessor.cpp in Sources */,
+				6637A5732495408200E489FC /* CvtColorProcessor.cpp in Sources */,
+				6637A5802495408200E489FC /* ImagePropertiesProcessor.cpp in Sources */,
 				66EF59932493FAFD0080E6EC /* BaseFaceDetector.cpp in Sources */,
+				6637A5812495408200E489FC /* NormalizeProcessor.cpp in Sources */,
+				6637A5712495408200E489FC /* ImageCropProcessor.cpp in Sources */,
+				6637A5782495408200E489FC /* MedianBlurProcessor.cpp in Sources */,
 				66570B352492AF6A00A48092 /* CarNumbersSaver.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
