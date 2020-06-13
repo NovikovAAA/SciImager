@@ -8,7 +8,7 @@
 #ifndef PrimitiveDataTypeClassifier_h
 #define PrimitiveDataTypeClassifier_h
 
-enum PrimitiveTypeСlassifier {
+enum PrimitiveTypeClassifier {
     JNI_DOUBLE,
     JNI_INTEGER,
     JNI_STRING,

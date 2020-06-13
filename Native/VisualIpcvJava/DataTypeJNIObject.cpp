@@ -7,7 +7,7 @@
 
 #include "DataTypeJNIObject.hpp"
 
-DataTypeJNIObject::DataTypeJNIObject(PrimitiveTypeСlassifier _classifier, jclass _dataTypeClass, jmethodID _dataTypeConstructor, jmethodID _dataTypeGetValueMethod) {
+DataTypeJNIObject::DataTypeJNIObject(PrimitiveTypeClassifier _classifier, jclass _dataTypeClass, jmethodID _dataTypeConstructor, jmethodID _dataTypeGetValueMethod) {
     classifier = _classifier;
     dataTypeClass = _dataTypeClass;
     dataTypeConstructor = _dataTypeConstructor;
