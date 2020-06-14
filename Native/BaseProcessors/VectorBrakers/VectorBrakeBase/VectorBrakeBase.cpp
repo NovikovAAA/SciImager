@@ -15,7 +15,7 @@ VectorBrakeBase::VectorBrakeBase(std::string name, std::string module, std::stri
 
 DataBundle VectorBrakeBase::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     vector<double> vector4 = dataMap.read<vector<double>>(inputProperties[0].name);
-    vector<const ResultTransferModel<double>> resultModels;
+    vector<ResultTransferModel<double>> resultModels;
     for (int i = 0; i < outputProperties.size() && i < vector4.size(); i++) {
         resultModels.push_back(ResultTransferModel<double>{ outputProperties[i].name, vector4[i] });
     }

@@ -5,8 +5,10 @@ import com.visualipcv.core.DataTypes;
 import com.visualipcv.core.OpenCvUtils;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.scilab.modules.external_objects_java.ScilabJavaArray;
 import org.scilab.modules.types.ScilabDouble;
 import org.scilab.modules.types.ScilabInteger;
+import org.scilab.modules.types.ScilabMList;
 import org.scilab.modules.types.ScilabString;
 import org.scilab.modules.types.ScilabType;
 import org.scilab.modules.types.ScilabTypeEnum;
@@ -154,6 +156,8 @@ public class SciConverters {
                 converted.get(0, 0, data);
                 data[data.length - 2] = converted.width();
                 data[data.length - 1] = converted.height();
+
+                new ScilabInteger();
 
                 return new ScilabInteger(new int[][] { data, new int[] { converted.width() }, new int[] { converted.height() } }, false);
             }
