@@ -157,8 +157,6 @@ public class SciConverters {
                 data[data.length - 2] = converted.width();
                 data[data.length - 1] = converted.height();
 
-                new ScilabInteger();
-
                 return new ScilabInteger(new int[][] { data, new int[] { converted.width() }, new int[] { converted.height() } }, false);
             }
 

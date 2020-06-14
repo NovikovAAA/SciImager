@@ -15,8 +15,8 @@ public class Console {
     static {
         byteStream = new ByteArrayOutputStream();
         PrintStream stream = new PrintStream(byteStream);
-        //System.setOut(stream);
-        //System.setErr(stream);
+        System.setOut(stream);
+        System.setErr(stream);
     }
 
     public static String execute(String cmd, boolean showCmd) {
