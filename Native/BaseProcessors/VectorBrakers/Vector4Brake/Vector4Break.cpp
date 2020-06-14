@@ -6,12 +6,12 @@
 //  Copyright © 2020 Артём Новиков. All rights reserved.
 //
 
-#include "Vector4Brake.hpp"
+#include "Vector4Break.hpp"
 #include "ProcessorManager.hpp"
 
-bool vector4LoadResult = ProcessorManager::registerProcessor(new Vector4Brake());
+bool vector4LoadResult = ProcessorManager::registerProcessor(new Vector4Break());
 
-Vector4Brake::Vector4Brake() : VectorBrakeBase("Vector4Brake", "Core", "C++ Base",
+Vector4Break::Vector4Break() : VectorBreakBase("Vector4Break", "Core", "C++ Base",
 {ProcessorProperty("Vector", BaseDataType(BaseDataTypeClassifier::VECTOR4))},
 {ProcessorProperty("X", BaseDataType(BaseDataTypeClassifier::DOUBLE)),
  ProcessorProperty("Y", BaseDataType(BaseDataTypeClassifier::DOUBLE)),

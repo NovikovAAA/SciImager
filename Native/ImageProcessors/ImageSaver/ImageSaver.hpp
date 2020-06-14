@@ -19,6 +19,8 @@ public:
     ImageSaver(std::string pathString);
     
     void save(cv::Mat image, std::string imageName, std::string extension);
+    void save(cv::Mat image, std::string imageName);
+    void save(cv::Mat image);
 private:
     std::string pathString;
 };

@@ -6,12 +6,12 @@
 //  Copyright © 2020 Артём Новиков. All rights reserved.
 //
 
-#include "Vector3Brake.hpp"
+#include "Vector3Break.hpp"
 #include "ProcessorManager.hpp"
 
-bool vector3LoadResult = ProcessorManager::registerProcessor(new Vector3Brake());
+bool vector3LoadResult = ProcessorManager::registerProcessor(new Vector3Break());
 
-Vector3Brake::Vector3Brake() : VectorBrakeBase("Vector3Brake", "Core", "C++ Base",
+Vector3Break::Vector3Break() : VectorBreakBase("Vector3Break", "Core", "C++ Base",
 {ProcessorProperty("Vector", BaseDataType(BaseDataTypeClassifier::VECTOR3))},
 {ProcessorProperty("X", BaseDataType(BaseDataTypeClassifier::DOUBLE)),
  ProcessorProperty("Y", BaseDataType(BaseDataTypeClassifier::DOUBLE)),

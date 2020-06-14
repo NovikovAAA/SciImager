@@ -26,7 +26,7 @@ DataBundle ImagePropertiesProcessor::execute(const DataBundle &dataMap, DataBund
     try {
         image = dataMap.read<Mat *>(inputProperties[0].name);
     } catch (const std::exception& e) {
-        vector<const ResultTransferModel<double>> resultModels;
+        vector<ResultTransferModel<double>> resultModels;
         for (auto& outputProperty : outputProperties) {
             resultModels.push_back(ResultTransferModel<double>{ outputProperty.name, 0.0 });
         }

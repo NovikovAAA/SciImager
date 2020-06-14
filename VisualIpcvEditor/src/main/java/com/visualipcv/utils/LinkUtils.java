@@ -12,8 +12,8 @@ public class LinkUtils {
     public static void linkNativeLibraries() {
         try {
             addDir("./ext");
-            addDir("/Users/artemnovikov/Documents/Applications/scilab-branch-6.1.app/Contents/MacOS/lib/scilab");
-            addDir("/Users/artemnovikov/Documents/Applications/scilab-branch-6.1.app/Contents/MacOS/lib/thirdparty");
+            addDir("/Users/artemnovikov/ScilabTEST/Contents/MacOS/lib/scilab");
+//            addDir("/Users/artemnovikov/ScilabTEST/Contents/MacOS/lib/thirdparty");
         } catch (Exception e) {
             e.printStackTrace();
         }

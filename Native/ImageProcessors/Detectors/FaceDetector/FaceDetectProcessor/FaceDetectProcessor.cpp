@@ -12,7 +12,7 @@
 bool faceDetectProccessorLoadResult = ProcessorManager::registerProcessor(new FaceDetectProcessor());
 
 FaceDetectProcessor::FaceDetectProcessor() : Processor("FaceDetect", "Core", "C++ Image Processors",
-{ProcessorProperty("image", BaseDataType(BaseDataTypeClassifier::IMAGE)), ProcessorProperty("cascadePath", BaseDataType(BaseDataTypeClassifier::STRING))},
+{ProcessorProperty("image", BaseDataType(BaseDataTypeClassifier::IMAGE)), ProcessorProperty("cascadePath", BaseDataType(BaseDataTypeClassifier::PATH))},
 {ProcessorProperty("result", BaseDataType(BaseDataTypeClassifier::IMAGE))}) {}
 
 DataBundle FaceDetectProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {

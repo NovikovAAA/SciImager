@@ -8,8 +8,8 @@ import org.scilab.modules.types.*;
 public class SciRunner {
     private static Scilab scilab;
     public static void load() {
-        System.setProperty("SCI", "/Users/artemnovikov/Documents/Applications/scilab-branch-6.1.app/Contents/MacOS/lib/scilab");
         try {
+            System.out.println(System.getProperty("SCI"));
             scilab = new Scilab(true);
         } catch(JavasciException.InitializationException e) {
             Console.error(e);
