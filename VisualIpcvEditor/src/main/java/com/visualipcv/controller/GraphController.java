@@ -321,14 +321,19 @@ public class GraphController extends Controller<GraphView> implements INameable 
     }
 
     public NodeSlotController findNodeSlotController(NodeSlot slot) {
-        for(NodeController controller : (List<NodeController>)nodesProperty.getValue()) {
-            if(controller.getContext() == slot.getNode()) {
-                for(AdvancedNodeSlotController slotController : controller.getInputSlots()) {
+        for(GraphElementController controller : (List<GraphElementController>)nodesProperty.getValue()) {
+            if(!(controller instanceof NodeController))
+                continue;
+
+            NodeController nodeController = (NodeController)controller;
+
+            if(nodeController.getContext() == slot.getNode()) {
+                for(AdvancedNodeSlotController slotController : nodeController.getInputSlots()) {
                     if(slotController.getContext() == slot) {
                         return slotController.getSlot();
                     }
                 }
-                for(AdvancedNodeSlotController slotController : controller.getOutputSlots()) {
+                for(AdvancedNodeSlotController slotController : nodeController.getOutputSlots()) {
                     if(slotController.getContext() == slot) {
                         return slotController.getSlot();
                     }

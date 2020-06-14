@@ -1,5 +1,6 @@
 package com.visualipcv.utils;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.opencv.core.Core;
 
 import java.awt.*;
@@ -17,9 +18,14 @@ public class LinkUtils {
             e.printStackTrace();
         }
 
-        System.loadLibrary("opencv_java430");
         System.loadLibrary("VisualIPCV");
-        System.loadLibrary("VisualIpcvJava");
+        System.loadLibrary("VisualIPCVJava");
+
+        if(SystemUtils.OS_NAME.toLowerCase().contains("win")) {
+            System.loadLibrary("opencv_world420d");
+        } else {
+            System.loadLibrary("opencv_java430");
+        }
     }
 
     public static void addDir(String s) throws IOException {
