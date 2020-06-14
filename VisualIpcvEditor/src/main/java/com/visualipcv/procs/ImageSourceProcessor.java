@@ -11,6 +11,8 @@ import com.visualipcv.core.ProcessorProperty;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class ImageSourceProcessor extends Processor {
@@ -19,7 +21,7 @@ public class ImageSourceProcessor extends Processor {
             .setName("ImageSource")
             .setModule("Core")
             .setCategory("Input")
-            .addInputProperty(new ProcessorProperty("Path", DataTypes.STRING))
+            .addInputProperty(new ProcessorProperty("Path", DataTypes.PATH))
             .addOutputProperty(new ProcessorProperty("Image", DataTypes.IMAGE)));
     }
 

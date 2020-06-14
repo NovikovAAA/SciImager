@@ -66,18 +66,21 @@ public class GraphProcessor extends Processor {
             throw new CommonException(e.getMessage());
         }
 
+        int index = 0;
+
         for(Node node : graph.getOutputNodes()) {
             for(InputNodeSlot slot : node.getInputSlots()) {
                 Object value = GraphExecutionData.load(slot);
-                outputs.write(getNameForOutput(node, slot), value);
+                outputs.write(getNameForOutput(node, slot, index), value);
+                ++index;
             }
         }
 
         return outputs;
     }
 
-    private static String getNameForOutput(Node node, NodeSlot slot) {
-        return node.getName() + "->" + slot.getProperty().getName();
+    private static String getNameForOutput(Node node, NodeSlot slot, int index) {
+        return slot.getProperty().getName() + " " + Integer.toString(index);
     }
 
     private static List<ProcessorProperty> getInputProperties(Graph graph) {
@@ -110,10 +113,13 @@ public class GraphProcessor extends Processor {
         List<ProcessorProperty> properties = new ArrayList<>();
         List<Node> nodes = graph.getOutputNodes();
 
+        int index = 0;
+
         for(Node node : nodes) {
             for(NodeSlot slot : node.getInputSlots()) {
-                ProcessorProperty property = new ProcessorProperty(getNameForOutput(node, slot), slot.getProperty().getType());
+                ProcessorProperty property = new ProcessorProperty(getNameForOutput(node, slot, index), slot.getProperty().getType());
                 properties.add(property);
+                ++index;
             }
         }
 
