@@ -83,9 +83,6 @@ DataBundle WatershedProcessor::execute(const DataBundle &dataMap, DataBundle &no
 
 DataBundle WatershedProcessor::handleException() {
     Logger::getInstance().log("exception");
-    DataBundle resultDataBundle;
-    resultDataBundle.write(outputProperties[0].name, new Mat());
-    resultDataBundle.write(outputProperties[1].name, 0);
-    prepareResult(&resultDataBundle);
-    return resultDataBundle;
+    return executionResult(ResultTransferModel<Mat *>{ outputProperties[0].name, new Mat() },
+                           ResultTransferModel<double>{ outputProperties[0].name, 0.0 });
 }

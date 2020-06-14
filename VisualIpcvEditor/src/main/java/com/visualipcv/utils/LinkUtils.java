@@ -2,22 +2,45 @@ package com.visualipcv.utils;
 
 import org.opencv.core.Core;
 
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.Field;
+
 public class LinkUtils {
     public static void linkNativeLibraries() {
-        if(!System.getProperty("os.name").contains("win")) {
-            String libsPath = System.getProperty("user.dir") + "/ext/";
-            String libExt = ".dylib";
+        try {
+            addDir("./ext");
+            addDir("/Users/artemnovikov/Documents/Applications/scilab-branch-6.1.app/Contents/MacOS/lib/scilab");
+            addDir("/Users/artemnovikov/Documents/Applications/scilab-branch-6.1.app/Contents/MacOS/lib/thirdparty");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-            System.load(libsPath +"libopencv_java430" + libExt);
-            System.load(libsPath +"libVisualIPCV" + libExt);
-            System.load(libsPath +"libVisualIpcvJava" + libExt);
-//            System.load("/Users/artemnovikov/Documents/Учеба/Диплом/Scilmager/VisualIpcvEditor/Plugins/libCoreLibrary.dylib");
-        } else {
-            System.loadLibrary("ext/opencv_world420d");
-            System.loadLibrary("ext/opencv_java420");
-            System.loadLibrary("ext/VisualIPCV");
-            System.loadLibrary("ext/VisualIPCVJava");
-            System.loadLibrary("ext/" + Core.NATIVE_LIBRARY_NAME);
+        System.loadLibrary("opencv_java430");
+        System.loadLibrary("VisualIPCV");
+        System.loadLibrary("VisualIpcvJava");
+    }
+
+    public static void addDir(String s) throws IOException {
+        try {
+            Field field = ClassLoader.class.getDeclaredField("usr_paths");
+            field.setAccessible(true);
+            String[] paths = (String[])field.get(null);
+            for (int i = 0; i < paths.length; i++) {
+                if (s.equals(paths[i])) {
+                    return;
+                }
+            }
+            String[] tmp = new String[paths.length+1];
+            System.arraycopy(paths,0,tmp,0,paths.length);
+            tmp[paths.length] = s;
+            field.set(null,tmp);
+            System.setProperty("java.library.path", System.getProperty("java.library.path") + File.pathSeparator + s);
+        } catch (IllegalAccessException e) {
+            throw new IOException("Failed to get permissions to set library path");
+        } catch (NoSuchFieldException e) {
+            throw new IOException("Failed to get field handle to set library path");
         }
     }
 }

@@ -23,11 +23,10 @@ ImagePropertiesProcessor::ImagePropertiesProcessor() : Processor("ImagePropertie
 
 DataBundle ImagePropertiesProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {
     Mat* image;
-    vector<const ResultTransferModel<double>> resultModels;
-    
     try {
         image = dataMap.read<Mat *>(inputProperties[0].name);
     } catch (const std::exception& e) {
+        vector<const ResultTransferModel<double>> resultModels;
         for (auto& outputProperty : outputProperties) {
             resultModels.push_back(ResultTransferModel<double>{ outputProperty.name, 0.0 });
         }
@@ -39,9 +38,8 @@ DataBundle ImagePropertiesProcessor::execute(const DataBundle &dataMap, DataBund
     double channels = image->channels();
     double depth = image->depth();
     
-    resultModels.push_back(ResultTransferModel<double>{ outputProperties[0].name, height });
-    resultModels.push_back(ResultTransferModel<double>{ outputProperties[1].name, width });
-    resultModels.push_back(ResultTransferModel<double>{ outputProperties[2].name, channels });
-    resultModels.push_back(ResultTransferModel<double>{ outputProperties[3].name, depth });
-    return executionResult(resultModels);
+    return executionResult(ResultTransferModel<double>{ outputProperties[0].name, height },
+                           ResultTransferModel<double>{ outputProperties[1].name, width },
+                           ResultTransferModel<double>{ outputProperties[2].name, channels },
+                           ResultTransferModel<double>{ outputProperties[3].name, depth });
 }
