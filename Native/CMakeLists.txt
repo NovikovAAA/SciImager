@@ -1,4 +1,7 @@
 add_subdirectory(VisualIPCV)
 add_subdirectory(VisualIpcvJava)
 add_subdirectory(VisualIpcvTest)
+add_subdirectory(BaseProcessors)
+add_subdirectory(ImageProcessors)
+add_subdirectory(PropertyProcessors)
 #add_subdirectory(VisualIpcvSci)

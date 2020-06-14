@@ -15,7 +15,7 @@ public class Starter {
     static {
         LinkUtils.linkNativeLibraries();
 
-//        SciRunner.load();
+        SciRunner.load();
 
         DataTypeLibrary.init();
         ProcessorLibrary.getInstance();

@@ -29,7 +29,11 @@ public class SciProcessor extends Processor {
 
     @Override
     public DataBundle execute(DataBundle inputs, DataBundle props) {
-        return script.run(inputs);
+        try {
+            return script.run(inputs);
+        } catch (Exception e) {
+            throw new CommonException("Sci run error");
+        }
     }
 
     public SciScript getScript() {
