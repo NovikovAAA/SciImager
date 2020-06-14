@@ -12,3 +12,15 @@ target_include_directories(${PROJECT_NAME} PRIVATE ../VisualIPCV)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ${OpenCV_LIBS})
 target_link_libraries(${PROJECT_NAME} PUBLIC VisualIPCV)
+
+FILE(GLOB_RECURSE children LIST_DIRECTORIES true "**/*")
+SET(SUBDIRS "")
+FOREACH(child ${children})
+  IF(IS_DIRECTORY ${child})
+    LIST(APPEND SUBDIRS ${child})
+  ENDIF()
+ENDFOREACH()
+
+FOREACH(subdir ${SUBDIRS})
+  target_include_directories(${PROJECT_NAME} PRIVATE ${subdir})
+ENDFOREACH()

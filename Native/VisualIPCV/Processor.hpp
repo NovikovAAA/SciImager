@@ -39,7 +39,7 @@ public:
     
 protected:
     template <class T>
-    DataBundle executionResult(std::vector<const ResultTransferModel<T>> models) {
+    DataBundle executionResult(std::vector<ResultTransferModel<T>> models) {
         DataBundle resultDataBundle;
         for (auto& model : models) {
            resultDataBundle.write(model.key, model.value);
