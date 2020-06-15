@@ -46,5 +46,5 @@ void ImageSaver::save(Mat image, string imageName) {
 
 void ImageSaver::save(Mat image, string imageName, string extension) {
     path savingPath = pathString + imageName + "." + extension;
-    imwrite(savingPath, image);
+    imwrite(savingPath.generic_string(), image);
 }
