@@ -17,6 +17,7 @@ enum class BaseDataTypeClassifier {
     IMAGE,
     BYTES,
     STRING,
+    PATH,
     ANY
 };
 

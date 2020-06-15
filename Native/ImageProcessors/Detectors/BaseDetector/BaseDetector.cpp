@@ -45,10 +45,11 @@ Mat *BaseDetector::detectObjects(Mat *sourceImage) {
     
     vector<Rect> objects = detectObjectsRects(sourceImage);
     
+    Mat *resultImage = new Mat(*sourceImage);
     for (int i = 0; i < objects.size(); i++) {
-        rectangle(*sourceImage, objects[i], Scalar(red, green, blue), rectangleWidth);
+        rectangle(*resultImage, objects[i], Scalar(red, green, blue), rectangleWidth);
     }
-    return new Mat(*sourceImage);
+    return new Mat(*resultImage);
 }
 
 vector<Rect> BaseDetector::detectObjectsRects(Mat *sourceImage) {

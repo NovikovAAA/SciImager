@@ -10,11 +10,11 @@
 #define Vector4Brake_hpp
 
 #include <stdio.h>
-#include "VectorBrakeBase.hpp"
+#include "VectorBreakBase.hpp"
 
-class Vector4Brake : public VectorBrakeBase {
+class Vector4Break : public VectorBreakBase {
 public:
-    Vector4Brake();
+    Vector4Break();
 };
 
 #endif /* Vector4Brake_hpp */

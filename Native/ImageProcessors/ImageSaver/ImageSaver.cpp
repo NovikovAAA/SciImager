@@ -11,6 +11,7 @@
 
 #include <opencv2/highgui.hpp>
 #include <filesystem>
+#include <ctime>
 
 using namespace cv;
 using namespace std;
@@ -32,6 +33,16 @@ ImageSaver::ImageSaver(string pathString) {
 }
 
 #pragma mark - Saving
+
+void ImageSaver::save(Mat image) {
+    time_t now = time(0);
+    char* dt = ctime(&now);
+    save(image, dt, "png");
+}
+
+void ImageSaver::save(Mat image, string imageName) {
+    save(image, imageName, "png");
+}
 
 void ImageSaver::save(Mat image, string imageName, string extension) {
     path savingPath = pathString + imageName + "." + extension;

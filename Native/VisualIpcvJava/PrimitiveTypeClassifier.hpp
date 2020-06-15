@@ -12,6 +12,7 @@ enum PrimitiveTypeClassifier {
     JNI_DOUBLE,
     JNI_INTEGER,
     JNI_STRING,
+    JNI_PATH,
     JNI_IMAGE,
     JNI_VECTOR2,
     JNI_VECTOR3,

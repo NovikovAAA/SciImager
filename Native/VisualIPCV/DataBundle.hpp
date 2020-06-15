@@ -29,8 +29,9 @@ struct DataBundle {
     }
     
     template <class T>
-    void write(std::string name, T const &value) {
+    bool write(std::string name, T const &value) {
         dataMap[name] = value;
+        return true;
     }
 };
 

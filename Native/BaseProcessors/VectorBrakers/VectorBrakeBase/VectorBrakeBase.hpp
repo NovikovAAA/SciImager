@@ -12,9 +12,9 @@
 #include <stdio.h>
 #include "Processor.hpp"
 
-class VectorBrakeBase : public Processor {
+class VectorBreakBase : public Processor {
 public:
-    VectorBrakeBase(std::string name, std::string module, std::string category, std::vector<ProcessorProperty> inputProperties, std::vector<ProcessorProperty> outputProperties);
+    VectorBreakBase(std::string name, std::string module, std::string category, std::vector<ProcessorProperty> inputProperties, std::vector<ProcessorProperty> outputProperties);
     DataBundle execute(const DataBundle &dataMap, DataBundle &nodeSate) override;
 };
 

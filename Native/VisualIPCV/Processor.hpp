@@ -48,6 +48,14 @@ protected:
         return resultDataBundle;
     }
     
+    template <class... Args>
+    DataBundle executionResult(ResultTransferModel<Args>...models) {
+        DataBundle resultDataBundle;
+        bool res = (resultDataBundle.write(models.key, models.value) && ...);
+        prepareResult(&resultDataBundle);
+        return resultDataBundle;
+    }
+    
     template <class T>
     DataBundle executionResult(std::string key, T const &value) {
         DataBundle resultDataBundle;

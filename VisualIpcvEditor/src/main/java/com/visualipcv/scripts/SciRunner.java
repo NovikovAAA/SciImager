@@ -7,11 +7,9 @@ import org.scilab.modules.types.*;
 
 public class SciRunner {
     private static Scilab scilab;
-///Users/artemnovikov/Documents/Applications/scilab-6.0.2.app
     public static void load() {
-//        System.setProperty("LD_LIBRARY_PATH", "/Users/artemnovikov/Documents/Applications/scilab-6.0.2.app/Contents/MacOS/lib/scilab");
-//        System.setProperty("SCI", "/Users/artemnovikov/Documents/Applications/scilab-6.0.2.app/Contents/MacOS/lib/scilab");
         try {
+            System.out.println(System.getProperty("SCI"));
             scilab = new Scilab(true);
         } catch(JavasciException.InitializationException e) {
             Console.error(e);

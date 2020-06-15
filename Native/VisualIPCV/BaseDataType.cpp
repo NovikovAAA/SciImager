@@ -79,6 +79,8 @@ std::string BaseDataType::typeNameForClassifier(BaseDataTypeClassifier typeClass
             return "Bytes";
         case BaseDataTypeClassifier::STRING:
             return "String";
+        case BaseDataTypeClassifier::PATH:
+            return "Path";
         default:
             return "Any";
     }
