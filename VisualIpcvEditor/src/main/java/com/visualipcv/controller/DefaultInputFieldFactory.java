@@ -29,8 +29,10 @@ public class DefaultInputFieldFactory extends InputFieldFactory {
             return new VectorNFieldController(3);
         } else if(type == DataTypes.VECTOR4) {
             return new VectorNFieldController(4);
-        } else if(type == DataTypes.PATH) {
-            return new PathFieldController();
+        } else if(type == DataTypes.FILE) {
+            return new PathFieldController(false);
+        } else if(type == DataTypes.DIRECTORY) {
+            return new PathFieldController(true);
         }
         return null;
     }

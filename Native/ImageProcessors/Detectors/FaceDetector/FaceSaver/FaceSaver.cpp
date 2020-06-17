@@ -15,8 +15,8 @@ bool faceSaverProccessorLoadResult = ProcessorManager::registerProcessor(new Fac
 
 FaceSaver::FaceSaver() : Processor("FaceSaver", "Core", "C++ Image Processors",
 {ProcessorProperty("image", BaseDataType(BaseDataTypeClassifier::IMAGE)),
- ProcessorProperty("saving path", BaseDataType(BaseDataTypeClassifier::PATH)),
- ProcessorProperty("cascadePath", BaseDataType(BaseDataTypeClassifier::PATH))},
+ ProcessorProperty("saving path", BaseDataType(BaseDataTypeClassifier::FILE)),
+ ProcessorProperty("cascadePath", BaseDataType(BaseDataTypeClassifier::FILE))},
 {ProcessorProperty("result", BaseDataType(BaseDataTypeClassifier::IMAGE))}) {}
 
 DataBundle FaceSaver::execute(const DataBundle &dataMap, DataBundle &nodeSate) {

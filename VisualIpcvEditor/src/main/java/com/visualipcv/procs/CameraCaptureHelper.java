@@ -11,7 +11,8 @@ public class CameraCaptureHelper {
         if(capture.containsKey(index)) {
             return capture.get(index);
         } else {
-            VideoCapture capture = new VideoCapture(index);
+            VideoCapture capture = new VideoCapture();
+            capture.open(index);
             CameraCaptureHelper.capture.put(index, capture);
             return capture;
         }

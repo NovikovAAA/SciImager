@@ -7,15 +7,19 @@ import com.visualipcv.core.NodeSlot;
 import com.visualipcv.core.OutputNodeSlot;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 
 public class AdvancedNodeSlotController extends Controller<HBox> {
     private NodeController controller;
     private NodeSlotController slotController = null;
     private InputFieldController fieldController = null;
+    private VBox titleAndFieldBox;
 
     private UIProperty showControlProperty = new UIProperty(true);
     private UIProperty showConnectorProperty = new UIProperty(true);
@@ -31,12 +35,13 @@ public class AdvancedNodeSlotController extends Controller<HBox> {
         slotController = new NodeSlotController(controller);
         fieldController = new InputFieldController(type);
 
-        VBox vbox = new VBox();
-        vbox.getChildren().add(title);
-        vbox.getChildren().add(fieldController.getView());
-        HBox.setMargin(vbox, new Insets(5.0));
+        titleAndFieldBox = new VBox();
+        titleAndFieldBox.getChildren().add(title);
+        titleAndFieldBox.getChildren().add(fieldController.getView());
+        HBox.setMargin(titleAndFieldBox, new Insets(5.0));
+        HBox.setHgrow(titleAndFieldBox, Priority.ALWAYS);
         getView().getChildren().add(slotController.getView());
-        getView().getChildren().add(vbox);
+        getView().getChildren().add(titleAndFieldBox);
 
         showControlProperty.addEventListener(new PropertyChangedEventListener() {
             @Override
@@ -61,11 +66,13 @@ public class AdvancedNodeSlotController extends Controller<HBox> {
                 getView().getChildren().clear();
 
                 if((Boolean)newValue) {
-                    getView().getChildren().add(vbox);
+                    getView().getChildren().add(titleAndFieldBox);
                     getView().getChildren().add(slotController.getView());
+                    titleAndFieldBox.setAlignment(Pos.CENTER_RIGHT);
                 } else {
                     getView().getChildren().add(slotController.getView());
-                    getView().getChildren().add(vbox);
+                    getView().getChildren().add(titleAndFieldBox);
+                    titleAndFieldBox.setAlignment(Pos.CENTER_LEFT);
                 }
             }
         });

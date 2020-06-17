@@ -86,7 +86,16 @@ public class DataTypes {
 
     @PrimaryDataType
     @RegisterDataType
-    public static final DataType PATH = new DataType("Path", Color.DARKMAGENTA, String.class) {
+    public static final DataType FILE = new DataType("File", Color.DARKMAGENTA, String.class) {
+        @Override
+        public Object getDefaultValue() {
+            return "";
+        }
+    };
+
+    @PrimaryDataType
+    @RegisterDataType
+    public static final DataType DIRECTORY = new DataType("Directory", Color.DARKMAGENTA, String.class) {
         @Override
         public Object getDefaultValue() {
             return "";

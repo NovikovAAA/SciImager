@@ -17,7 +17,7 @@ using namespace std;
 bool imagePropertyProcessorResult = ProcessorManager::registerProcessor(new ImagePropertyProcessor());
 
 ImagePropertyProcessor::ImagePropertyProcessor() : Processor("ImageProperty", "Core", "C++ Properties",
-{ProcessorProperty("Path", BaseDataType(BaseDataTypeClassifier::PATH))},
+{ProcessorProperty("Path", BaseDataType(BaseDataTypeClassifier::FILE))},
 {ProcessorProperty("Result", BaseDataType(BaseDataTypeClassifier::IMAGE))}, true) {}
 
 DataBundle ImagePropertyProcessor::execute(const DataBundle &dataMap, DataBundle &nodeSate) {

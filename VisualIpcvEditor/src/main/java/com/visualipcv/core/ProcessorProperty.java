@@ -9,6 +9,7 @@ public class ProcessorProperty {
     private DataType type;
     private boolean showControl = true;
     private boolean showConnector = true;
+    private boolean isArray = false;
 
     public ProcessorProperty(ProcessorPropertyEntity entity) {
         this.name = entity.getName();
@@ -17,11 +18,21 @@ public class ProcessorProperty {
         this.showConnector = entity.showConnector();
     }
 
+    public ProcessorProperty(ProcessorPropertyBuilder builder) {
+        this.name = builder.getName();
+        this.type = builder.getType();
+        this.showControl = builder.isShowControl();
+        this.showConnector = builder.isShowConnector();
+        this.isArray = builder.isArray();
+    }
+
+    // TODO: remove it later
     public ProcessorProperty(String name, DataType type) {
         this.name = name;
         this.type = type;
     }
 
+    // TODO: remove it later
     public ProcessorProperty(String name, DataType type, boolean showControl, boolean showConnector) {
         this.name = name;
         this.type = type;
@@ -29,6 +40,7 @@ public class ProcessorProperty {
         this.showConnector = showConnector;
     }
 
+    // TODO: remove it later
     public ProcessorProperty(String name, DataType type, boolean showConnector) {
         this.name = name;
         this.type = type;
@@ -49,6 +61,10 @@ public class ProcessorProperty {
 
     public void setType(DataType type) {
         this.type = type;
+    }
+
+    public boolean isArray() {
+        return isArray;
     }
 
     public boolean showControl() {

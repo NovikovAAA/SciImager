@@ -78,8 +78,8 @@ public class EnumFieldController extends Controller<Pane> {
 
             if(value instanceof EnumConstraint.Value) {
                 ((InputNodeSlot)getContext()).setValue(((EnumConstraint.Value)value).getValue());
-                valueField.setBorder(null);
-                poll(valueProperty);
+                //valueField.setBorder(null);
+                //poll(valueProperty);
             } else if(value instanceof String) {
                 for(EnumConstraint.Value v : valueField.getItems()) {
                     if(v.getVisual().equals(valueField.getEditor().getText())) {

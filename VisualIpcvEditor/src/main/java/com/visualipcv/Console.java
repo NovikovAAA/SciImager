@@ -20,11 +20,15 @@ public class Console {
     }
 
     public static String execute(String cmd, boolean showCmd) {
-        SciRunner.execute(cmd);
+        try {
+            SciRunner.execute(cmd);
 
-        if(showCmd) {
-            System.out.println(cmd);
-            update();
+            if(showCmd) {
+                System.out.println(cmd);
+                update();
+            }
+        } catch (Exception e) {
+            Console.error(e.getMessage());
         }
 
         return "";

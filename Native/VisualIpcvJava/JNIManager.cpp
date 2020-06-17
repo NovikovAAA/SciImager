@@ -154,7 +154,8 @@ jobject JNIManager::processorResultForJava(JNIEnv *env, DataBundle result) {
                 break;
             }
             case BaseDataTypeClassifier::STRING:
-            case BaseDataTypeClassifier::PATH: {
+            case BaseDataTypeClassifier::FILE:
+            case BaseDataTypeClassifier::DIRECTORY: {
                 std::string resultString = result.read<std::string>(item.first);
                 value = env->NewStringUTF(resultString.c_str());
                 break;
@@ -220,7 +221,8 @@ void JNIManager::writeToBundle(JNIEnv *env, jobject object, DataBundle *valuesBu
             break;
         }
         case JNI_STRING:
-        case JNI_PATH: {
+        case JNI_FILE:
+        case JNI_DIRECTORY: {
             jstring valueJString = (jstring) object;
             assert(valueJString != nullptr);
             std::string valueString = env->GetStringUTFChars(valueJString, 0);

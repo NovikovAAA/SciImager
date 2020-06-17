@@ -162,10 +162,12 @@ public class SciConverters {
 
             @Override
             public Object fromScilabToJava(ScilabType value) {
-                if(value.getType() == ScilabTypeEnum.sci_ints) {
+                if(value != null && value.getType() == ScilabTypeEnum.sci_ints) {
                     int[][] data = ((ScilabInteger)value).getDataAsInt();
                     Mat image = new Mat(data[2][0], data[1][0], CvType.makeType(4, 3));
                     image.put(0, 0, data[0]);
+                    Mat converted = new Mat();
+                    image.convertTo(converted, CvType.makeType(4, 3));
                     return image;
                 }
 
