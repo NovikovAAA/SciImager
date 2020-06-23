@@ -5,7 +5,6 @@ import com.visualipcv.core.Converter;
 import com.visualipcv.core.DataTypeLibrary;
 import com.visualipcv.core.ProcessorLibrary;
 import com.visualipcv.core.ReflectedProcessorGenerator;
-import com.visualipcv.scripts.SciConverters;
 import com.visualipcv.scripts.SciRunner;
 import com.visualipcv.utils.LinkUtils;
 
@@ -13,9 +12,10 @@ import java.io.IOException;
 
 public class Starter {
     static {
+        Console.write("Start!!!");
         LinkUtils.linkNativeLibraries();
 
-//        SciRunner.load();
+        SciRunner.load();
 
         DataTypeLibrary.init();
         ProcessorLibrary.getInstance();

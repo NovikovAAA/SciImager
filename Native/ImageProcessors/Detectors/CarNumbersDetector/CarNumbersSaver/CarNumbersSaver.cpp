@@ -15,7 +15,7 @@ bool carNumbersSaverProccessorLoadResult = ProcessorManager::registerProcessor(n
 
 CarNumbersSaver::CarNumbersSaver() : Processor("CarNumbersSaver", "Core", "C++ Image Processors",
 {ProcessorProperty("image", BaseDataType(BaseDataTypeClassifier::IMAGE)),
- ProcessorProperty("saving path", BaseDataType(BaseDataTypeClassifier::PATH))},
+ ProcessorProperty("saving path", BaseDataType(BaseDataTypeClassifier::FILE))},
 {ProcessorProperty("result", BaseDataType(BaseDataTypeClassifier::IMAGE))}) {}
 
 DataBundle CarNumbersSaver::execute(const DataBundle &dataMap, DataBundle &nodeSate) {

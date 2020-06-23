@@ -91,6 +91,9 @@ public abstract class NodeSlot {
         if(slot1.getNode().getGraph() != slot2.getNode().getGraph())
             return false;
 
+        if(slot1.getProperty().isArray() != slot2.getProperty().isArray())
+            return false;
+
         DataType originType1 = slot1.getProperty().getType();
         DataType originType2 = slot2.getProperty().getType();
 

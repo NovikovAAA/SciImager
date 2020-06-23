@@ -10,7 +10,7 @@
 #include <cassert>
 
 DataTypesManager::DataTypesManager() {
-    classifiers = {JNI_DOUBLE, JNI_INTEGER, JNI_STRING, JNI_PATH, JNI_IMAGE, JNI_VECTOR2, JNI_VECTOR3, JNI_VECTOR4, UNKNOWN};
+    classifiers = {JNI_DOUBLE, JNI_INTEGER, JNI_STRING, JNI_DIRECTORY, JNI_FILE, JNI_IMAGE, JNI_VECTOR2, JNI_VECTOR3, JNI_VECTOR4, UNKNOWN};
 }
 
 std::unique_ptr<DataTypeJNIObject> DataTypesManager::getPrimitiveType(JNIEnv* env, jobject object) {
@@ -53,7 +53,8 @@ string DataTypesManager::javaTypeNameForClassifier(PrimitiveTypeClassifier class
         case JNI_DOUBLE:
             return "java/lang/Double";
         case JNI_STRING:
-        case JNI_PATH:
+        case JNI_DIRECTORY:
+        case JNI_FILE:
             return "java/lang/String";
         case JNI_IMAGE:
             return "org/opencv/core/Mat";
@@ -117,7 +118,8 @@ PrimitiveTypeClassifier DataTypesManager::primitiveTypeClassifier(BaseDataTypeCl
         case BaseDataTypeClassifier::INTEGER:
             return JNI_INTEGER;
         case BaseDataTypeClassifier::STRING:
-        case BaseDataTypeClassifier::PATH:
+        case BaseDataTypeClassifier::FILE:
+        case BaseDataTypeClassifier::DIRECTORY:
             return JNI_STRING;
         case BaseDataTypeClassifier::IMAGE:
             return JNI_IMAGE;

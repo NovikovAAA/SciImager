@@ -19,6 +19,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 
 import java.io.File;
@@ -28,7 +29,7 @@ public class PathFieldController extends Controller<Pane> {
     private Button selectButton;
     private UIProperty pathProperty = new UIProperty();
 
-    public PathFieldController() {
+    public PathFieldController(boolean isDirectory) {
         super(Pane.class);
 
         pathField = new TextField();
@@ -103,8 +104,17 @@ public class PathFieldController extends Controller<Pane> {
         selectButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                FileChooser chooser = new FileChooser();
-                File file = chooser.showOpenDialog(Editor.getPrimaryStage());
+                File file;
+
+                if(isDirectory) {
+                    DirectoryChooser chooser = new DirectoryChooser();
+                    chooser.setTitle("Open directory");
+                    file = chooser.showDialog(Editor.getPrimaryStage());
+                } else {
+                    FileChooser chooser = new FileChooser();
+                    chooser.setTitle("Open file");
+                    file = chooser.showOpenDialog(Editor.getPrimaryStage());
+                }
 
                 if(file != null) {
                     try {

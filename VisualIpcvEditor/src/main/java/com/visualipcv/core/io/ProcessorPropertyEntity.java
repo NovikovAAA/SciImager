@@ -10,12 +10,14 @@ public class ProcessorPropertyEntity implements Serializable {
     private String type;
     private boolean showControl = true;
     private boolean showConnector = true;
+    private boolean isArray = false;
 
     public ProcessorPropertyEntity(ProcessorProperty property) {
         this.name = property.getName();
         this.type = property.getType().getName();
         this.showControl = property.showControl();
         this.showConnector = property.showConnector();
+        this.isArray = property.isArray();
     }
 
     public String getName() {

@@ -32,7 +32,7 @@ public class SciProcessor extends Processor {
         try {
             return script.run(inputs);
         } catch (Exception e) {
-            throw new CommonException("Sci run error");
+            throw new CommonException(e.getMessage());
         }
     }
 

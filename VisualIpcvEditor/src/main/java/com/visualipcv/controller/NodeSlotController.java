@@ -16,6 +16,7 @@ import javafx.scene.input.TransferMode;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,12 +29,17 @@ public class NodeSlotController extends Controller<NodeSlotView> {
     private Circle backgroundCircle;
     @FXML
     private Circle fillCircle;
+    @FXML
+    private Rectangle backgroundRectangle;
+    @FXML
+    private Rectangle fillRectangle;
 
     private UIProperty connectedProperty = new UIProperty();
     private UIProperty connectionsProperty = new UIProperty();
     private UIProperty backgroundColorProperty = new UIProperty();
     private UIProperty foregroundColorProperty = new UIProperty();
     private UIProperty isOutputProperty = new UIProperty();
+    private UIProperty isArrayProperty = new UIProperty();
 
     public NodeSlotController(NodeController controller) {
         super(NodeSlotView.class, "NodeSlotView.fxml");
@@ -44,7 +50,14 @@ public class NodeSlotController extends Controller<NodeSlotView> {
         connectedProperty.addEventListener(new PropertyChangedEventListener() {
             @Override
             public void onChanged(Object oldValue, Object newValue) {
-                fillCircle.setVisible((Boolean)newValue);
+                if(!((Boolean) newValue)) {
+                    fillCircle.setVisible((Boolean)newValue);
+                    fillRectangle.setVisible(false);
+                }
+                else {
+                    fillRectangle.setVisible((Boolean)newValue);
+                    fillCircle.setVisible(false);
+                }
             }
         });
 
@@ -52,6 +65,7 @@ public class NodeSlotController extends Controller<NodeSlotView> {
             @Override
             public void onChanged(Object oldValue, Object newValue) {
                 backgroundCircle.fillProperty().set((Color)newValue);
+                backgroundRectangle.fillProperty().set((Color)newValue);
             }
         });
 
@@ -60,6 +74,21 @@ public class NodeSlotController extends Controller<NodeSlotView> {
             public void onChanged(Object oldValue, Object newValue) {
                 backgroundCircle.strokeProperty().set((Color)newValue);
                 fillCircle.fillProperty().set((Color)newValue);
+                backgroundRectangle.strokeProperty().set((Color)newValue);
+                fillRectangle.fillProperty().set((Color)newValue);
+            }
+        });
+
+        isArrayProperty.addEventListener(new PropertyChangedEventListener() {
+            @Override
+            public void onChanged(Object oldValue, Object newValue) {
+                if((Boolean)newValue) {
+                    backgroundCircle.setVisible(false);
+                    backgroundRectangle.setVisible(true);
+                } else {
+                    backgroundCircle.setVisible(true);
+                    backgroundRectangle.setVisible(false);
+                }
             }
         });
 
@@ -78,6 +107,10 @@ public class NodeSlotController extends Controller<NodeSlotView> {
 
         isOutputProperty.setBinder((Object slot) -> {
             return slot instanceof OutputNodeSlot;
+        });
+
+        isArrayProperty.setBinder((Object slot) -> {
+            return ((NodeSlot)slot).getProperty().isArray();
         });
 
         initialize();

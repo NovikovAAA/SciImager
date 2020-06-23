@@ -18,9 +18,11 @@ import javafx.scene.layout.AnchorPane;
 
 public class PropertyController extends Controller<AnchorPane> {
     @FXML
-    private Button moveUpButton;
+    public Button moveUpButton;
     @FXML
-    private Button moveDownButton;
+    public Button moveDownButton;
+    @FXML
+    public Button removeButton;
     @FXML
     private ComboBox<DataType> dataType;
     @FXML
@@ -31,6 +33,27 @@ public class PropertyController extends Controller<AnchorPane> {
 
     public PropertyController() {
         super(AnchorPane.class, "PropertyView.fxml");
+
+        moveUpButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+            }
+        });
+
+        moveDownButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+            }
+        });
+
+        removeButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+
+            }
+        });
 
         nameProperty.addEventListener(new PropertyChangedEventListener() {
             @Override

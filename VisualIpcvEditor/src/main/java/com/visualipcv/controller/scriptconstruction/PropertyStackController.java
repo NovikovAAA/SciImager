@@ -36,6 +36,46 @@ public class PropertyStackController extends Controller<AnchorPane> {
             List<PropertyController> views = new ArrayList<>();
             for(ProcessorProperty property : (List<ProcessorProperty>)context) {
                 PropertyController propertyView = new PropertyController();
+
+                propertyView.moveDownButton.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        List<ProcessorProperty> processorProperties = (List<ProcessorProperty>)getContext();
+                        int index = processorProperties.indexOf(propertyView.getContext());
+
+                        if(index >= processorProperties.size() - 1)
+                            return;
+
+                        processorProperties.remove(propertyView.getContext());
+                        processorProperties.add(index + 1, propertyView.getContext());
+                        poll(properties);
+                    }
+                });
+
+                propertyView.moveUpButton.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        List<ProcessorProperty> processorProperties = (List<ProcessorProperty>)getContext();
+                        int index = processorProperties.indexOf(propertyView.getContext());
+
+                        if(index <= 0)
+                            return;
+
+                        processorProperties.remove(propertyView.getContext());
+                        processorProperties.add(index - 1, propertyView.getContext());
+                        poll(properties);
+                    }
+                });
+
+                propertyView.removeButton.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent event) {
+                        List<ProcessorProperty> processorProperties = (List<ProcessorProperty>)getContext();
+                        processorProperties.remove(propertyView.getContext());
+                        poll(properties);
+                    }
+                });
+
                 propertyView.setContext(property);
                 views.add(propertyView);
             }

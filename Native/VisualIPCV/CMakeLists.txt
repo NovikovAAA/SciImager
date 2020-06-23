@@ -1,6 +1,6 @@
 project(VisualIPCV)
 
-find_package(OpenCV REQUIRED PATHS ${CMAKE_SOURCE_DIR}/../OpenCV/build/)
+find_package(OpenCV REQUIRED PATHS ${CMAKE_SOURCE_DIR}/../OpenCV/cmake_build/install/)
 
 file(GLOB_RECURSE sources "*.h" "*.hpp" "*.cpp")
 add_library(${PROJECT_NAME} SHARED ${sources})

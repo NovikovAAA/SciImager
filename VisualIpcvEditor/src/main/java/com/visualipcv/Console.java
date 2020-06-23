@@ -15,16 +15,20 @@ public class Console {
     static {
         byteStream = new ByteArrayOutputStream();
         PrintStream stream = new PrintStream(byteStream);
-        //System.setOut(stream);
-        //System.setErr(stream);
+        System.setOut(stream);
+        System.setErr(stream);
     }
 
     public static String execute(String cmd, boolean showCmd) {
-        SciRunner.execute(cmd);
+        try {
+            SciRunner.execute(cmd);
 
-        if(showCmd) {
-            System.out.println(cmd);
-            update();
+            if(showCmd) {
+                System.out.println(cmd);
+                update();
+            }
+        } catch (Exception e) {
+            Console.error(e.getMessage());
         }
 
         return "";

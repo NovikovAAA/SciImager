@@ -12,20 +12,21 @@ public class LinkUtils {
     public static void linkNativeLibraries() {
         try {
             addDir("./ext");
-            addDir("/Users/artemnovikov/ScilabTEST/Contents/MacOS/lib/scilab");
-//            addDir("/Users/artemnovikov/ScilabTEST/Contents/MacOS/lib/thirdparty");
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        try {
+            addDir("/Users/artemnovikov/ScilabTEST/Contents/MacOS/lib/scilab");
+            addDir("/Users/artemnovikov/ScilabTEST/Contents/MacOS/lib/thirdparty");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        System.loadLibrary("opencv_world430d");
+        System.loadLibrary("opencv_java430");
         System.loadLibrary("VisualIPCV");
         System.loadLibrary("VisualIPCVJava");
-
-        if(SystemUtils.OS_NAME.toLowerCase().contains("win")) {
-            System.loadLibrary("opencv_world420d");
-        } else {
-            System.loadLibrary("opencv_java430");
-        }
     }
 
     public static void addDir(String s) throws IOException {

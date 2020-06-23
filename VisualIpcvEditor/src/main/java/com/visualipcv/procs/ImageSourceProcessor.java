@@ -21,7 +21,7 @@ public class ImageSourceProcessor extends Processor {
             .setName("ImageSource")
             .setModule("Core")
             .setCategory("Input")
-            .addInputProperty(new ProcessorProperty("Path", DataTypes.PATH))
+            .addInputProperty(new ProcessorProperty("Path", DataTypes.FILE))
             .addOutputProperty(new ProcessorProperty("Image", DataTypes.IMAGE)));
     }
 
