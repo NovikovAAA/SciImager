@@ -12,7 +12,6 @@ import java.io.IOException;
 
 public class Starter {
     static {
-        Console.write("Start!!!");
         LinkUtils.linkNativeLibraries();
 
         SciRunner.load();

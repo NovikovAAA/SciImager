@@ -36,6 +36,8 @@ public class SciScriptEditor extends Controller<AnchorPane> implements INameable
     private TextArea codeField;
     @FXML
     private VBox properties;
+    @FXML
+    private Button buildButton;
 
     private UIProperty nameProperty = new UIProperty();
 
@@ -67,10 +69,17 @@ public class SciScriptEditor extends Controller<AnchorPane> implements INameable
 
         nameProperty.setBinder(context -> ((SciScript)context).getName());
 
-        codeField.textProperty().addListener(new ChangeListener<String>() {
+        /*codeField.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 ((SciScript)getContext()).setCode(newValue);
+            }
+        });*/
+
+        buildButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                ((SciScript)getContext()).setCode(codeField.getText());
             }
         });
     }

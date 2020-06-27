@@ -13,6 +13,7 @@
             <padding>
                 <Insets topRightBottomLeft="3.0"/>
             </padding>
+            <Button fx:id="buildButton" text="Build"/>
         </FlowPane>
         <SplitPane VBox.vgrow="ALWAYS" dividerPositions="0.2">
             <VBox fx:id="properties"/>

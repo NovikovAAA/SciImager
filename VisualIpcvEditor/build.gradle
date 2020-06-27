@@ -20,3 +20,13 @@ dependencies {
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.0'
     compile group: 'org.apache.ant', name: 'ant', version: '1.10.8'
 }
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'Gradle Jar File Example',
+                'Implementation-Version': version,
+                'Main-Class': 'com.visualipcv.Starter'
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
