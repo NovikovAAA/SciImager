@@ -28,6 +28,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -47,6 +48,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
+import javax.tools.Tool;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,6 +75,7 @@ public class NodeController extends GraphElementController<AnchorPane> {
     private final UIProperty isProxyProperty = new UIProperty();
 
     private ContextMenu contextMenu;
+    private Tooltip errorTooltip;
 
     public NodeController(GraphController controller) {
         super(controller, AnchorPane.class, "NodeView.fxml");
@@ -120,13 +123,17 @@ public class NodeController extends GraphElementController<AnchorPane> {
                 String msg = (String)newValue;
 
                 if(msg != null && msg.length() > 0) {
-                    error.setText(msg);
+                    error.setText("Error occurred (see more)");
                     errorPane.setVisible(true);
                     errorPane.setManaged(true);
+                    errorTooltip = new Tooltip(msg);
+                    errorTooltip.setAutoHide(true);
+                    Tooltip.install(errorPane, errorTooltip);
                 } else {
                     error.setText("");
                     errorPane.setVisible(false);
                     errorPane.setManaged(false);
+                    error.onMouseClickedProperty().unbind();
                 }
             }
         });

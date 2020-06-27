@@ -46,9 +46,9 @@
                 </children>
             </GridPane>
             <StackPane maxWidth="500.0" fx:id="content"/>
-            <Pane fx:id="errorPane" prefHeight="34.0" prefWidth="200.0" style="-fx-background-color: #aa0000; -fx-background-radius: 0 0 10 10; -fx-border-color: transparent;">
+            <Pane fx:id="errorPane" prefHeight="34.0" style="-fx-background-color: #aa0000; -fx-background-radius: 0 0 10 10; -fx-border-color: transparent;">
                 <children>
-                    <Text fx:id="error" layoutX="20.0" layoutY="20.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Text" wrappingWidth="160.0" />
+                    <Text fx:id="error" styleClass="error" layoutX="20.0" layoutY="20.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-weight: bold;" text="Text" />
                 </children>
             </Pane>
         </VBox>
