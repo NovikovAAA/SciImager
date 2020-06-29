@@ -16,13 +16,17 @@ public class LinkUtils {
             e.printStackTrace();
         }
 
-        try {
+        /*try {
             addDir("/Users/artemnovikov/ScilabTEST/Contents/MacOS/lib/scilab");
             addDir("/Users/artemnovikov/ScilabTEST/Contents/MacOS/lib/thirdparty");
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
+        /*System.loadLibrary("./ext/opencv_world430d");
+        System.loadLibrary("./ext/opencv_java430");
+        System.loadLibrary("./ext/VisualIPCV");
+        System.loadLibrary("./ext/VisualIPCVJava");*/
         System.loadLibrary("opencv_world430d");
         System.loadLibrary("opencv_java430");
         System.loadLibrary("VisualIPCV");

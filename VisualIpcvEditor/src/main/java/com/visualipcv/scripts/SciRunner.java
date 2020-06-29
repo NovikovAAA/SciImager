@@ -18,9 +18,16 @@ public class SciRunner {
         }
 
         try {
+            Thread.sleep(1000);
+        } catch (Exception e) {
+
+        }
+
+        try {
             scilab.open();
         } catch(JavasciException e) {
             Console.error(e);
+            throw new RuntimeException(e);
         }
 
         SciConverters.load();
@@ -43,11 +50,12 @@ public class SciRunner {
     }
 
     private static void repairScilab() {
-        try {
-            scilab = new Scilab(true);
+        //scilab.exec("clear;");
+        /*try {
+
         } catch (JavasciException e) {
             Console.error(e.getMessage());
-        }
+        }*/
     }
 
     public static void execute(String code) {
@@ -62,6 +70,7 @@ public class SciRunner {
                 throw new CommonException(errMessage);
 
         } catch (JavasciException e) {
+            repairScilab();
             throw new CommonException(e.getMessage());
         }
     }

@@ -107,7 +107,7 @@ public class SciScript implements IDocumentPart {
     public DataBundle run(DataBundle inputs) {
         for(ProcessorProperty property : inputProperties) {
             SciConverter converter = SciConverters.getConverterForType(property.getType());
-            ScilabType sciValue = converter.fromJavaToScilab(inputs.read(property.getName()));
+            ScilabType sciValue = converter.fromJavaToScilab(property.getName(), inputs.read(property.getName()));
             SciRunner.set(property.getName(), sciValue);
         }
 
@@ -116,7 +116,7 @@ public class SciScript implements IDocumentPart {
 
         for(ProcessorProperty property : outputProperties) {
             SciConverter converter = SciConverters.getConverterForType(property.getType());
-            Object value = converter.fromScilabToJava(SciRunner.get(property.getName()));
+            Object value = converter.fromScilabToJava(property.getName(), SciRunner.get(property.getName()));
             result.write(property.getName(), value);
         }
 

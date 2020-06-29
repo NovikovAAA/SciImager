@@ -175,3 +175,13 @@
     -fx-background-color: rgba(255, 255, 255, 1);
     -fx-background-radius: 5.0;
 }
+
+.error {
+    -fx-fill: white;
+    -fx-underline: true;
+}
+
+.error:hover {
+    -fx-fill: cyan;
+    -fx-underline: true;
+}
